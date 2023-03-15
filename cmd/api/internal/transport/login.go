@@ -41,7 +41,7 @@ func (server *Server) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := service.SignIn(requestData.Phone, requestData.Password, server.DB)
+	code, err := service.SignIn(requestData.Phone, requestData.Password, server.DB)
 	if err != nil {
 		passErr := errors.New("Incorrect Details")
 		fmt.Println(err)
@@ -49,7 +49,7 @@ func (server *Server) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responses.JSON(w, http.StatusOK, token)
+	responses.JSON(w, http.StatusOK, responses.LoginResponse{Code: code})
 }
 
 func (server *Server) submit(w http.ResponseWriter, r *http.Request) {
@@ -65,5 +65,5 @@ func (server *Server) submit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responses.JSON(w, http.StatusOK, token)
+	responses.JSON(w, http.StatusOK, responses.SubmitResponse{Token: token})
 }
