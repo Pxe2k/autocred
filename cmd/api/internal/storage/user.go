@@ -14,7 +14,8 @@ type User struct {
 	Phone                string        `gorm:"size:100;not null;unique"`
 	Password             string        `gorm:"size:100;"`
 	Creditor             bool          `json:"creditor"`
-	Bank                 *string       `json:"bank,omitempty"`
+	BankID               *uint         `json:"bankID,omitempty"`
+	Bank                 *Bank         `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bank,omitempty"`
 	UserApplications     []Application `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"userApplications"`
 	CreditedApplications []Application `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"creditedApplications"`
 }
@@ -77,5 +78,15 @@ func (u *User) SaveUser(db *gorm.DB) (*User, error) {
 	if err != nil {
 		return &User{}, err
 	}
+	return u, nil
+}
+
+func (u *User) Get(db *gorm.DB, uid uint) (*User, error) {
+	err := db.Debug().Model(User{}).Where("id = ?", uid).Take(&u).Error
+	if err != nil {
+		return &User{}, err
+	}
+	errors.Is(err, gorm.ErrRecordNotFound)
+
 	return u, nil
 }

@@ -35,6 +35,7 @@ func CreateUserService(db *gorm.DB, body []byte) (*storage.User, error) {
 	user.Phone = requestData.Phone
 	user.Password = requestData.Password
 	user.Creditor = requestData.Creditor
+	user.BankID = requestData.BankID
 
 	if user.Email == "" {
 		return &storage.User{}, err

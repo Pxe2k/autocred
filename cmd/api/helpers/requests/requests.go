@@ -6,6 +6,7 @@ type UserRequestData struct {
 	Creditor bool   `json:"creditor"`
 	Bank     string `json:"bank"`
 	Password string `json:"password"`
+	BankID   *uint  `json:"bankID"`
 }
 
 type SubmitCode struct {

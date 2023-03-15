@@ -43,7 +43,8 @@ func (server *Server) Initialize(Dbdriver, DbUser, DbPassword, DbPort, DbHost, D
 		storage.ClientComment{},
 		storage.Pledge{},
 		storage.Application{},
-		storage.Sign{}) //migrations
+		storage.Bank{},
+		storage.BankResponse{}) //migrations
 
 	server.Router = mux.NewRouter()
 	server.InitializeRoutes()
