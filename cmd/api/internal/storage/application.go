@@ -7,27 +7,16 @@ import (
 
 type Application struct {
 	gorm.Model
-	CreditProduct      string          `gorm:"size:100;" json:"creditProduct"` // Кредитный продукт
-	ReLoan             bool            `json:"reLoan"`                         // Повторный займ
-	LoanAmount         int             `json:"loanAmount"`                     // Сумма займа
-	Score              int             `json:"score"`
-	Subsidy            int             `json:"subsidy"`                      // Субсудия
-	LoanPurpose        string          `gorm:"size:100;" json:"loanPurpose"` // Цель кредита
-	PrincipalAmount    int             `json:"principalAmount"`              // Сумма ОС второго периода
-	PeriodLength       int             `json:"periodLength"`                 // Длительность между погашениями
-	TrenchesNumber     int             `json:"trenchesNumber"`               // Кол-во траншей
-	CarryoverContracts bool            `json:"carryoverContracts"`           // Переносить проценты по пролонгированным контрактам
-	InterestRate       int             `json:"interestRate"`                 // Процентная ставка
-	InitialFee         int             `json:"initialFee"`                   // Первоначальный взнос
-	LoanType           string          `gorm:"size:100;" json:"loanType"`    // Тип займа
-	LoanStage          int             `json:"loanStage"`                    // Ступень займа
-	Income             int             `json:"income"`                       // Среднемесячный доход
-	Payment            int             `json:"payment"`                      // Среднемесячный платеж
-	DebtLoad           int             `json:"debtLoad"`                     // Показатель долговой нагрузки
-	UserID             uint            `json:"userID"`
-	ClientID           uint            `json:"clientID"`
-	Client             *Client         `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"client,omitempty"`
-	BankResponses      *[]BankResponse `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bankResponses,omitempty"`
+	CreditProduct  string          `gorm:"size:100;" json:"creditProduct"` // Кредитный продукт
+	ReLoan         bool            `json:"reLoan"`                         // Повторный займ
+	LoanAmount     int             `json:"loanAmount"`                     // Сумма займа
+	Subsidy        int             `json:"subsidy"`                        // Субсудия
+	LoanPurpose    string          `gorm:"size:100;" json:"loanPurpose"`   // Цель кредита
+	TrenchesNumber int             `json:"trenchesNumber"`                 // Кол-во траншей
+	UserID         uint            `json:"userID"`
+	ClientID       uint            `json:"clientID"`
+	Client         *Client         `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"client,omitempty"`
+	BankResponses  *[]BankResponse `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bankResponses,omitempty"`
 }
 
 func (a *Application) Save(db *gorm.DB) (*Application, error) {

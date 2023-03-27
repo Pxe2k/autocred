@@ -4,10 +4,18 @@ import "gorm.io/gorm"
 
 type Pledge struct {
 	gorm.Model
-	Type     string `gorm:"size:100;" json:"type"`
-	Title    string `gorm:"size:100;" json:"title"`
-	Pledger  string `gorm:"size:100;" json:"pledger"`
-	ClientID uint   `json:"clientID"`
+	Type       string `gorm:"size:100;" json:"type"`
+	Title      string `gorm:"size:100;" json:"title"`
+	Pledger    string `gorm:"size:100;" json:"pledger"`
+	CarBrand   string `gorm:"size:100" json:"carBrand"`
+	CarModel   string `gorm:"size:100" json:"carModel"`
+	YearIssue  string `gorm:"size:100" json:"yearIssue"`
+	Condition  string `gorm:"size:100" json:"condition"`
+	InitFee    uint   `json:"initFee"`
+	Mileage    string `gorm:"size:100" json:"mileage"`
+	LoanAmount uint   `json:"loanAmount"`
+	VINCode    string `gorm:"size:100" json:"VINCode"`
+	ClientID   uint   `json:"clientID"`
 }
 
 func (p *Pledge) Save(db *gorm.DB) (*Pledge, error) {
