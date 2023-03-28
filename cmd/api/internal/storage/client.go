@@ -18,6 +18,7 @@ type Client struct {
 	Email               string               `gorm:"size:100;" json:"email"`        // Email
 	Education           string               `gorm:"size:100;" json:"education"`    // Образование
 	UserID              uint                 `json:"userId"`
+	User                *User                `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"user,omitempty"`
 	MaritalStatus       *MaritalStatus       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"maritalStatus,omitempty"`       // Семейное положение
 	Document            *Document            `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"document,omitempty"`            // Документы
 	WorkPlaceInfo       *WorkPlaceInfo       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"workPlaceInfo,omitempty"`       // Информация о месте работы
@@ -43,7 +44,7 @@ func (c *Client) Save(db *gorm.DB) (*Client, error) {
 func (c *Client) All(db *gorm.DB) (*[]Client, error) {
 	var clients []Client
 
-	err := db.Debug().Model(&Client{}).Limit(100).Find(&clients).Error
+	err := db.Debug().Model(&Client{}).Preload("User").Limit(100).Find(&clients).Error
 	if err != nil {
 		return nil, err
 	}
