@@ -13,7 +13,10 @@ type Client struct {
 	BirthDate           string               `gorm:"size:100;" json:"birthDate"`    // ДР
 	Country             string               `gorm:"size:100;" json:"country"`      // Страна
 	Residency           string               `gorm:"size:100;" json:"residency"`    // Резиденство
-	Education           string               `gorm:"size:100"  json:"education"`    // Образование
+	Bin                 string               `gorm:"size:100;" json:"bin"`          // ИИН
+	Phone               string               `gorm:"size:100;" json:"phone"`        // Телефон
+	Email               string               `gorm:"size:100;" json:"email"`        // Email
+	Education           string               `gorm:"size:100;" json:"education"`    // Образование
 	UserID              uint                 `json:"userId"`
 	MaritalStatus       *MaritalStatus       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"maritalStatus,omitempty"`       // Семейное положение
 	Document            *Document            `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"document,omitempty"`            // Документы
@@ -22,9 +25,10 @@ type Client struct {
 	RegistrationAddress *RegistrationAddress `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"registrationAddress,omitempty"` // Адрес прописки
 	ResidentialAddress  *ResidentialAddress  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"residentialAddress,omitempty"`  // Адрес проживания
 	Contacts            *[]ClientContact     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"contacts,omitempty"`            // Доп. контакты
-	BeneficialOwners    *[]BeneficialOwner   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"beneficialOwners,omitempty"`    // Бенефициарные владельцы
+	BonusInfo           *BonusInfo           `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bonusInfo"`
+	PersonalProperty    *PersonalProperty    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"personalProperty"`
+	BeneficialOwners    *[]BeneficialOwner   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"beneficialOwners,omitempty"` // Бенефициарные владельцы
 	ClientComment       *ClientComment       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"clientComment,omitempty"`
-	Pledge              *[]Pledge            `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"pledge,omitempty"` // Залог
 }
 
 func (c *Client) Save(db *gorm.DB) (*Client, error) {

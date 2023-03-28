@@ -16,6 +16,7 @@ type Application struct {
 	UserID         uint            `json:"userID"`
 	ClientID       uint            `json:"clientID"`
 	Client         *Client         `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"client,omitempty"`
+	Pledge         *Pledge         `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"pledge,omitempty"` // Залог
 	BankResponses  *[]BankResponse `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bankResponses,omitempty"`
 }
 

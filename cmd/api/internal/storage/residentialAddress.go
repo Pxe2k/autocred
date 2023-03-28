@@ -14,7 +14,5 @@ type ResidentialAddress struct {
 	Flat     string `gorm:"size:100;" json:"flat"`     // Номер квартиры
 	House    string `gorm:"size:100;" json:"house"`    // Номер дома
 	Kato     string `gorm:"size:100;" json:"kato"`     // Код КАТО
-	Phone    string `gorm:"size:100;" json:"phone"`
-	Email    string `gorm:"size:100;" json:"email"`
 	ClientID uint
 }
