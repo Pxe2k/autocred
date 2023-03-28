@@ -32,4 +32,10 @@ func (server *Server) InitializeRoutes() {
 	bankApi.HandleFunc("/create", middlewares.SetMiddlewareJSON(server.createBank)).Methods("POST")
 	bankApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allBank)).Methods("GET")
 	bankApi.HandleFunc("/sign", middlewares.SetMiddlewareJSON(server.signApplication)).Methods("POST")
+
+	workApi := server.Router.PathPrefix("/api/work").Subrouter()
+
+	workApi.HandleFunc("/create-activity", middlewares.SetMiddlewareJSON(server.createWorkActivity)).Methods("POST")
+	workApi.HandleFunc("/create-title", middlewares.SetMiddlewareJSON(server.createJobTitle)).Methods("POST")
+	workApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allWorkActivity)).Methods("GET")
 }
