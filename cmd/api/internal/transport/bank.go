@@ -69,3 +69,26 @@ func (server *Server) signApplication(w http.ResponseWriter, r *http.Request) {
 
 	responses.JSON(w, http.StatusAccepted, signedResponse)
 }
+
+func (server *Server) createProduct(w http.ResponseWriter, r *http.Request) {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	product := storage.BankProduct{}
+	err = json.Unmarshal(body, &product)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	productCreated, err := product.Save(server.DB)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusCreated, productCreated)
+}
