@@ -38,4 +38,10 @@ func (server *Server) InitializeRoutes() {
 	workApi.HandleFunc("/create-activity", middlewares.SetMiddlewareJSON(server.createWorkActivity)).Methods("POST")
 	workApi.HandleFunc("/create-title", middlewares.SetMiddlewareJSON(server.createJobTitle)).Methods("POST")
 	workApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allWorkActivity)).Methods("GET")
+
+	cityApi := server.Router.PathPrefix("/api/city").Subrouter()
+
+	cityApi.HandleFunc("/create-city", middlewares.SetMiddlewareJSON(server.createCity)).Methods("POST")
+	cityApi.HandleFunc("/create-district", middlewares.SetMiddlewareJSON(server.createDistrict)).Methods("POST")
+	cityApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allCity)).Methods("GET")
 }
