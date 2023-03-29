@@ -4,9 +4,8 @@ import "gorm.io/gorm"
 
 type District struct {
 	gorm.Model
-	Name   string `gorm:"size:100;" json:"name"`
-	Kato   string `gorm:"size:100;" json:"kato"`
-	CityID uint   `json:"cityID"`
+	Name string `gorm:"size:100;" json:"name"`
+	Kato string `gorm:"size:100;" json:"kato"`
 }
 
 func (d *District) Save(db *gorm.DB) (*District, error) {

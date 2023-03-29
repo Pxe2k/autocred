@@ -5,6 +5,7 @@ import (
 	"autocredit/cmd/api/helpers/responses"
 	"autocredit/cmd/api/internal/service"
 	"autocredit/cmd/api/internal/storage"
+	"errors"
 	"github.com/gorilla/mux"
 	"io"
 	"net/http"
@@ -80,4 +81,42 @@ func (server *Server) getClient(w http.ResponseWriter, r *http.Request) {
 	}
 
 	responses.JSON(w, http.StatusOK, clientGotten)
+}
+
+func (server *Server) uploadAvatar(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	clientID, err := strconv.ParseUint(vars["id"], 10, 32)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	err = r.ParseMultipartForm(10 << 20)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+	file, handler, err := r.FormFile("image")
+	if err != nil {
+		retrErr := errors.New("error while uploading file")
+		responses.ERROR(w, http.StatusInternalServerError, retrErr)
+		return
+	}
+
+	tokenID, _ := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
+		return
+	}
+	if tokenID == 0 {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("token is missing"))
+		return
+	}
+
+	clientAvatar, err := service.UploadAvatarForClient(server.DB, uint32(clientID), file, handler)
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+	responses.JSON(w, http.StatusOK, clientAvatar)
 }

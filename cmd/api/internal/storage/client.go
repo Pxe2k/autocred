@@ -6,8 +6,10 @@ import (
 
 type Client struct {
 	gorm.Model
-	IsBusiness          bool                 `json:"isBusiness"`                    // Физ/не физ
-	FullName            string               `gorm:"size:100;" json:"fullName"`     // ФИО
+	IsBusiness          bool                 `json:"isBusiness"` // Физ/не физ
+	FirstName           string               `gorm:"size:100;" json:"firstName"`
+	MiddleName          string               `gorm:"size:100;" json:"middleName"`
+	LastName            *string              `gorm:"size:100;" json:"lastName,omitempty"`
 	TypeOfClient        string               `gorm:"size:100;" json:"typeOfClient"` // Тип клиента
 	Sex                 string               `gorm:"size:100;" json:"sex"`          // Пол
 	BirthDate           string               `gorm:"size:100;" json:"birthDate"`    // ДР
@@ -17,6 +19,7 @@ type Client struct {
 	Phone               string               `gorm:"size:100;" json:"phone"`        // Телефон
 	Email               string               `gorm:"size:100;" json:"email"`        // Email
 	Education           string               `gorm:"size:100;" json:"education"`    // Образование
+	Image               string               `gorm:"size:100;" json:"image"`        // Аватарка
 	UserID              uint                 `json:"userId"`
 	User                *User                `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"user,omitempty"`
 	MaritalStatus       *MaritalStatus       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"maritalStatus,omitempty"`       // Семейное положение
@@ -68,5 +71,17 @@ func (c *Client) Get(db *gorm.DB, id uint) (*Client, error) {
 		return nil, err
 	}
 
+	return c, nil
+}
+
+func (c *Client) UpdateAvatar(db *gorm.DB, id uint) (*Client, error) {
+	err := db.Debug().Model(&Client{}).Where("id = ?", id).Take(&Client{}).UpdateColumns(
+		map[string]interface{}{
+			"image": c.Image,
+		},
+	).Error
+	if err != nil {
+		return &Client{}, err
+	}
 	return c, nil
 }

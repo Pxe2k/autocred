@@ -11,6 +11,7 @@ import (
 type User struct {
 	gorm.Model
 	Email                string        `gorm:"size:100;unique"`
+	FullName             string        `gorm:"size:100;unique"`
 	Phone                string        `gorm:"size:100;not null;unique"`
 	Password             string        `gorm:"size:100;"`
 	Creditor             bool          `json:"creditor"`

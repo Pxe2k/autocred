@@ -14,6 +14,7 @@ func (server *Server) InitializeRoutes() {
 	clientApi.HandleFunc("/create", middlewares.SetMiddlewareJSON(server.createClient)).Methods("POST")
 	clientApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allClients)).Methods("GET")
 	clientApi.HandleFunc("/{id}", middlewares.SetMiddlewareJSON(server.getClient)).Methods("GET")
+	clientApi.HandleFunc("/upload-avatar/{id}", middlewares.SetMiddlewareJSON(server.uploadAvatar)).Methods("PUT")
 
 	pledgeApi := server.Router.PathPrefix("/api/pledge").Subrouter()
 
@@ -42,7 +43,6 @@ func (server *Server) InitializeRoutes() {
 
 	cityApi := server.Router.PathPrefix("/api/city").Subrouter()
 
-	cityApi.HandleFunc("/create-city", middlewares.SetMiddlewareJSON(server.createCity)).Methods("POST")
-	cityApi.HandleFunc("/create-district", middlewares.SetMiddlewareJSON(server.createDistrict)).Methods("POST")
 	cityApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allCity)).Methods("GET")
+	cityApi.HandleFunc("/{id}", middlewares.SetMiddlewareJSON(server.findCityById)).Methods("GET")
 }
