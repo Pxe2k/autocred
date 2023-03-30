@@ -10,11 +10,8 @@ type Pledge struct {
 	CarModel      string `gorm:"size:100" json:"carModel"`
 	YearIssue     string `gorm:"size:100" json:"yearIssue"`
 	Condition     string `gorm:"size:100" json:"condition"`
-	InitFee       uint   `json:"initFee"`
 	Mileage       string `gorm:"size:100" json:"mileage"`
-	LoanAmount    uint   `json:"loanAmount"`
 	VINCode       string `gorm:"size:100" json:"VINCode"`
-	ApplicationID uint   `json:"applicationID"`
 	ClientID      uint   `json:"clientID"`
 	Client        Client `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"client"`
 }

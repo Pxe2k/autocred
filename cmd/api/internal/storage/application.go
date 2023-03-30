@@ -10,13 +10,15 @@ type Application struct {
 	CreditProduct  string          `gorm:"size:100;" json:"creditProduct"` // Кредитный продукт
 	ReLoan         bool            `json:"reLoan"`                         // Повторный займ
 	LoanAmount     int             `json:"loanAmount"`                     // Сумма займа
+	CarCost 			 int 						 `json:"carCost"` 											 // Стоимость авто
+	InitFee 			 int						 `json:"initFee"`												 // Первоначалка
+	LoanPercentage int						 `json:"loanPercentage"`		 						 // Процент кредита
 	Subsidy        int             `json:"subsidy"`                        // Субсудия
 	LoanPurpose    string          `gorm:"size:100;" json:"loanPurpose"`   // Цель кредита
 	TrenchesNumber int             `json:"trenchesNumber"`                 // Кол-во траншей
 	UserID         uint            `json:"userID"`
 	ClientID       uint            `json:"clientID"`
 	Client         *Client         `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"client,omitempty"`
-	Pledge         *Pledge         `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"pledge,omitempty"` // Залог
 	BankResponses  *[]BankResponse `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bankResponses,omitempty"`
 }
 
@@ -41,7 +43,7 @@ func (a *Application) All(db *gorm.DB, uid uint) (*[]Application, error) {
 
 func (a *Application) Get(db *gorm.DB, id uint, creditor bool) (*Application, error) {
 	query := db.Debug().Model(&Application{}).Preload("Client").Where("id = ?", id)
-	if creditor == false {
+	if !creditor {
 		query.Preload(clause.Associations)
 	}
 
