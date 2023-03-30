@@ -1,8 +1,14 @@
 package transport
 
-import "autocredit/cmd/api/middlewares"
+import (
+	"autocredit/cmd/api/middlewares"
+	"net/http"
+)
 
 func (server *Server) InitializeRoutes() {
+	fs := http.FileServer(http.Dir("./storage/"))
+	server.Router.PathPrefix("/storage/").Handler(http.StripPrefix("/storage/", fs))
+
 	authApi := server.Router.PathPrefix("/api/auth").Subrouter()
 
 	authApi.HandleFunc("/create", middlewares.SetMiddlewareJSON(server.createUser)).Methods("POST")
