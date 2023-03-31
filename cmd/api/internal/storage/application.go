@@ -10,10 +10,10 @@ type Application struct {
 	CreditProduct  string          `gorm:"size:100;" json:"creditProduct"` // Кредитный продукт
 	ReLoan         bool            `json:"reLoan"`                         // Повторный займ
 	LoanAmount     int             `json:"loanAmount"`                     // Сумма займа
-	CarCost 			 int 						 `json:"carCost"` 											 // Стоимость авто
-	InitFee 			 int						 `json:"initFee"`												 // Первоначалка
-	LoanPercentage int						 `json:"loanPercentage"`		 						 // Процент кредита
-	Subsidy        int             `json:"subsidy"`                        // Субсудия
+	CarCost        int             `json:"carCost"`                        // Стоимость авто
+	InitFee        int             `json:"initFee"`                        // Первоначалка
+	LoanPercentage int             `json:"loanPercentage"`                 // Процент кредита
+	Subsidy        bool            `json:"subsidy"`                        // Субсудия
 	LoanPurpose    string          `gorm:"size:100;" json:"loanPurpose"`   // Цель кредита
 	TrenchesNumber int             `json:"trenchesNumber"`                 // Кол-во траншей
 	UserID         uint            `json:"userID"`

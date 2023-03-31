@@ -4,16 +4,16 @@ import "gorm.io/gorm"
 
 type Pledge struct {
 	gorm.Model
-	Type          string `gorm:"size:100;" json:"type"`
-	Title         string `gorm:"size:100;" json:"title"`
-	CarBrand      string `gorm:"size:100" json:"carBrand"`
-	CarModel      string `gorm:"size:100" json:"carModel"`
-	YearIssue     string `gorm:"size:100" json:"yearIssue"`
-	Condition     string `gorm:"size:100" json:"condition"`
-	Mileage       string `gorm:"size:100" json:"mileage"`
-	VINCode       string `gorm:"size:100" json:"VINCode"`
-	ClientID      uint   `json:"clientID"`
-	Client        Client `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"client"`
+	Type      string `gorm:"size:100;" json:"type"`
+	Title     string `gorm:"size:100;" json:"title"`
+	CarBrand  string `gorm:"size:100" json:"carBrand"`
+	CarModel  string `gorm:"size:100" json:"carModel"`
+	YearIssue string `gorm:"size:100" json:"yearIssue"`
+	Condition string `gorm:"size:100" json:"condition"`
+	Mileage   string `gorm:"size:100" json:"mileage"`
+	VINCode   string `gorm:"size:100" json:"vinCode"`
+	ClientID  uint   `json:"clientID"`
+	Client    Client `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"client"`
 }
 
 func (p *Pledge) Save(db *gorm.DB) (*Pledge, error) {
