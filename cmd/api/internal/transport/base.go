@@ -51,7 +51,8 @@ func (server *Server) Initialize(Dbdriver, DbUser, DbPassword, DbPort, DbHost, D
 		storage.WorkingActivity{},
 		storage.JobTitle{},
 		storage.City{},
-		storage.BankProduct{}) //migrations
+		storage.BankProduct{},
+		storage.Media{}) //migrations
 
 	server.Router = mux.NewRouter()
 	server.InitializeRoutes()

@@ -51,4 +51,7 @@ func (server *Server) InitializeRoutes() {
 
 	cityApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allCity)).Methods("GET")
 	cityApi.HandleFunc("/{id}", middlewares.SetMiddlewareJSON(server.findCityById)).Methods("GET")
+
+	templateApi := server.Router.PathPrefix("/api/template").Subrouter()
+	templateApi.HandleFunc("/create", middlewares.SetMiddlewareJSON(server.GenerateTemplate)).Methods("POST")
 }

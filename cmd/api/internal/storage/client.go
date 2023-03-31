@@ -13,7 +13,6 @@ type Client struct {
 	TypeOfClient        string               `gorm:"size:100;" json:"typeOfClient"` // Тип клиента
 	Sex                 string               `gorm:"size:100;" json:"sex"`          // Пол
 	BirthDate           string               `gorm:"size:100;" json:"birthDate"`    // ДР
-	Country             string               `gorm:"size:100;" json:"country"`      // Страна
 	Residency           string               `gorm:"size:100;" json:"residency"`    // Резиденство
 	Bin                 string               `gorm:"size:100;" json:"bin"`          // ИИН
 	Phone               string               `gorm:"size:100;" json:"phone"`        // Телефон
@@ -34,7 +33,7 @@ type Client struct {
 	CurrentLoans        *[]CurrentLoans      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"currentLoans,omitempty"`        // Действующие кредиты и займы
 	BeneficialOwners    *[]BeneficialOwner   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"beneficialOwners,omitempty"`    // Бенефициарные владельцы
 	ClientComment       *ClientComment       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"clientComment,omitempty"`
-	Pledges 						*[]Pledge						 `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"pledges,omitempty"` 						// Залоги
+	Pledges             *[]Pledge            `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"pledges,omitempty"` // Залоги
 }
 
 func (c *Client) Save(db *gorm.DB) (*Client, error) {

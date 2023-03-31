@@ -1,3 +1,5 @@
+github.com/SebastiaanKlippert/go-wkhtmltopdf v1.9.0 h1:DNrExYwvyyI404SxdUCCANAj9TwnGjRfa3cYFMNY1AU=
+github.com/SebastiaanKlippert/go-wkhtmltopdf v1.9.0/go.mod h1:SQq4xfIdvf6WYKSDxAJc+xOJdolt+/bc1jnQKMtPMvQ=
 github.com/badoux/checkmail v1.2.1 h1:TzwYx5pnsV6anJweMx2auXdekBwGr/yt1GgalIx9nBQ=
 github.com/badoux/checkmail v1.2.1/go.mod h1:XroCOBU5zzZJcLvgwU15I+2xXyCdTWXyR9MGfRhBYy0=
 github.com/cespare/xxhash/v2 v2.2.0 h1:DC2CZ1Ep5Y4k3ZQ899DldepgrayRUGE6BBZ/cd9Cj44=

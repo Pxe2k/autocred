@@ -4,7 +4,6 @@ import "gorm.io/gorm"
 
 type ResidentialAddress struct {
 	gorm.Model
-	Country  string `gorm:"size:100;" json:"country"`  // Страна
 	City     string `gorm:"size:100;" json:"city"`     // Населённый пункт
 	Address  string `gorm:"size:100;" json:"address"`  // Адрес
 	Region   string `gorm:"size:100;" json:"region"`   // Область
