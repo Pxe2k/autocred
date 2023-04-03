@@ -56,11 +56,11 @@ func (server *Server) createJobTitle(w http.ResponseWriter, r *http.Request) {
 
 func (server *Server) allWorkActivity(w http.ResponseWriter, r *http.Request) {
 	workActivity := storage.WorkingActivity{}
-	banks, err := workActivity.All(server.DB)
+	workActivities, err := workActivity.All(server.DB)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	responses.JSON(w, http.StatusOK, banks)
+	responses.JSON(w, http.StatusOK, workActivities)
 }

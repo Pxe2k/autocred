@@ -54,4 +54,9 @@ func (server *Server) InitializeRoutes() {
 
 	templateApi := server.Router.PathPrefix("/api/template").Subrouter()
 	templateApi.HandleFunc("/create", middlewares.SetMiddlewareJSON(server.GenerateTemplate)).Methods("POST")
+
+	carApi := server.Router.PathPrefix("/api/cars").Subrouter()
+
+	carApi.HandleFunc("/create", middlewares.SetMiddlewareJSON(server.createCarBrand)).Methods("POST")
+	carApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allCarBrands)).Methods("GET")
 }

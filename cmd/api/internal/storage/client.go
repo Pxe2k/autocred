@@ -6,19 +6,21 @@ import (
 
 type Client struct {
 	gorm.Model
-	IsBusiness          bool                 `json:"isBusiness"` // Физ/не физ
+	IsBusiness          bool                 `json:"isBusiness"`                    // Физ/не физ
+	TypeOfClient        string               `gorm:"size:100;" json:"typeOfClient"` // Тип клиента
 	FirstName           string               `gorm:"size:100;" json:"firstName"`
 	MiddleName          string               `gorm:"size:100;" json:"middleName"`
 	LastName            *string              `gorm:"size:100;" json:"lastName,omitempty"`
-	TypeOfClient        string               `gorm:"size:100;" json:"typeOfClient"` // Тип клиента
-	Sex                 string               `gorm:"size:100;" json:"sex"`          // Пол
-	BirthDate           string               `gorm:"size:100;" json:"birthDate"`    // ДР
-	Residency           string               `gorm:"size:100;" json:"residency"`    // Резиденство
-	Bin                 string               `gorm:"size:100;" json:"bin"`          // ИИН
-	Phone               string               `gorm:"size:100;" json:"phone"`        // Телефон
-	Email               string               `gorm:"size:100;" json:"email"`        // Email
-	Education           string               `gorm:"size:100;" json:"education"`    // Образование
-	Image               string               `gorm:"size:100;" json:"image"`        // Аватарка
+	Sex                 string               `gorm:"size:100;" json:"sex"`       // Пол
+	BirthDate           string               `gorm:"size:100;" json:"birthDate"` // ДР
+	Country             string               `gorm:"size:100;" json:"country"`
+	Residency           string               `gorm:"size:100;" json:"residency"` // Резиденство
+	Bin                 string               `gorm:"size:100;" json:"bin"`       // ИИН
+	Phone               string               `gorm:"size:100;" json:"phone"`     // Телефон
+	SecondPhone         string               `gorm:"size:100;" json:"secondPhone"`
+	Email               string               `gorm:"size:100;" json:"email"`     // Email
+	Education           string               `gorm:"size:100;" json:"education"` // Образование
+	Image               string               `gorm:"size:100;" json:"image"`     // Аватарка
 	UserID              uint                 `json:"userId"`
 	User                *User                `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"user,omitempty"`
 	MaritalStatus       *MaritalStatus       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"maritalStatus,omitempty"`       // Семейное положение

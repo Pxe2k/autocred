@@ -4,14 +4,13 @@ import "gorm.io/gorm"
 
 type ResidentialAddress struct {
 	gorm.Model
-	City     string `gorm:"size:100;" json:"city"`     // Населённый пункт
-	Address  string `gorm:"size:100;" json:"address"`  // Адрес
-	Region   string `gorm:"size:100;" json:"region"`   // Область
-	Area     string `gorm:"size:100;" json:"area"`     // Сельский округ
-	District string `gorm:"size:100;" json:"district"` // Район
-	Street   string `gorm:"size:100;" json:"street"`   // Улица/Микрорайон
-	Flat     string `gorm:"size:100;" json:"flat"`     // Номер квартиры
-	House    string `gorm:"size:100;" json:"house"`    // Номер дома
-	Kato     string `gorm:"size:100;" json:"kato"`     // Код КАТО
+	Address  string `gorm:"size:100;" json:"address"` // Адрес
+	Address1 uint   `json:"address1"`
+	Address2 uint   `json:"address2"`
+	Address3 uint   `json:"address3"`
+	Address4 uint   `json:"address4"`
+	Address5 uint   `json:"address5"`
+	Address6 uint   `json:"address6"`
+	Kato     string `gorm:"size:100;" json:"kato"` // Код КАТО
 	ClientID uint
 }
