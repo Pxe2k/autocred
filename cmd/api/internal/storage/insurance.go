@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"errors"
 	"gorm.io/gorm"
 )
 
@@ -16,7 +15,6 @@ type Insurance struct {
 func (i *Insurance) Save(db *gorm.DB) (*Insurance, error) {
 	err := db.Debug().Create(&i).Error
 	if err != nil {
-		errors.New("testsd")
 		return &Insurance{}, err
 	}
 
