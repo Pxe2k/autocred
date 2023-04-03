@@ -7,9 +7,10 @@ import (
 
 type Bank struct {
 	gorm.Model
-	Title    string         `gorm:"size:100;" json:"title"`
-	Image    *string        `gorm:"size:100;" json:"image,omitempty"`
-	Products *[]BankProduct `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"products,omitempty"`
+	Title     string         `gorm:"size:100;" json:"title"`
+	Image     *string        `gorm:"size:100;" json:"image,omitempty"`
+	Products  *[]BankProduct `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"products,omitempty"`
+	Insurance *Insurance     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"insurance,omitempty"`
 }
 
 func (b *Bank) Save(db *gorm.DB) (*Bank, error) {
@@ -23,7 +24,7 @@ func (b *Bank) Save(db *gorm.DB) (*Bank, error) {
 
 func (b *Bank) All(db *gorm.DB) (*[]Bank, error) {
 	var banks []Bank
-	err := db.Debug().Model(&Bank{}).Preload(clause.Associations).Limit(100).Find(&banks).Error
+	err := db.Debug().Model(&Bank{}).Preload(clause.Associations).Preload("Insurance.Kasko").Preload("Insurance.RoadHelp").Preload("Insurance.LifeInsurance").Limit(100).Find(&banks).Error
 	if err != nil {
 		return nil, err
 	}

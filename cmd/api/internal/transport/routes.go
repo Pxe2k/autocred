@@ -59,4 +59,12 @@ func (server *Server) InitializeRoutes() {
 
 	carApi.HandleFunc("/create", middlewares.SetMiddlewareJSON(server.createCarBrand)).Methods("POST")
 	carApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allCarBrands)).Methods("GET")
+
+	insuranceApi := server.Router.PathPrefix("/api/insurance").Subrouter()
+
+	insuranceApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allInsurance)).Methods("GET")
+	insuranceApi.HandleFunc("/create-insurance", middlewares.SetMiddlewareJSON(server.createInsurance)).Methods("POST")
+	insuranceApi.HandleFunc("/create-kasko", middlewares.SetMiddlewareJSON(server.createKasko)).Methods("POST")
+	insuranceApi.HandleFunc("/create-road-help", middlewares.SetMiddlewareJSON(server.createRoadHelp)).Methods("POST")
+	insuranceApi.HandleFunc("/create-life-insurance", middlewares.SetMiddlewareJSON(server.createLifeInsurance)).Methods("POST")
 }
