@@ -8,7 +8,6 @@ import (
 	"github.com/SebastiaanKlippert/go-wkhtmltopdf"
 	"gorm.io/gorm"
 	"html/template"
-	"log"
 	"os"
 	"strconv"
 	"time"
@@ -71,12 +70,14 @@ func (r *RequestPdf) ConvertHTMLtoPdf(pdfPath string) (bool, error) {
 	if _, err := os.Stat("templates/resultMedia/cloneMedia/"); os.IsNotExist(err) {
 		errDir := os.Mkdir("templates/resultMedia/cloneMedia/", 0777)
 		if errDir != nil {
-			log.Fatal(errDir)
+			fmt.Println(errDir)
+			return false, errDir
 		}
 	}
 	err1 := os.WriteFile("templates/resultMedia/cloneMedia/"+strconv.FormatInt(int64(t), 10)+".html", []byte(r.body), 0644)
 	if err1 != nil {
-		panic(err1)
+		fmt.Println(err1)
+		return false, err1
 	}
 
 	f, err := os.Open("templates/resultMedia/cloneMedia/" + strconv.FormatInt(int64(t), 10) + ".html")
@@ -84,14 +85,16 @@ func (r *RequestPdf) ConvertHTMLtoPdf(pdfPath string) (bool, error) {
 		defer f.Close()
 	}
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		return false, err
 	}
 
 	wkhtmltopdf.SetPath(os.Getenv("CONVERT_TO_PDF_PATH"))
 
 	pdfg, err := wkhtmltopdf.NewPDFGenerator()
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		return false, err
 	}
 
 	pdfg.AddPage(wkhtmltopdf.NewPageReader(f))
@@ -102,17 +105,20 @@ func (r *RequestPdf) ConvertHTMLtoPdf(pdfPath string) (bool, error) {
 
 	err = pdfg.Create()
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		return false, err
 	}
 
 	err = pdfg.WriteFile(pdfPath)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		return false, err
 	}
 
 	dir, err := os.Getwd()
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		return false, err
 	}
 
 	defer os.RemoveAll(dir + "/templates/resultMedia/cloneMedia")
