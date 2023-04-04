@@ -4,9 +4,10 @@ import "gorm.io/gorm"
 
 type BankResponse struct {
 	gorm.Model
-	Sign          bool `json:"sign"`
-	BankID        uint `json:"bankID"`
-	ApplicationID uint `json:"applicationID"`
+	Sign              bool   `json:"sign"`
+	Comment           string `json:"comment"`
+	BankID            uint   `json:"bankID"`
+	BankApplicationID uint   `json:"bankApplicationID"`
 }
 
 func (r *BankResponse) Save(db *gorm.DB) (*BankResponse, error) {

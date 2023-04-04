@@ -7,28 +7,12 @@ import (
 
 type Application struct {
 	gorm.Model
-	Bank               string          `gorm:"size:100;" json:"bank"`
-	CreditProduct      string          `gorm:"size:100;" json:"creditProduct"` // Кредитный продукт
-	ReLoan             bool            `json:"reLoan"`                         // Повторный займ
-	LoanAmount         int             `json:"loanAmount"`                     // Сумма займа
-	InitFee            int             `json:"initFee"`                        // Первоначалка
-	LoanPercentage     int             `json:"loanPercentage"`                 // Процент кредита
-	Subsidy            bool            `json:"subsidy"`                        // Субсудия
-	LoanPurpose        string          `gorm:"size:100;" json:"loanPurpose"`   // Цель кредита
-	TrenchesNumber     int             `json:"trenchesNumber"`                 // Кол-во траншей
-	KaskoTitle         string          `gorm:"size:100;" json:"kaskoTitle"`
-	KaskoPrice         int             `json:"kaskoPrice"`
-	KaskoTerm          int             `json:"kaskoTerm"`
-	RoadHelpTitle      string          `gorm:"size:100;" json:"roadHelpTitle"`
-	RoadHelpPrice      int             `json:"roadHelpPrice"`
-	RoadHelpTerm       int             `json:"roadHelpTerm"`
-	LifeInsuranceTitle string          `gorm:"size:100;" json:"lifeInsuranceTitle"`
-	LifeInsurancePrice int             `json:"lifeInsurancePrice"`
-	LifeInsuranceTerm  int             `json:"lifeInsuranceTerm"`
-	UserID             uint            `json:"userID"`
-	ClientID           uint            `json:"clientID"`
-	Client             *Client         `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"client,omitempty"`
-	BankResponses      *[]BankResponse `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bankResponses,omitempty"`
+	LoanPurpose      string            `gorm:"size:100;" json:"loanPurpose"` // Цель кредита
+	Subsidy          bool              `json:"subsidy"`                      // Субсудия
+	BankApplications []BankApplication `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bankApplications"`
+	UserID           uint              `json:"userID"`
+	ClientID         uint              `json:"clientID"`
+	Client           *Client           `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"client,omitempty"`
 }
 
 func (a *Application) Save(db *gorm.DB) (*Application, error) {
