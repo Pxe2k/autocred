@@ -4,9 +4,9 @@ import "gorm.io/gorm"
 
 type LifeInsurance struct {
 	gorm.Model
-	Title       string `gorm:"size:255;" json:"title"`
-	Price       int    `json:"price"`
-	Percent     int    `json:"percent"`
+	Title       string  `gorm:"size:255;" json:"title"`
+	Price       int     `json:"price"`
+	Percent     float64 `json:"percent"`
 	InsuranceID uint
 }
 
