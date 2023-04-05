@@ -5,6 +5,8 @@ import "gorm.io/gorm"
 type RoadHelp struct {
 	gorm.Model
 	Title       string `gorm:"size:255;" json:"title"`
+	Price       int    `json:"price"`
+	Percent     int    `json:"percent"`
 	InsuranceID uint
 }
 
