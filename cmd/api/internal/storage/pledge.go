@@ -8,7 +8,6 @@ type Pledge struct {
 	Title                   string `gorm:"size:100;" json:"title"`
 	CarBrand                string `gorm:"size:100;" json:"carBrand"`
 	CarModel                string `gorm:"size:100;" json:"carModel"`
-	CarPrice                int    `json:"carPrice"`
 	YearIssue               string `gorm:"size:100;" json:"yearIssue"`
 	Condition               string `gorm:"size:100;" json:"condition"`
 	Mileage                 string `gorm:"size:100;" json:"mileage"`
