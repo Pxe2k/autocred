@@ -120,3 +120,15 @@ func (server *Server) uploadAvatar(w http.ResponseWriter, r *http.Request) {
 	}
 	responses.JSON(w, http.StatusOK, clientAvatar)
 }
+
+func (server *Server) issuingAuthorityAll(w http.ResponseWriter, r *http.Request) {
+	issuingAuthority := storage.IssuingAuthority{}
+	issuingAuthorities, err := issuingAuthority.All(server.DB)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusOK, issuingAuthorities)
+
+}

@@ -10,7 +10,7 @@ type Country struct {
 
 func (c *Country) All(db *gorm.DB) (*[]Country, error) {
 	var countries []Country
-	err := db.Debug().Model(&Country{}).Limit(100).Find(&countries).Error
+	err := db.Debug().Model(&Country{}).Find(&countries).Error
 	if err != nil {
 		return nil, err
 	}

@@ -22,7 +22,7 @@ func (c *CarBrand) Save(db *gorm.DB) (*CarBrand, error) {
 func (c *CarBrand) All(db *gorm.DB) (*[]CarBrand, error) {
 	var carBrands []CarBrand
 
-	err := db.Debug().Model(&CarBrand{}).Preload(clause.Associations).Limit(100).Find(&carBrands).Error
+	err := db.Debug().Model(&CarBrand{}).Preload(clause.Associations).Find(&carBrands).Error
 	if err != nil {
 		return nil, err
 	}

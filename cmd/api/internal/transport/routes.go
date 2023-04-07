@@ -71,4 +71,8 @@ func (server *Server) InitializeRoutes() {
 	countryApi := server.Router.PathPrefix("/api/country").Subrouter()
 
 	countryApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allCountries)).Methods("GET")
+
+	documentApi := server.Router.PathPrefix("/api/document").Subrouter()
+
+	documentApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.issuingAuthorityAll)).Methods("GET")
 }
