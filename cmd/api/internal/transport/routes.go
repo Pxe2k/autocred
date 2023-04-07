@@ -75,4 +75,5 @@ func (server *Server) InitializeRoutes() {
 	documentApi := server.Router.PathPrefix("/api/document").Subrouter()
 
 	documentApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.issuingAuthorityAll)).Methods("GET")
+	documentApi.HandleFunc("/create", middlewares.SetMiddlewareJSON(server.uploadFile)).Methods("POST")
 }

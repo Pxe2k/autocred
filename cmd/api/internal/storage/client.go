@@ -36,6 +36,7 @@ type Client struct {
 	BeneficialOwners    *[]BeneficialOwner   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"beneficialOwners,omitempty"`    // Бенефициарные владельцы
 	ClientComment       *ClientComment       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"clientComment,omitempty"`
 	Pledges             *[]Pledge            `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"pledges,omitempty"` // Залоги
+	Documents           *[]Media             `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"documents"`
 }
 
 func (c *Client) Save(db *gorm.DB) (*Client, error) {
@@ -68,6 +69,8 @@ func (c *Client) Get(db *gorm.DB, id uint) (*Client, error) {
 		Preload("Contacts").
 		Preload("BeneficialOwners").
 		Preload("ClientComment").
+		Preload("Documents").
+		Preload("Pledges").
 		Take(&c).Error
 	if err != nil {
 		return nil, err
