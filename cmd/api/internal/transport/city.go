@@ -8,6 +8,10 @@ import (
 	"strconv"
 )
 
+type country struct {
+	Name string `json:"name"`
+}
+
 func (server *Server) allCity(w http.ResponseWriter, r *http.Request) {
 	city := storage.City{}
 	cities, err := city.All(server.DB)
@@ -35,4 +39,15 @@ func (server *Server) findCityById(w http.ResponseWriter, r *http.Request) {
 	}
 
 	responses.JSON(w, http.StatusOK, cities)
+}
+
+func (server *Server) allCountries(w http.ResponseWriter, r *http.Request) {
+	country := storage.Country{}
+	countries, err := country.All(server.DB)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusOK, countries)
 }
