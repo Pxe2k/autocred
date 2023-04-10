@@ -42,6 +42,11 @@ services:
     volumes:
       - redis:/data
 
+  wkhtmltopdf:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
 volumes:
   postgres:
     driver: local
