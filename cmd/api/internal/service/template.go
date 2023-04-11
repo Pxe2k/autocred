@@ -27,12 +27,15 @@ func GeneratePdf(db *gorm.DB, body []byte) (*storage.Media, error) {
 	r := NewRequestPdf("")
 	var result map[string]interface{}
 
-	json.Unmarshal(body, &result)
+	err := json.Unmarshal(body, &result)
+	if err != nil {
+		return &storage.Media{}, err
+	}
 	fileName := fmt.Sprint(result["templateName"])
 	templateFileName := "templates/resultMedia/documentTemplates/" + fileName + ".html"
 	data := result["data"]
 
-	err := r.ParseTemplate(fmt.Sprint(templateFileName), data)
+	err = r.ParseTemplate(fmt.Sprint(templateFileName), data)
 	if err != nil {
 		return &storage.Media{}, err
 	}
@@ -88,7 +91,7 @@ func (r *RequestPdf) ConvertHTMLtoPdf(pdfPath string) error {
 		return err
 	}
 
-	wkhtmltopdf.SetPath(os.Getenv("CONVERT_TO_PDF_PATH"))
+	//wkhtmltopdf.SetPath(os.Getenv("CONVERT_TO_PDF_PATH"))
 
 	pdfg, err := wkhtmltopdf.NewPDFGenerator()
 	if err != nil {
