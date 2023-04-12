@@ -78,7 +78,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                         
                         <div>
                             <div>
-                                <p>{{ .middleName }} </p>
+                                <p>{{ .MiddleName }} </p>
                             </div>
                         </div>
                     </td>
@@ -96,7 +96,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                         
                         <div>
                             <div>
-                                <p>{{ .firstName }} </p>
+                                <p>{{ .FirstName }} </p>
                             </div>
                         </div>
                     </td>
@@ -114,7 +114,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                         
                         <div>
                             <div>
-                                <p>{{ .lastName }} </p>
+                                <p>{{ .LastName }} </p>
                             </div>
                         </div>
                     </td>
@@ -150,7 +150,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                         
                         <div>
                             <div>
-                                <p>{{ .iin }} </p>
+                                <p>{{ .Bin }} </p>
                             </div>
                         </div>
                     </td>
@@ -168,7 +168,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                         
                         <div>
                             <div>
-                                <p>{{ .birthDate }} </p>
+                                <p>{{ .BirthDate }} </p>
                             </div>
                         </div>
                     </td>
@@ -186,7 +186,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                         
                         <div>
                             <div>
-                                <p>{{ .placeOfBirth }} </p>
+                                <p> </p>
                             </div>
                         </div>
                     </td>
@@ -204,7 +204,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                         
                         <div>
                             <div>
-                                <p> {{ .sex }} </p>
+                                <p> {{ .Sex }} </p>
                             </div>
                         </div>
                     </td>
@@ -222,7 +222,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                         
                         <div>
                             <div>
-                                <p>{{ .residency }} </p>
+                                <p>{{ .Residency }} </p>
                             </div>
                         </div>
                     </td>
@@ -240,7 +240,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                         
                         <div>
                             <div>
-                                <p> {{ .docNumber }} </p>
+                                <p>{{ .Document.Number }}</p>
                             </div>
                         </div>
                     </td>
@@ -258,7 +258,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                         
                         <div>
                             <div>
-                                <p>{{ .issuingAuthority }} </p>
+                                <p>{{ .Document.IssuingAuthority }}</p>
                             </div>
                         </div>
                     </td>
@@ -276,7 +276,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                         
                         <div>
                             <div>
-                                <p>{{ .documentIssueDate }} </p>
+                                <p>{{ .Document.DocumentIssueDate }}</p>
                             </div>
                         </div>
                     </td>
@@ -294,7 +294,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                         
                         <div>
                             <div>
-                                <p>{{ .documentEndDate }} </p>
+                                <p>{{ .Document.DocumentEndDate }}</p>
                             </div>
                         </div>
                     </td>
@@ -330,7 +330,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                         
                         <div>
                             <div>
-                                <p>{{ .education }}</p>
+                                <p>{{ .Education }}</p>
                             </div>
                         </div>
                     </td>
@@ -348,7 +348,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                         
                         <div>
                             <div>
-                                <p>{{ .maritalStatus }} </p>
+                                <p>{{ .MaritalStatus.Status }}</p>
                             </div>
                         </div>
                     </td>
@@ -366,7 +366,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                         
                         <div>
                             <div>
-                                <p>{{ .familyPartnerName }}</p>
+                                <p>{{ .MaritalStatus.FamilyPartnerName }}</p>
                             </div>
                         </div>
                     </td>
@@ -456,7 +456,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                         
                         <div>
                             <div>
-                                <p>{{ .minorChildren }}</p>
+                                <p>{{ .MaritalStatus.MinorChildren }}</p>
                             </div>
                         </div>
                     </td>
@@ -510,7 +510,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                         
                         <div>
                             <div>
-                                <p>+7 (000) 000-00-00 </p>
+                                <p>{{ .Phone }}</p>
                             </div>
                         </div>
                     </td>
@@ -528,7 +528,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                         
                         <div>
                             <div>
-                                <p>+7 (000) 000-00-00 </p>
+                                <p>{{ .SecondPhone }}</p>
                             </div>
                         </div>
                     </td>
@@ -556,7 +556,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                         
                         <div>
                             <div>
-                                <p>{{ .registrationAddress }}</p>
+                                <p>{{ .RegistrationAddress.Address }}</p>
                             </div>
                         </div>
                     </td>
@@ -574,7 +574,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                         
                         <div>
                             <div>
-                                <p>{{ .residentialAddress }}</p>
+                                <p>{{ .RegistrationAddress.Address }}</p>
                             </div>
                         </div>
                     </td>
@@ -674,7 +674,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                         
                         <div>
                             <div>
-                                <p>{{ .organizationName }}</p>
+                                <p>{{ .WorkPlaceInfo.OrganizationName }}</p>
                             </div>
                         </div>
                     </td>
@@ -692,7 +692,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                         
                         <div>
                             <div>
-                                <p>{{ .jobTitle }}</p>
+                                <p>{{ .WorkPlaceInfo.JobTitle }}</p>
                             </div>
                         </div>
                     </td>
@@ -710,7 +710,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                         
                         <div>
                             <div>
-                                <p>- </p>
+                                <p>{{ .WorkPlaceInfo.OrganizationPhone }}</p>
                             </div>
                         </div>
                     </td>
@@ -728,7 +728,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                         
                         <div>
                             <div>
-                                <p>{{ .experience }}</p>
+                                <p>{{ .WorkPlaceInfo.Experience }}</p>
                             </div>
                         </div>
                     </td>
@@ -764,7 +764,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                         
                         <div>
                             <div>
-                                <p>{{ .monthlyIncome }}</p>
+                                <p>{{ .WorkPlaceInfo.MonthlyIncome }}</p>
                             </div>
                         </div>
                     </td>

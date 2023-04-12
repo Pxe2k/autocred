@@ -23,7 +23,7 @@ func NewRequestPdf(body string) *RequestPdf {
 	}
 }
 
-func GeneratePdf(db *gorm.DB, body []byte) (*storage.Media, error) {
+func GeneratePdf(db *gorm.DB, body []byte, id uint) (*storage.Media, error) {
 	r := NewRequestPdf("")
 	var result map[string]interface{}
 
@@ -33,9 +33,15 @@ func GeneratePdf(db *gorm.DB, body []byte) (*storage.Media, error) {
 	}
 	fileName := fmt.Sprint(result["templateName"])
 	templateFileName := "templates/resultMedia/documentTemplates/" + fileName + ".html"
-	data := result["data"]
+	//data := result["data"]
 
-	err = r.ParseTemplate(fmt.Sprint(templateFileName), data)
+	client := storage.Client{}
+	clientGotten, err := client.Get(db, id)
+	if err != nil {
+		return nil, err
+	}
+
+	err = r.ParseTemplate(fmt.Sprint(templateFileName), clientGotten)
 	if err != nil {
 		return &storage.Media{}, err
 	}
@@ -52,13 +58,13 @@ func GeneratePdf(db *gorm.DB, body []byte) (*storage.Media, error) {
 	return mediaCreated, nil
 }
 
-func (r *RequestPdf) ParseTemplate(templateFileName string, data interface{}) error {
+func (r *RequestPdf) ParseTemplate(templateFileName string, client interface{}) error {
 	t, err := template.ParseFiles(templateFileName)
 	if err != nil {
 		return err
 	}
 	buf := new(bytes.Buffer)
-	if err = t.Execute(buf, data); err != nil {
+	if err = t.Execute(buf, client); err != nil {
 		return err
 	}
 	r.body = buf.String()
@@ -91,8 +97,6 @@ func (r *RequestPdf) ConvertHTMLtoPdf(pdfPath string) error {
 		return err
 	}
 
-	//wkhtmltopdf.SetPath(os.Getenv("CONVERT_TO_PDF_PATH"))
-
 	pdfg, err := wkhtmltopdf.NewPDFGenerator()
 	if err != nil {
 		fmt.Println(err)
@@ -117,13 +121,13 @@ func (r *RequestPdf) ConvertHTMLtoPdf(pdfPath string) error {
 		return err
 	}
 
-	//dir, err := os.Getwd()
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return err
-	//}
-	//
-	//defer os.RemoveAll(dir + "/templates/resultMedia/cloneMedia")
+	dir, err := os.Getwd()
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	defer os.RemoveAll(dir + "/templates/resultMedia/cloneMedia")
 
 	return nil
 }
