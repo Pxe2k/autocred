@@ -80,3 +80,51 @@ func UploadAvatarForClient(db *gorm.DB, uid uint32, file multipart.File, handler
 
 	return updatedClient, nil
 }
+
+func UpdateMaritalStatus(db *gorm.DB, body []byte, id uint) (*storage.MaritalStatus, error) {
+	maritalStatus := storage.MaritalStatus{}
+	err := json.Unmarshal(body, &maritalStatus)
+	if err != nil {
+		return nil, err
+	}
+
+	maritalStatus.ID = id
+	updatedMaritalStatus, err := maritalStatus.Update(*db, maritalStatus)
+	if err != nil {
+		return nil, err
+	}
+
+	return updatedMaritalStatus, nil
+}
+
+func UpdateDocument(db *gorm.DB, body []byte, id uint) (*storage.Document, error) {
+	document := storage.Document{}
+	err := json.Unmarshal(body, &document)
+	if err != nil {
+		return nil, err
+	}
+
+	document.ID = id
+	updatedDocument, err := document.Update(*db, document)
+	if err != nil {
+		return nil, err
+	}
+
+	return updatedDocument, nil
+}
+
+func UpdateWorkPlace(db *gorm.DB, body []byte, id uint) (*storage.WorkPlaceInfo, error) {
+	workPlace := storage.WorkPlaceInfo{}
+	err := json.Unmarshal(body, &workPlace)
+	if err != nil {
+		return nil, err
+	}
+
+	workPlace.ID = id
+	updatedWorkPlace, err := workPlace.Update(*db, workPlace)
+	if err != nil {
+		return nil, err
+	}
+
+	return updatedWorkPlace, nil
+}

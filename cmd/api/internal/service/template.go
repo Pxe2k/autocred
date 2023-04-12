@@ -27,19 +27,21 @@ func GeneratePdf(db *gorm.DB, body []byte) (*storage.Media, error) {
 	r := NewRequestPdf("")
 	var result map[string]interface{}
 
-	// Unmarshal or Decode the JSON to the interface.
-	json.Unmarshal(body, &result)
+	err := json.Unmarshal(body, &result)
+	if err != nil {
+		return &storage.Media{}, err
+	}
 	fileName := fmt.Sprint(result["templateName"])
 	templateFileName := "templates/resultMedia/documentTemplates/" + fileName + ".html"
 	data := result["data"]
 
-	err := r.ParseTemplate(fmt.Sprint(templateFileName), data)
+	err = r.ParseTemplate(fmt.Sprint(templateFileName), data)
 	if err != nil {
 		return &storage.Media{}, err
 	}
 
 	outputPath := "templates/resultMedia/outputPDF/" + fileName + ".pdf"
-	_, err = r.ConvertHTMLtoPdf(outputPath)
+	err = r.ConvertHTMLtoPdf(outputPath)
 	if err != nil {
 		return &storage.Media{}, err
 	}
@@ -63,7 +65,7 @@ func (r *RequestPdf) ParseTemplate(templateFileName string, data interface{}) er
 	return nil
 }
 
-func (r *RequestPdf) ConvertHTMLtoPdf(pdfPath string) (bool, error) {
+func (r *RequestPdf) ConvertHTMLtoPdf(pdfPath string) error {
 	t := time.Now().Unix()
 	// write whole the body
 
@@ -71,13 +73,13 @@ func (r *RequestPdf) ConvertHTMLtoPdf(pdfPath string) (bool, error) {
 		errDir := os.Mkdir("templates/resultMedia/cloneMedia/", 0777)
 		if errDir != nil {
 			fmt.Println(errDir)
-			return false, errDir
+			return errDir
 		}
 	}
 	err1 := os.WriteFile("templates/resultMedia/cloneMedia/"+strconv.FormatInt(int64(t), 10)+".html", []byte(r.body), 0644)
 	if err1 != nil {
 		fmt.Println(err1)
-		return false, err1
+		return err1
 	}
 
 	f, err := os.Open("templates/resultMedia/cloneMedia/" + strconv.FormatInt(int64(t), 10) + ".html")
@@ -86,15 +88,15 @@ func (r *RequestPdf) ConvertHTMLtoPdf(pdfPath string) (bool, error) {
 	}
 	if err != nil {
 		fmt.Println(err)
-		return false, err
+		return err
 	}
 
-	wkhtmltopdf.SetPath(os.Getenv("CONVERT_TO_PDF_PATH"))
+	//wkhtmltopdf.SetPath(os.Getenv("CONVERT_TO_PDF_PATH"))
 
 	pdfg, err := wkhtmltopdf.NewPDFGenerator()
 	if err != nil {
 		fmt.Println(err)
-		return false, err
+		return err
 	}
 
 	pdfg.AddPage(wkhtmltopdf.NewPageReader(f))
@@ -106,24 +108,24 @@ func (r *RequestPdf) ConvertHTMLtoPdf(pdfPath string) (bool, error) {
 	err = pdfg.Create()
 	if err != nil {
 		fmt.Println(err)
-		return false, err
+		return err
 	}
 
 	err = pdfg.WriteFile(pdfPath)
 	if err != nil {
 		fmt.Println(err)
-		return false, err
+		return err
 	}
 
-	dir, err := os.Getwd()
-	if err != nil {
-		fmt.Println(err)
-		return false, err
-	}
+	//dir, err := os.Getwd()
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return err
+	//}
+	//
+	//defer os.RemoveAll(dir + "/templates/resultMedia/cloneMedia")
 
-	defer os.RemoveAll(dir + "/templates/resultMedia/cloneMedia")
-
-	return true, nil
+	return nil
 }
 
 func UploadFileToUser(db *gorm.DB, uid uint32, filePath string, title string) (*storage.Media, error) {

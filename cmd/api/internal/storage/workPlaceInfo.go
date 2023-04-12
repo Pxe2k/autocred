@@ -19,3 +19,12 @@ type WorkPlaceInfo struct {
 	JobTitle          *JobTitle        `json:"jobTitle,omitempty"`
 	ClientID          uint
 }
+
+func (w *WorkPlaceInfo) Update(db gorm.DB, workPlace WorkPlaceInfo) (*WorkPlaceInfo, error) {
+	err := db.Debug().Model(&WorkPlaceInfo{}).Where("id = ?", workPlace.ID).Updates(workPlace).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return w, nil
+}

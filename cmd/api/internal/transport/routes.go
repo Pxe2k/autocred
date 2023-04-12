@@ -22,6 +22,12 @@ func (server *Server) InitializeRoutes() {
 	clientApi.HandleFunc("/{id}", middlewares.SetMiddlewareJSON(server.getClient)).Methods("GET")
 	clientApi.HandleFunc("/upload-avatar/{id}", middlewares.SetMiddlewareJSON(server.uploadAvatar)).Methods("PUT")
 
+	clientEditApi := server.Router.PathPrefix("/api/edit").Subrouter()
+
+	clientEditApi.HandleFunc("/marital-status/{id}", middlewares.SetMiddlewareJSON(server.UpdateMaritalStatus)).Methods("PATCH")
+	clientEditApi.HandleFunc("/document/{id}", middlewares.SetMiddlewareJSON(server.UpdateDocument)).Methods("PATCH")
+	clientEditApi.HandleFunc("/workplace/{id}", middlewares.SetMiddlewareJSON(server.UpdateWorkPlace)).Methods("PATCH")
+
 	pledgeApi := server.Router.PathPrefix("/api/pledge").Subrouter()
 
 	pledgeApi.HandleFunc("/create", middlewares.SetMiddlewareJSON(server.createPledge)).Methods("POST")
@@ -76,4 +82,5 @@ func (server *Server) InitializeRoutes() {
 
 	documentApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.issuingAuthorityAll)).Methods("GET")
 	documentApi.HandleFunc("/create", middlewares.SetMiddlewareJSON(server.uploadFile)).Methods("POST")
+
 }

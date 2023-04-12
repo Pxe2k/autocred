@@ -90,3 +90,9 @@ func (c *Client) UpdateAvatar(db *gorm.DB, id uint) (*Client, error) {
 	}
 	return c, nil
 }
+
+//func (c *Client) Update(db gorm.DB, id uint) (*Client, error) {
+//	err := db.Debug().Model(&Client{}).Where("id = ?", id).Updates()
+//
+//	return c, nil
+//}

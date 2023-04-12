@@ -1,6 +1,7 @@
 version: '3.9'
 services:
   app:
+    build: .
     container_name: autoCred
     image: golang:1.19
     working_dir: /usr/src/autoCred

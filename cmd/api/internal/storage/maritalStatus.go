@@ -10,3 +10,12 @@ type MaritalStatus struct {
 	MinorChildren     string `gorm:"size:100;" json:"minorChildren"`     // Кол-во несовершеннолетних детей
 	ClientID          uint
 }
+
+func (m *MaritalStatus) Update(db gorm.DB, status MaritalStatus) (*MaritalStatus, error) {
+	err := db.Debug().Model(&MaritalStatus{}).Where("id = ?", status.ID).Updates(status).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return m, nil
+}
