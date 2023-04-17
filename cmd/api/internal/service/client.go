@@ -81,6 +81,23 @@ func UploadAvatarForClient(db *gorm.DB, uid uint32, file multipart.File, handler
 	return updatedClient, nil
 }
 
+func UpdateClientInfo(db *gorm.DB, body []byte, id uint) (*storage.Client, error) {
+	client := storage.Client{}
+	err := json.Unmarshal(body, &client)
+	if err != nil {
+		return nil, err
+	}
+
+	client.ID = id
+	fmt.Println(client)
+	updatedClient, err := client.Update(*db, client)
+	if err != nil {
+		return nil, err
+	}
+
+	return updatedClient, nil
+}
+
 func UpdateMaritalStatus(db *gorm.DB, body []byte, id uint) (*storage.MaritalStatus, error) {
 	maritalStatus := storage.MaritalStatus{}
 	err := json.Unmarshal(body, &maritalStatus)

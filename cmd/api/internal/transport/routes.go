@@ -21,6 +21,7 @@ func (server *Server) InitializeRoutes() {
 	clientApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allClients)).Methods("GET")
 	clientApi.HandleFunc("/{id}", middlewares.SetMiddlewareJSON(server.getClient)).Methods("GET")
 	clientApi.HandleFunc("/upload-avatar/{id}", middlewares.SetMiddlewareJSON(server.uploadAvatar)).Methods("PUT")
+	clientApi.HandleFunc("/edit/{id}", middlewares.SetMiddlewareJSON(server.updateClient)).Methods("PATCH")
 
 	clientEditApi := server.Router.PathPrefix("/api/edit").Subrouter()
 
