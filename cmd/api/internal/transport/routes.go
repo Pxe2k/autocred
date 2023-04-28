@@ -19,15 +19,10 @@ func (server *Server) InitializeRoutes() {
 
 	clientApi.HandleFunc("/create", middlewares.SetMiddlewareJSON(server.createClient)).Methods("POST")
 	clientApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allClients)).Methods("GET")
+	clientApi.HandleFunc("/filter", middlewares.SetMiddlewareJSON(server.allClients)).Methods("GET")
 	clientApi.HandleFunc("/{id}", middlewares.SetMiddlewareJSON(server.getClient)).Methods("GET")
 	clientApi.HandleFunc("/upload-avatar/{id}", middlewares.SetMiddlewareJSON(server.uploadAvatar)).Methods("PUT")
 	clientApi.HandleFunc("/edit/{id}", middlewares.SetMiddlewareJSON(server.updateClient)).Methods("PATCH")
-
-	clientEditApi := server.Router.PathPrefix("/api/edit").Subrouter()
-
-	clientEditApi.HandleFunc("/marital-status/{id}", middlewares.SetMiddlewareJSON(server.UpdateMaritalStatus)).Methods("PATCH")
-	clientEditApi.HandleFunc("/document/{id}", middlewares.SetMiddlewareJSON(server.UpdateDocument)).Methods("PATCH")
-	clientEditApi.HandleFunc("/workplace/{id}", middlewares.SetMiddlewareJSON(server.UpdateWorkPlace)).Methods("PATCH")
 
 	pledgeApi := server.Router.PathPrefix("/api/pledge").Subrouter()
 
@@ -47,6 +42,8 @@ func (server *Server) InitializeRoutes() {
 	bankApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allBank)).Methods("GET")
 	bankApi.HandleFunc("/sign", middlewares.SetMiddlewareJSON(server.signApplication)).Methods("POST")
 	bankApi.HandleFunc("/product", middlewares.SetMiddlewareJSON(server.createProduct)).Methods("POST")
+	bankApi.HandleFunc("/update/{id}", middlewares.SetMiddlewareJSON(server.updateBank)).Methods("PATCH")
+	bankApi.HandleFunc("/update-product/{id}", middlewares.SetMiddlewareJSON(server.updateProduct)).Methods("PATCH")
 
 	workApi := server.Router.PathPrefix("/api/work").Subrouter()
 
@@ -74,6 +71,9 @@ func (server *Server) InitializeRoutes() {
 	insuranceApi.HandleFunc("/create-kasko", middlewares.SetMiddlewareJSON(server.createKasko)).Methods("POST")
 	insuranceApi.HandleFunc("/create-road-help", middlewares.SetMiddlewareJSON(server.createRoadHelp)).Methods("POST")
 	insuranceApi.HandleFunc("/create-life-insurance", middlewares.SetMiddlewareJSON(server.createLifeInsurance)).Methods("POST")
+	insuranceApi.HandleFunc("/update-kasko/{id}", middlewares.SetMiddlewareJSON(server.updateKasko)).Methods("PATCH")
+	insuranceApi.HandleFunc("/update-road-help/{id}", middlewares.SetMiddlewareJSON(server.updateRoadHelp)).Methods("PATCH")
+	insuranceApi.HandleFunc("/update-life-insurance/{id}", middlewares.SetMiddlewareJSON(server.updateLifeInsurance)).Methods("PATCH")
 
 	countryApi := server.Router.PathPrefix("/api/country").Subrouter()
 

@@ -1,3 +1,6 @@
+INSERT INTO working_activities (title) VALUES ('Пенсионер');
+INSERT INTO working_activities (title) VALUES ('Работающий пенсионер');
+INSERT INTO working_activities (title) VALUES ('Военнослужащий');
 INSERT INTO working_activities (title) VALUES ('Игорный бизнес/Развлекательная индустрия');
 INSERT INTO working_activities (title) VALUES ('Ресторан/Кафе/Бары');
 INSERT INTO working_activities (title) VALUES ('Туризм');

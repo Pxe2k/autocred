@@ -1,7 +1,9 @@
 package storage
 
 import (
+	"fmt"
 	"gorm.io/gorm"
+	"strings"
 )
 
 type Client struct {
@@ -47,10 +49,35 @@ func (c *Client) Save(db *gorm.DB) (*Client, error) {
 	return c, nil
 }
 
-func (c *Client) All(db *gorm.DB) (*[]Client, error) {
+func (c *Client) All(db *gorm.DB, name, userID string) (*[]Client, error) {
 	var clients []Client
 
-	err := db.Debug().Model(&Client{}).Preload("User").Limit(100).Find(&clients).Error
+	query := db.Debug().Model(&Client{}).Preload("User")
+
+	names := strings.Split(name, " ")
+	firstName := ""
+	middleName := ""
+	lastName := ""
+	if len(names) > 0 {
+		firstName = names[0]
+	}
+	if len(names) > 1 {
+		middleName = names[1]
+	}
+	if len(names) > 2 {
+		lastName = strings.Join(names[2:], " ")
+	}
+
+	if userID != "" {
+		query = query.Where("user_id = ?", userID)
+	}
+	if name != "" {
+		query = query.Where("first_name LIKE ? OR middle_name LIKE ? OR last_name LIKE ?", "%"+firstName+"%", "%"+middleName+"%", "%"+lastName+"%")
+	}
+
+	query.Find(&clients)
+
+	err := query.Error
 	if err != nil {
 		return nil, err
 	}
@@ -92,10 +119,14 @@ func (c *Client) UpdateAvatar(db *gorm.DB, id uint) (*Client, error) {
 }
 
 func (c *Client) Update(db gorm.DB, client Client) (*Client, error) {
-	err := db.Debug().Model(&Client{}).Where("id = ?", client.ID).Session(&gorm.Session{FullSaveAssociations: true}).Updates(Client{
-		Bin:           "23232",
+	client = Client{
+		Bin:           "23244444444444432",
 		WorkPlaceInfo: &WorkPlaceInfo{OrganizationName: "test"},
-	}).Error
+	}
+
+	fmt.Println(client)
+
+	err := db.Debug().Model(&Client{}).Where("id = ?", 2).Session(&gorm.Session{FullSaveAssociations: true}).Updates(&client).Error
 	if err != nil {
 		return nil, err
 	}

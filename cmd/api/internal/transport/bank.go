@@ -6,8 +6,11 @@ import (
 	"autocredit/cmd/api/internal/service"
 	"autocredit/cmd/api/internal/storage"
 	"encoding/json"
+	"errors"
+	"github.com/gorilla/mux"
 	"io"
 	"net/http"
+	"strconv"
 )
 
 func (server *Server) createBank(w http.ResponseWriter, r *http.Request) {
@@ -42,6 +45,46 @@ func (server *Server) allBank(w http.ResponseWriter, r *http.Request) {
 	}
 
 	responses.JSON(w, http.StatusOK, banks)
+}
+
+func (server *Server) updateBank(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	bankID, err := strconv.ParseUint(vars["id"], 10, 32)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	tokenID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
+		return
+	}
+	if tokenID == 0 {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("token is missing"))
+		return
+	}
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	bank := storage.Bank{}
+	err = json.Unmarshal(body, &bank)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	bankUpdate, err := bank.Update(server.DB, int(bankID))
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusCreated, bankUpdate)
 }
 
 func (server *Server) signApplication(w http.ResponseWriter, r *http.Request) {
@@ -91,4 +134,44 @@ func (server *Server) createProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	responses.JSON(w, http.StatusCreated, productCreated)
+}
+
+func (server *Server) updateProduct(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	bankProductID, err := strconv.ParseUint(vars["id"], 10, 32)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	tokenID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
+		return
+	}
+	if tokenID == 0 {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("token is missing"))
+		return
+	}
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	bankProduct := storage.BankProduct{}
+	err = json.Unmarshal(body, &bankProduct)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	bankProductUpdate, err := bankProduct.Update(server.DB, int(bankProductID))
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusCreated, bankProductUpdate)
 }

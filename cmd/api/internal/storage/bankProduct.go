@@ -16,3 +16,11 @@ func (b *BankProduct) Save(db *gorm.DB) (*BankProduct, error) {
 
 	return b, nil
 }
+
+func (b *BankProduct) Update(db *gorm.DB, id int) (*BankProduct, error) {
+	err := db.Debug().Model(&BankProduct{}).Where("id = ?", id).Updates(&b).Error
+	if err != nil {
+		return nil, err
+	}
+	return b, nil
+}
