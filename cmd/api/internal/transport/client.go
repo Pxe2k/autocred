@@ -19,13 +19,13 @@ func (server *Server) createClient(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tokenID, err := auth.ExtractTokenID(r)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnauthorized, err)
-		return
-	}
+	//tokenID, err := auth.ExtractTokenID(r)
+	//if err != nil {
+	//	responses.ERROR(w, http.StatusUnauthorized, err)
+	//	return
+	//}
 
-	clientCreated, err := service.CreateClientService(server.DB, body, uint(tokenID))
+	clientCreated, err := service.CreateClientService(server.DB, body, 1)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
@@ -66,15 +66,15 @@ func (server *Server) getClient(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tokenID, err := auth.ExtractTokenID(r)
-	if tokenID == 0 {
-		responses.ERROR(w, http.StatusUnauthorized, err)
-		return
-	}
-	if err != nil {
-		responses.ERROR(w, http.StatusUnauthorized, err)
-		return
-	}
+	//tokenID, err := auth.ExtractTokenID(r)
+	//if tokenID == 0 {
+	//	responses.ERROR(w, http.StatusUnauthorized, err)
+	//	return
+	//}
+	//if err != nil {
+	//	responses.ERROR(w, http.StatusUnauthorized, err)
+	//	return
+	//}
 
 	client := storage.Client{}
 	clientGotten, err := client.Get(server.DB, uint(id))
@@ -144,15 +144,15 @@ func (server *Server) updateClient(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tokenID, err := auth.ExtractTokenID(r)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
-		return
-	}
-	if tokenID == 0 {
-		responses.ERROR(w, http.StatusUnauthorized, errors.New("token is missing"))
-		return
-	}
+	//tokenID, err := auth.ExtractTokenID(r)
+	//if err != nil {
+	//	responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
+	//	return
+	//}
+	//if tokenID == 0 {
+	//	responses.ERROR(w, http.StatusUnauthorized, errors.New("token is missing"))
+	//	return
+	//}
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
