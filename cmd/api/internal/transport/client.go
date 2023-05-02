@@ -19,13 +19,13 @@ func (server *Server) createClient(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//tokenID, err := auth.ExtractTokenID(r)
-	//if err != nil {
-	//	responses.ERROR(w, http.StatusUnauthorized, err)
-	//	return
-	//}
+	tokenID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, err)
+		return
+	}
 
-	clientCreated, err := service.CreateClientService(server.DB, body, 1)
+	clientCreated, err := service.CreateClientService(server.DB, body, uint(tokenID))
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
@@ -66,15 +66,15 @@ func (server *Server) getClient(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//tokenID, err := auth.ExtractTokenID(r)
-	//if tokenID == 0 {
-	//	responses.ERROR(w, http.StatusUnauthorized, err)
-	//	return
-	//}
-	//if err != nil {
-	//	responses.ERROR(w, http.StatusUnauthorized, err)
-	//	return
-	//}
+	tokenID, err := auth.ExtractTokenID(r)
+	if tokenID == 0 {
+		responses.ERROR(w, http.StatusUnauthorized, err)
+		return
+	}
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, err)
+		return
+	}
 
 	client := storage.Client{}
 	clientGotten, err := client.Get(server.DB, uint(id))
@@ -167,105 +167,4 @@ func (server *Server) updateClient(w http.ResponseWriter, r *http.Request) {
 	}
 
 	responses.JSON(w, http.StatusAccepted, updatedClient)
-}
-
-// TODO обьеденить в одну функцию
-
-func (server *Server) UpdateMaritalStatus(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	clientID, err := strconv.ParseUint(vars["id"], 10, 32)
-	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
-		return
-	}
-
-	tokenID, err := auth.ExtractTokenID(r)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
-		return
-	}
-	if tokenID == 0 {
-		responses.ERROR(w, http.StatusUnauthorized, errors.New("token is missing"))
-		return
-	}
-
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	updatedMaritalStatus, err := service.UpdateMaritalStatus(server.DB, body, uint(clientID))
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	responses.JSON(w, http.StatusAccepted, updatedMaritalStatus)
-}
-
-func (server *Server) UpdateDocument(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	clientID, err := strconv.ParseUint(vars["id"], 10, 32)
-	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
-		return
-	}
-
-	tokenID, err := auth.ExtractTokenID(r)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
-		return
-	}
-	if tokenID == 0 {
-		responses.ERROR(w, http.StatusUnauthorized, errors.New("token is missing"))
-		return
-	}
-
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	updatedDocument, err := service.UpdateDocument(server.DB, body, uint(clientID))
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	responses.JSON(w, http.StatusAccepted, updatedDocument)
-}
-
-func (server *Server) UpdateWorkPlace(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	clientID, err := strconv.ParseUint(vars["id"], 10, 32)
-	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
-		return
-	}
-
-	tokenID, err := auth.ExtractTokenID(r)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
-		return
-	}
-	if tokenID == 0 {
-		responses.ERROR(w, http.StatusUnauthorized, errors.New("token is missing"))
-		return
-	}
-
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	updatedWorkPlace, err := service.UpdateWorkPlace(server.DB, body, uint(clientID))
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	responses.JSON(w, http.StatusAccepted, updatedWorkPlace)
 }

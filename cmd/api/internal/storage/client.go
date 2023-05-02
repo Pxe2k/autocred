@@ -45,6 +45,7 @@ func (c *Client) Save(db *gorm.DB) (*Client, error) {
 	if err != nil {
 		return &Client{}, err
 	}
+
 	return c, nil
 }
 
