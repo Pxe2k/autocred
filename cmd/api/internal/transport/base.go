@@ -70,7 +70,7 @@ func (server *Server) Run(addr string) {
 	fmt.Println("Listening to port " + os.Getenv("APP_PORT"))
 
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization", "Location"})
-	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS"})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"})
 	originsOk := handlers.AllowedOrigins([]string{"*"})
 
 	log.Fatal(http.ListenAndServe(addr, handlers.CORS(headersOk, methodsOk, originsOk)(server.Router)))
