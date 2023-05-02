@@ -9,6 +9,10 @@ type Application struct {
 	gorm.Model
 	LoanPurpose      string            `gorm:"size:100;" json:"loanPurpose"` // Цель кредита
 	Subsidy          bool              `json:"subsidy"`                      // Субсудия
+	LoanAmount       int               `json:"loanAmount"`                   // Сумма займа
+	TrenchesNumber   int               `json:"trenchesNumber"`               // Кол-во траншей
+	CarPrice         int               `json:"carPrice"`                     // Цена авто
+	LoanPercentage   int               `json:"loanPercentage"`               // Процент кредита
 	BankApplications []BankApplication `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bankApplications"`
 	UserID           uint              `json:"userID"`
 	ClientID         uint              `json:"clientID"`
