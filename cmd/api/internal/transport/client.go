@@ -144,15 +144,15 @@ func (server *Server) updateClient(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//tokenID, err := auth.ExtractTokenID(r)
-	//if err != nil {
-	//	responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
-	//	return
-	//}
-	//if tokenID == 0 {
-	//	responses.ERROR(w, http.StatusUnauthorized, errors.New("token is missing"))
-	//	return
-	//}
+	tokenID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
+		return
+	}
+	if tokenID == 0 {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("token is missing"))
+		return
+	}
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -160,7 +160,7 @@ func (server *Server) updateClient(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	updatedClient, err := service.UpdateClientInfo(server.DB, body, uint(clientID))
+	updatedClient, err := service.UpdateClientInfo(server.DB, body, uint(clientID), uint(tokenID))
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
