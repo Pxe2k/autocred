@@ -7,11 +7,7 @@ type BankApplication struct {
 	Bank            string `gorm:"size:100;" json:"bank"`
 	CreditProductID uint   `json:"creditProductID"` // Кредитный продукт
 	ReLoan          bool   `json:"reLoan"`          // Повторный займ
-	CarPrice        int    `json:"carPrice"`        // Цена авто
-	LoanAmount      int    `json:"loanAmount"`      // Сумма займа
 	InitFee         int    `json:"initFee"`         // Первоначалка
-	LoanPercentage  int    `json:"loanPercentage"`  // Процент кредита
-	TrenchesNumber  int    `json:"trenchesNumber"`  // Кол-во траншей
 	KaskoID         uint   `json:"kaskoID"`
 	RoadHelpID      uint   `json:"roadHelpID"`
 	LifeInsuranceID uint   `json:"lifeInsuranceID"`
