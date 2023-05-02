@@ -22,6 +22,14 @@ func (b *Bank) Save(db *gorm.DB) (*Bank, error) {
 	return b, nil
 }
 
+func (b *Bank) Update(db *gorm.DB, id int) (*Bank, error) {
+	err := db.Debug().Model(&Bank{}).Where("id = ?", id).Updates(&b).Error
+	if err != nil {
+		return nil, err
+	}
+	return b, nil
+}
+
 func (b *Bank) All(db *gorm.DB) (*[]Bank, error) {
 	var banks []Bank
 	err := db.Debug().Model(&Bank{}).Preload(clause.Associations).Preload("Insurance.Kasko").Preload("Insurance.RoadHelp").Preload("Insurance.LifeInsurance").Limit(100).Find(&banks).Error

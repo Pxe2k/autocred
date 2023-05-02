@@ -18,3 +18,11 @@ func (k *Kasko) Save(db *gorm.DB) (*Kasko, error) {
 
 	return k, nil
 }
+
+func (k *Kasko) Update(db *gorm.DB, id int) (*Kasko, error) {
+	err := db.Debug().Model(&Kasko{}).Where("id = ?", id).Updates(&k).Error
+	if err != nil {
+		return nil, err
+	}
+	return k, nil
+}

@@ -4,6 +4,8 @@ import "gorm.io/gorm"
 
 type ClientComment struct {
 	gorm.Model
-
-	ClientID uint
+	WorkInfo   string `json:"workInfo"`
+	Comment    string `json:"comment"`
+	RiskStatus string `json:"riskStatus"`
+	ClientID   uint
 }

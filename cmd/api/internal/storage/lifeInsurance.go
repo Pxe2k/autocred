@@ -18,3 +18,11 @@ func (l *LifeInsurance) Save(db *gorm.DB) (*LifeInsurance, error) {
 
 	return l, nil
 }
+
+func (l *LifeInsurance) Update(db *gorm.DB, id int) (*LifeInsurance, error) {
+	err := db.Debug().Model(&LifeInsurance{}).Where("id = ?", id).Updates(&l).Error
+	if err != nil {
+		return nil, err
+	}
+	return l, nil
+}

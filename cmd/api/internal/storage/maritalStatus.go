@@ -4,8 +4,11 @@ import "gorm.io/gorm"
 
 type MaritalStatus struct {
 	gorm.Model
-
-	ClientID uint
+	Status            string `gorm:"size:100;" json:"status"`            // Семейное положение
+	FamilyPartnerName string `gorm:"size:100;" json:"familyPartnerName"` // ФИО партнера
+	Phone             string `gorm:"size:100;" json:"phone"`             // Телефон
+	MinorChildren     string `gorm:"size:100;" json:"minorChildren"`     // Кол-во несовершеннолетних детей
+	ClientID          uint
 }
 
 func (m *MaritalStatus) Update(db gorm.DB, status MaritalStatus) (*MaritalStatus, error) {

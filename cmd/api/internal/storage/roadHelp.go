@@ -18,3 +18,11 @@ func (r *RoadHelp) Save(db *gorm.DB) (*RoadHelp, error) {
 
 	return r, nil
 }
+
+func (r *RoadHelp) Update(db *gorm.DB, id int) (*RoadHelp, error) {
+	err := db.Debug().Model(&RoadHelp{}).Where("id = ?", id).Updates(&r).Error
+	if err != nil {
+		return nil, err
+	}
+	return r, nil
+}
