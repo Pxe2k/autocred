@@ -6,10 +6,10 @@ type Media struct {
 	gorm.Model
 	Title    string `gorm:"size:255;" json:"title"`
 	File     string `gorm:"size:255;" json:"file"`
-	ClientID uint
+	ClientID uint   `json:"clientID"`
 }
 
-func (m *Media) SaveMedia(db *gorm.DB) (*Media, error) {
+func (m *Media) Save(db *gorm.DB) (*Media, error) {
 	err := db.Debug().Create(&m).Error
 	if err != nil {
 		return &Media{}, err

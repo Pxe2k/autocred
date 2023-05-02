@@ -30,7 +30,7 @@ func UploadFileService(db *gorm.DB, uid uint32, title, folderName string, client
 	//if validate == false {
 	//	return storage.Media{}, errors.New("wrong file format")
 	//}
-	mediaCreated, err := media.SaveMedia(db)
+	mediaCreated, err := media.Save(db)
 
 	return *mediaCreated, nil
 }

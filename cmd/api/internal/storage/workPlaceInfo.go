@@ -4,7 +4,6 @@ import "gorm.io/gorm"
 
 type WorkPlaceInfo struct {
 	gorm.Model
-	Client
 	OrganizationName  string           `gorm:"size:100;" json:"organizationName"` // Название организанции
 	WorkPlace         string           `gorm:"size:100;" json:"workPlaceType"`    // Тип места работы
 	WorkingActivityID uint             `json:"activityTypeID"`                    // Тип деятельности

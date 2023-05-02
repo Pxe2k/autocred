@@ -54,7 +54,7 @@ func GeneratePdf(db *gorm.DB, body []byte, id uint) (*storage.Media, error) {
 	//fileBytes, err := os.ReadFile("outputPdf/" + fileName + ".pdf")
 
 	//mediaCreated, err := UploadFileService(db, uid, fileName, "", fileBytes, fileBytes)
-	mediaCreated, err := UploadFileToUser(db, 1, outputPath, fileName)
+	mediaCreated, err := UploadFileToUser(db, uint32(id), outputPath, fileName)
 	return mediaCreated, nil
 }
 
@@ -137,7 +137,7 @@ func UploadFileToUser(db *gorm.DB, uid uint32, filePath string, title string) (*
 	media.File = filePath
 	media.Title = title
 	media.ClientID = uint(uid)
-	mediaCreated, err := media.SaveMedia(db)
+	mediaCreated, err := media.Save(db)
 	if err != nil {
 		return &storage.Media{}, err
 	}
