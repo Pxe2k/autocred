@@ -9,9 +9,9 @@ type Application struct {
 	gorm.Model
 	LoanPurpose      string            `gorm:"size:100;" json:"loanPurpose"` // Цель кредита
 	Subsidy          bool              `json:"subsidy"`                      // Субсудия
-	LoanAmount       int               `json:"loanAmount"`                   // Сумма займа
-	TrenchesNumber   int               `json:"trenchesNumber"`               // Кол-во траншей
 	CarPrice         int               `json:"carPrice"`                     // Цена авто
+	InitFee          int               `json:"initFee"`                      // Первоначалка
+	TrenchesNumber   int               `json:"trenchesNumber"`               // Кол-во траншей
 	LoanPercentage   int               `json:"loanPercentage"`               // Процент кредита
 	BankApplications []BankApplication `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bankApplications"`
 	UserID           uint              `json:"userID"`
@@ -38,13 +38,8 @@ func (a *Application) All(db *gorm.DB, uid uint) (*[]Application, error) {
 	return &applications, nil
 }
 
-func (a *Application) Get(db *gorm.DB, id uint, creditor bool) (*Application, error) {
-	query := db.Debug().Model(&Application{}).Preload("Client").Where("id = ?", id)
-	if !creditor {
-		query.Preload(clause.Associations)
-	}
-
-	err := query.Take(a).Error
+func (a *Application) Get(db *gorm.DB, id uint) (*Application, error) {
+	err := db.Debug().Model(&Application{}).Preload("Client").Where("id = ?", id).Preload(clause.Associations).Take(a).Error
 	if err != nil {
 		return nil, err
 	}

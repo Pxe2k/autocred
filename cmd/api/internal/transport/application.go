@@ -76,7 +76,7 @@ func (server *Server) getApplication(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	applicationGotten, err := service.GetApplication(server.DB, uint(id), uint(tokenID))
+	applicationGotten, err := service.GetApplication(server.DB, uint(id))
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return

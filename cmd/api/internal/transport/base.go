@@ -30,7 +30,9 @@ func (server *Server) Initialize(Dbdriver, DbUser, DbPassword, DbPort, DbHost, D
 		fmt.Printf("We are connected to the %s database \n", Dbdriver)
 	}
 
-	server.DB.Debug().AutoMigrate(storage.User{},
+	server.DB.Debug().AutoMigrate(
+		storage.Role{},
+		storage.User{},
 		storage.Client{},
 		storage.Document{},
 		storage.WorkPlaceInfo{},

@@ -175,3 +175,32 @@ func (server *Server) updateProduct(w http.ResponseWriter, r *http.Request) {
 
 	responses.JSON(w, http.StatusCreated, bankProductUpdate)
 }
+
+func (server *Server) deleteBank(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	bankID, err := strconv.ParseUint(vars["id"], 10, 32)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	tokenID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
+		return
+	}
+	if tokenID == 0 {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("token is missing"))
+		return
+	}
+
+	bank := storage.Bank{}
+
+	bankDeleted, err := bank.SoftDelete(server.DB, uint(bankID))
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusCreated, bankDeleted)
+}

@@ -44,6 +44,7 @@ func (server *Server) InitializeRoutes() {
 	bankApi.HandleFunc("/product", middlewares.SetMiddlewareJSON(server.createProduct)).Methods("POST")
 	bankApi.HandleFunc("/update/{id}", middlewares.SetMiddlewareJSON(server.updateBank)).Methods("PATCH")
 	bankApi.HandleFunc("/update-product/{id}", middlewares.SetMiddlewareJSON(server.updateProduct)).Methods("PATCH")
+	bankApi.HandleFunc("/delete/{id}", middlewares.SetMiddlewareJSON(server.deleteBank)).Methods("DELETE")
 
 	workApi := server.Router.PathPrefix("/api/work").Subrouter()
 
