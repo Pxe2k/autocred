@@ -3,7 +3,6 @@ package transport
 import (
 	"autocredit/cmd/api/auth"
 	"autocredit/cmd/api/helpers/responses"
-	"autocredit/cmd/api/internal/service"
 	"autocredit/cmd/api/internal/storage"
 	"encoding/json"
 	"errors"
@@ -85,32 +84,6 @@ func (server *Server) updateBank(w http.ResponseWriter, r *http.Request) {
 	}
 
 	responses.JSON(w, http.StatusCreated, bankUpdate)
-}
-
-func (server *Server) signApplication(w http.ResponseWriter, r *http.Request) {
-	tokenID, err := auth.ExtractTokenID(r)
-	if tokenID == 0 {
-		responses.ERROR(w, http.StatusUnauthorized, err)
-		return
-	}
-	if err != nil {
-		responses.ERROR(w, http.StatusUnauthorized, err)
-		return
-	}
-
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	signedResponse, err := service.SignApplication(server.DB, body)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	responses.JSON(w, http.StatusAccepted, signedResponse)
 }
 
 func (server *Server) createProduct(w http.ResponseWriter, r *http.Request) {
@@ -203,4 +176,62 @@ func (server *Server) deleteBank(w http.ResponseWriter, r *http.Request) {
 	}
 
 	responses.JSON(w, http.StatusCreated, bankDeleted)
+}
+
+func (server *Server) deleteBankProduct(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	bankProductID, err := strconv.ParseUint(vars["id"], 10, 32)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	tokenID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
+		return
+	}
+	if tokenID == 0 {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("token is missing"))
+		return
+	}
+
+	bankProduct := storage.BankProduct{}
+
+	bankProductDeleted, err := bankProduct.SoftDelete(server.DB, uint(bankProductID))
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusCreated, bankProductDeleted)
+}
+
+func (server *Server) getBankProduct(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	bankProductID, err := strconv.ParseUint(vars["id"], 10, 32)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	tokenID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
+		return
+	}
+	if tokenID == 0 {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("token is missing"))
+		return
+	}
+
+	bankProduct := storage.BankProduct{}
+
+	bankProductGotten, err := bankProduct.Get(server.DB, uint(bankProductID))
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusCreated, bankProductGotten)
 }

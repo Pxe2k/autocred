@@ -40,11 +40,12 @@ func (server *Server) InitializeRoutes() {
 
 	bankApi.HandleFunc("/create", middlewares.SetMiddlewareJSON(server.createBank)).Methods("POST")
 	bankApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allBank)).Methods("GET")
-	bankApi.HandleFunc("/sign", middlewares.SetMiddlewareJSON(server.signApplication)).Methods("POST")
+	bankApi.HandleFunc("/product/{id}", middlewares.SetMiddlewareJSON(server.getBankProduct)).Methods("GET")
 	bankApi.HandleFunc("/product", middlewares.SetMiddlewareJSON(server.createProduct)).Methods("POST")
 	bankApi.HandleFunc("/update/{id}", middlewares.SetMiddlewareJSON(server.updateBank)).Methods("PATCH")
 	bankApi.HandleFunc("/update-product/{id}", middlewares.SetMiddlewareJSON(server.updateProduct)).Methods("PATCH")
 	bankApi.HandleFunc("/delete/{id}", middlewares.SetMiddlewareJSON(server.deleteBank)).Methods("DELETE")
+	bankApi.HandleFunc("/delete-product/{id}", middlewares.SetMiddlewareJSON(server.deleteBankProduct)).Methods("DELETE")
 
 	workApi := server.Router.PathPrefix("/api/work").Subrouter()
 
