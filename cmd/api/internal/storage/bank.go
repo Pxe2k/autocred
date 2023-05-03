@@ -34,7 +34,7 @@ func (b *Bank) Update(db *gorm.DB, id int) (*Bank, error) {
 
 func (b *Bank) All(db *gorm.DB) (*[]Bank, error) {
 	var banks []Bank
-	err := db.Debug().Model(&Bank{}).Preload("Kasko").Preload("RoadHelp").Preload("LifeInsurance").Limit(100).Find(&banks).Error
+	err := db.Debug().Model(&Bank{}).Preload("Products").Preload("Kasko").Preload("RoadHelp").Preload("LifeInsurance").Limit(100).Find(&banks).Error
 	if err != nil {
 		return nil, err
 	}
