@@ -34,8 +34,6 @@ func CreateUserService(db *gorm.DB, body []byte) (*storage.User, error) {
 	user.Email = requestData.Email
 	user.Phone = requestData.Phone
 	user.Password = requestData.Password
-	user.Creditor = requestData.Creditor
-	user.BankID = requestData.BankID
 
 	if user.Email == "" {
 		return &storage.User{}, err
@@ -118,5 +116,5 @@ func CreateToken(db *gorm.DB, body []byte) (string, error) {
 		return "wrong code", errors.New("code != value")
 	}
 
-	return auth.CreateToken(uint32(user.ID))
+	return auth.CreateToken(uint32(user.ID), user.RoleID)
 }

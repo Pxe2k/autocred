@@ -10,16 +10,14 @@ import (
 
 type User struct {
 	gorm.Model
-	Email                string        `gorm:"size:100;unique"`
-	FullName             string        `gorm:"size:100;"`
-	Phone                string        `gorm:"size:100;not null;unique"`
-	Address              string        `gorm:"size:100;"`
-	Password             string        `gorm:"size:100;"`
-	Creditor             bool          `json:"creditor"`
-	BankID               *uint         `json:"bankID,omitempty"`
-	Bank                 *Bank         `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bank,omitempty"`
-	UserApplications     []Application `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"userApplications"`
-	CreditedApplications []Application `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"creditedApplications"`
+	Email        string        `gorm:"size:100;unique"`
+	FullName     string        `gorm:"size:100;" json:"fullName"`
+	Phone        string        `gorm:"size:100;not null;unique"`
+	Address      string        `gorm:"size:100;"`
+	Password     string        `gorm:"size:100;"`
+	RoleID       *uint         `gorm:"default:2;" json:"roleID,omitempty"`
+	Role         Role          `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"role"`
+	Applications []Application `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"applications"`
 }
 
 func Hash(password string) ([]byte, error) {

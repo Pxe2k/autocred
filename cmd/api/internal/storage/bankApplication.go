@@ -6,11 +6,10 @@ type BankApplication struct {
 	gorm.Model
 	Bank            string `gorm:"size:100;" json:"bank"`
 	CreditProductID uint   `json:"creditProductID"` // Кредитный продукт
-	ReLoan          bool   `json:"reLoan"`          // Повторный займ
-	InitFee         int    `json:"initFee"`         // Первоначалка
-	KaskoID         uint   `json:"kaskoID"`
-	RoadHelpID      uint   `json:"roadHelpID"`
-	LifeInsuranceID uint   `json:"lifeInsuranceID"`
+	KaskoID         *uint  `json:"kaskoID,omitempty"`
+	RoadHelpID      *uint  `json:"roadHelpID,omitempty"`
+	LifeInsuranceID *uint  `json:"lifeInsuranceID,omitempty"`
+	LoanAmount      int    `json:"loanAmount"` // Сумма займа
 	ApplicationID   uint
 	CreditProduct   *BankProduct    `json:"creditProduct,omitempty"`
 	Kasko           *Kasko          `json:"kasko,omitempty"`

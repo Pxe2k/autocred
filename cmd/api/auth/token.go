@@ -12,10 +12,11 @@ import (
 	"time"
 )
 
-func CreateToken(userId uint32) (string, error) {
+func CreateToken(userID uint32, roleID *uint) (string, error) {
 	claims := jwt.MapClaims{}
 	claims["authorized"] = true
-	claims["user_id"] = userId
+	claims["user_id"] = userID
+	claims["role_id"] = roleID
 	claims["exp"] = time.Now().Add(time.Hour * 168).Unix() //Token expires after 1 hour
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 

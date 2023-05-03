@@ -39,3 +39,16 @@ func (b *Bank) All(db *gorm.DB) (*[]Bank, error) {
 
 	return &banks, nil
 }
+
+func (b *Bank) SoftDelete(db *gorm.DB, id uint) (int64, error) {
+	err := db.Debug().Model(&Bank{}).Where("id = ?", id).Take(&Bank{}).Select(clause.Associations).Delete(&Bank{})
+	if err != nil {
+		return 0, err.Error
+	}
+
+	if err.Error != nil {
+		return 0, err.Error
+	}
+
+	return err.RowsAffected, nil
+}
