@@ -12,40 +12,6 @@ import (
 	"strconv"
 )
 
-func (server *Server) allInsurance(w http.ResponseWriter, r *http.Request) {
-	insurance := storage.Insurance{}
-	allInsurances, err := insurance.All(server.DB)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	responses.JSON(w, http.StatusOK, allInsurances)
-}
-
-func (server *Server) createInsurance(w http.ResponseWriter, r *http.Request) {
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	insurance := storage.Insurance{}
-	err = json.Unmarshal(body, &insurance)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	insuranceCreated, err := insurance.Save(server.DB)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	responses.JSON(w, http.StatusCreated, insuranceCreated)
-}
-
 func (server *Server) createKasko(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -233,4 +199,178 @@ func (server *Server) updateLifeInsurance(w http.ResponseWriter, r *http.Request
 	}
 
 	responses.JSON(w, http.StatusCreated, lifeInsuranceUpdate)
+}
+
+func (server *Server) deleteKasko(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	bankProductID, err := strconv.ParseUint(vars["id"], 10, 32)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	tokenID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
+		return
+	}
+	if tokenID == 0 {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("token is missing"))
+		return
+	}
+
+	kasko := storage.Kasko{}
+
+	kaskoDeleted, err := kasko.SoftDelete(server.DB, uint(bankProductID))
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusCreated, kaskoDeleted)
+}
+
+func (server *Server) getKasko(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	bankProductID, err := strconv.ParseUint(vars["id"], 10, 32)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	tokenID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
+		return
+	}
+	if tokenID == 0 {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("token is missing"))
+		return
+	}
+
+	kasko := storage.Kasko{}
+
+	kaskoGotten, err := kasko.Get(server.DB, uint(bankProductID))
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusCreated, kaskoGotten)
+}
+
+func (server *Server) deleteRoadHelp(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	bankProductID, err := strconv.ParseUint(vars["id"], 10, 32)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	tokenID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
+		return
+	}
+	if tokenID == 0 {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("token is missing"))
+		return
+	}
+
+	roadHelp := storage.RoadHelp{}
+
+	roadHelpDeleted, err := roadHelp.SoftDelete(server.DB, uint(bankProductID))
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusCreated, roadHelpDeleted)
+}
+
+func (server *Server) getRoadHelp(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	bankProductID, err := strconv.ParseUint(vars["id"], 10, 32)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	tokenID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
+		return
+	}
+	if tokenID == 0 {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("token is missing"))
+		return
+	}
+
+	roadHelp := storage.RoadHelp{}
+
+	roadHelpGotten, err := roadHelp.Get(server.DB, uint(bankProductID))
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusCreated, roadHelpGotten)
+}
+
+func (server *Server) softDeleteLifeInsurance(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	bankProductID, err := strconv.ParseUint(vars["id"], 10, 32)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	tokenID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
+		return
+	}
+	if tokenID == 0 {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("token is missing"))
+		return
+	}
+
+	lifeInsurance := storage.LifeInsurance{}
+
+	lifeInsuranceDeleted, err := lifeInsurance.SoftDelete(server.DB, uint(bankProductID))
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusCreated, lifeInsuranceDeleted)
+}
+
+func (server *Server) getLifeInsurance(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	bankProductID, err := strconv.ParseUint(vars["id"], 10, 32)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	tokenID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
+		return
+	}
+	if tokenID == 0 {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("token is missing"))
+		return
+	}
+
+	lifeInsurance := storage.LifeInsurance{}
+
+	lifeInsuranceGotten, err := lifeInsurance.Get(server.DB, uint(bankProductID))
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusCreated, lifeInsuranceGotten)
 }

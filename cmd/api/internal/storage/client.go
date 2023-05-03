@@ -1,8 +1,8 @@
 package storage
 
 import (
+	"fmt"
 	"gorm.io/gorm"
-	"strings"
 )
 
 type Client struct {
@@ -49,30 +49,23 @@ func (c *Client) Save(db *gorm.DB) (*Client, error) {
 	return c, nil
 }
 
-func (c *Client) All(db *gorm.DB, name, userID string) (*[]Client, error) {
+func (c *Client) All(db *gorm.DB, firstName, middleName, lastName, userID string) (*[]Client, error) {
 	var clients []Client
 
 	query := db.Debug().Model(&Client{}).Preload("User")
 
-	names := strings.Split(name, " ")
-	firstName := ""
-	middleName := ""
-	lastName := ""
-	if len(names) > 0 {
-		firstName = names[0]
-	}
-	if len(names) > 1 {
-		middleName = names[1]
-	}
-	if len(names) > 2 {
-		lastName = strings.Join(names[2:], " ")
-	}
-
 	if userID != "" {
 		query = query.Where("user_id = ?", userID)
 	}
-	if name != "" {
-		query = query.Where("first_name LIKE ? OR middle_name LIKE ? OR last_name LIKE ?", "%"+firstName+"%", "%"+middleName+"%", "%"+lastName+"%")
+	if firstName != "" {
+		fmt.Println("test")
+		query = query.Where("first_name LIKE ?", "%"+firstName+"%")
+	}
+	if middleName != "" {
+		query = query.Where("middle_name LIKE ?", "%"+middleName+"%")
+	}
+	if lastName != "" {
+		query = query.Where("last_name LIKE ?", "%"+lastName+"%")
 	}
 
 	query.Find(&clients)

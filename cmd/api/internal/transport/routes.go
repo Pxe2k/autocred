@@ -68,14 +68,18 @@ func (server *Server) InitializeRoutes() {
 
 	insuranceApi := server.Router.PathPrefix("/api/insurance").Subrouter()
 
-	insuranceApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allInsurance)).Methods("GET")
-	insuranceApi.HandleFunc("/create-insurance", middlewares.SetMiddlewareJSON(server.createInsurance)).Methods("POST")
 	insuranceApi.HandleFunc("/create-kasko", middlewares.SetMiddlewareJSON(server.createKasko)).Methods("POST")
 	insuranceApi.HandleFunc("/create-road-help", middlewares.SetMiddlewareJSON(server.createRoadHelp)).Methods("POST")
 	insuranceApi.HandleFunc("/create-life-insurance", middlewares.SetMiddlewareJSON(server.createLifeInsurance)).Methods("POST")
 	insuranceApi.HandleFunc("/update-kasko/{id}", middlewares.SetMiddlewareJSON(server.updateKasko)).Methods("PATCH")
 	insuranceApi.HandleFunc("/update-road-help/{id}", middlewares.SetMiddlewareJSON(server.updateRoadHelp)).Methods("PATCH")
 	insuranceApi.HandleFunc("/update-life-insurance/{id}", middlewares.SetMiddlewareJSON(server.updateLifeInsurance)).Methods("PATCH")
+	insuranceApi.HandleFunc("/kasko/{id}", middlewares.SetMiddlewareJSON(server.getKasko)).Methods("GET")
+	insuranceApi.HandleFunc("/road-help/{id}", middlewares.SetMiddlewareJSON(server.getRoadHelp)).Methods("GET")
+	insuranceApi.HandleFunc("/life-insurance/{id}", middlewares.SetMiddlewareJSON(server.getLifeInsurance)).Methods("GET")
+	insuranceApi.HandleFunc("/delete-kasko/{id}", middlewares.SetMiddlewareJSON(server.deleteKasko)).Methods("DELETE")
+	insuranceApi.HandleFunc("/delete-road-help/{id}", middlewares.SetMiddlewareJSON(server.deleteRoadHelp)).Methods("DELETE")
+	insuranceApi.HandleFunc("/delete-life-insurance/{id}", middlewares.SetMiddlewareJSON(server.softDeleteLifeInsurance)).Methods("DELETE")
 
 	countryApi := server.Router.PathPrefix("/api/country").Subrouter()
 

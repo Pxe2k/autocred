@@ -7,10 +7,12 @@ import (
 
 type Bank struct {
 	gorm.Model
-	Title     string         `gorm:"size:100;" json:"title"`
-	Image     *string        `gorm:"size:100;" json:"image,omitempty"`
-	Products  *[]BankProduct `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"products,omitempty"`
-	Insurance *Insurance     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"insurance,omitempty"`
+	Title         string           `gorm:"size:100;" json:"title"`
+	Image         *string          `gorm:"size:100;" json:"image,omitempty"`
+	Products      *[]BankProduct   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"products,omitempty"`
+	Kasko         *[]Kasko         `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"kasko,omitempty"`
+	RoadHelp      *[]RoadHelp      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"roadHelp,omitempty"`
+	LifeInsurance *[]LifeInsurance `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"lifeInsurance,omitempty"`
 }
 
 func (b *Bank) Save(db *gorm.DB) (*Bank, error) {
