@@ -21,7 +21,7 @@ type Pledge struct {
 	ClientID                uint      `json:"clientID"`
 	CarBrand                *CarBrand `json:"carBrand,omitempty"`
 	CarModel                *CarModel `json:"carModel,omitempty"`
-	Client                  Client    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"client"`
+	Client                  *Client   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"client,omitempty"`
 }
 
 func (p *Pledge) Save(db *gorm.DB) (*Pledge, error) {

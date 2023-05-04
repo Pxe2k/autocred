@@ -91,6 +91,8 @@ func (c *Client) Get(db *gorm.DB, id uint) (*Client, error) {
 		Preload("ClientComment").
 		Preload("Documents").
 		Preload("Pledges").
+		Preload("Pledges.CarModel").
+		Preload("Pledges.CarBrand").
 		Take(&c).Error
 	if err != nil {
 		return nil, err
