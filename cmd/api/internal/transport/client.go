@@ -48,8 +48,8 @@ func (server *Server) allClients(w http.ResponseWriter, r *http.Request) {
 
 	userID := r.URL.Query().Get("user_id")
 	fullName := r.URL.Query().Get("full_name")
-	sex := r.URL.Query().Get("full_name")
-	birthDate := r.URL.Query().Get("full_name")
+	sex := r.URL.Query().Get("sex")
+	birthDate := r.URL.Query().Get("birth_date")
 
 	client := storage.Client{}
 	clients, err := client.All(server.DB, fullName, sex, birthDate, userID)
