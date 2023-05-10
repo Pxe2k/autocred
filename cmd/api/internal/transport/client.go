@@ -6,10 +6,11 @@ import (
 	"autocredit/cmd/api/internal/service"
 	"autocredit/cmd/api/internal/storage"
 	"errors"
-	"github.com/gorilla/mux"
 	"io"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 func (server *Server) createClient(w http.ResponseWriter, r *http.Request) {
@@ -46,12 +47,12 @@ func (server *Server) allClients(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userID := r.URL.Query().Get("user_id")
-	firstName := r.URL.Query().Get("first_name")
-	middleName := r.URL.Query().Get("middle_name")
-	lastName := r.URL.Query().Get("last_name")
+	fullName := r.URL.Query().Get("full_name")
+	sex := r.URL.Query().Get("full_name")
+	birthDate := r.URL.Query().Get("full_name")
 
 	client := storage.Client{}
-	clients, err := client.All(server.DB, firstName, middleName, lastName, userID)
+	clients, err := client.All(server.DB, fullName, sex, birthDate, userID)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return

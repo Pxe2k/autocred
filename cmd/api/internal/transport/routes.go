@@ -35,6 +35,7 @@ func (server *Server) InitializeRoutes() {
 	applicationApi.HandleFunc("/create", middlewares.SetMiddlewareJSON(server.createApplication)).Methods("POST")
 	applicationApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allApplications)).Methods("GET")
 	applicationApi.HandleFunc("/get/{id}", middlewares.SetMiddlewareJSON(server.getApplication)).Methods("GET")
+	applicationApi.HandleFunc("/encode", middlewares.SetMiddlewareJSON(server.encodePDFtoBase64)).Methods("POST")
 
 	bankApi := server.Router.PathPrefix("/api/bank").Subrouter()
 
@@ -89,5 +90,4 @@ func (server *Server) InitializeRoutes() {
 
 	documentApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.issuingAuthorityAll)).Methods("GET")
 	documentApi.HandleFunc("/create", middlewares.SetMiddlewareJSON(server.uploadFile)).Methods("POST")
-
 }

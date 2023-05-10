@@ -5,10 +5,14 @@ import (
 	"autocredit/cmd/api/helpers/responses"
 	"autocredit/cmd/api/internal/service"
 	"autocredit/cmd/api/internal/storage"
-	"github.com/gorilla/mux"
+	"bufio"
+	"encoding/base64"
 	"io"
 	"net/http"
+	"os"
 	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 func (server *Server) createApplication(w http.ResponseWriter, r *http.Request) {
@@ -83,4 +87,23 @@ func (server *Server) getApplication(w http.ResponseWriter, r *http.Request) {
 	}
 
 	responses.JSON(w, http.StatusOK, applicationGotten)
+}
+
+func (server *Server) encodePDFtoBase64(w http.ResponseWriter, r *http.Request) {
+	f, err := os.Open("templates/resultMedia/outputPDF/autocredit.pdf")
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	reader := bufio.NewReader(f)
+	content, err := io.ReadAll(reader)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	encoded := base64.StdEncoding.EncodeToString(content)
+
+	responses.JSON(w, http.StatusOK, encoded)
 }

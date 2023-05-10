@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"fmt"
 	"gorm.io/gorm"
 )
 
@@ -49,23 +48,23 @@ func (c *Client) Save(db *gorm.DB) (*Client, error) {
 	return c, nil
 }
 
-func (c *Client) All(db *gorm.DB, firstName, middleName, lastName, userID string) (*[]Client, error) {
+func (c *Client) All(db *gorm.DB, fullName, sex, birthDate, userID string) (*[]Client, error) {
 	var clients []Client
 
 	query := db.Debug().Model(&Client{}).Preload("User")
 
+	if fullName != "" {
+		fullNameParam := "%" + fullName + "%"
+		query = query.Raw("SELECT clients.* FROM clients JOIN (SELECT id, concat_ws(' ', last_name, first_name, middle_name) as fullName FROM clients) clients2 ON clients2.fullName LIKE ? AND clients2.id = clients.id", fullNameParam)
+	}
+	if sex != "" {
+		query = query.Order("sex " + sex)
+	}
+	if birthDate != "" {
+		query = query.Order("birth_date " + birthDate)
+	}
 	if userID != "" {
-		query = query.Where("user_id = ?", userID)
-	}
-	if firstName != "" {
-		fmt.Println("test")
-		query = query.Where("first_name LIKE ?", "%"+firstName+"%")
-	}
-	if middleName != "" {
-		query = query.Where("middle_name LIKE ?", "%"+middleName+"%")
-	}
-	if lastName != "" {
-		query = query.Where("last_name LIKE ?", "%"+lastName+"%")
+		query = query.Order("user_id " + userID)
 	}
 
 	query.Find(&clients)
