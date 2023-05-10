@@ -1,6 +1,7 @@
 package transport
 
 import (
+	"autocredit/cmd/api/auth"
 	"autocredit/cmd/api/helpers/requests"
 	"autocredit/cmd/api/helpers/responses"
 	"autocredit/cmd/api/internal/service"
@@ -65,5 +66,11 @@ func (server *Server) submit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responses.JSON(w, http.StatusOK, responses.SubmitResponse{Token: token})
+	roleID, err := auth.ExtractRoleID(token)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusOK, responses.SubmitResponse{Token: token, RoleID: roleID})
 }

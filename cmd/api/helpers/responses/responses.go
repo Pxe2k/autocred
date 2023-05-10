@@ -11,7 +11,8 @@ type LoginResponse struct {
 }
 
 type SubmitResponse struct {
-	Token string `json:"token"`
+	Token  string `json:"token"`
+	RoleID uint32 `json:"roleID"`
 }
 
 func JSON(w http.ResponseWriter, statusCode int, data interface{}) {

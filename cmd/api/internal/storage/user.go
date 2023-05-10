@@ -2,10 +2,11 @@ package storage
 
 import (
 	"errors"
+	"strings"
+
 	"github.com/badoux/checkmail"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	"strings"
 )
 
 type User struct {
