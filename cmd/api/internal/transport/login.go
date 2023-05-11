@@ -66,11 +66,15 @@ func (server *Server) submit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	roleID, err := auth.ExtractRoleID(token)
+	responses.JSON(w, http.StatusOK, responses.SubmitResponse{Token: &token})
+}
+
+func (server *Server) getRoleID(w http.ResponseWriter, r *http.Request) {
+	roleID, err := auth.ExtractRoleID(r)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	responses.JSON(w, http.StatusOK, responses.SubmitResponse{Token: token, RoleID: roleID})
+	responses.JSON(w, http.StatusOK, responses.SubmitResponse{RoleID: &roleID})
 }

@@ -5,23 +5,14 @@ import (
 	"autocredit/cmd/api/helpers/responses"
 	"autocredit/cmd/api/internal/service"
 	"autocredit/cmd/api/internal/storage"
-	"bufio"
-	"encoding/base64"
 	"io"
 	"net/http"
-	"os"
 	"strconv"
 
 	"github.com/gorilla/mux"
 )
 
 func (server *Server) createApplication(w http.ResponseWriter, r *http.Request) {
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
 	tokenID, err := auth.ExtractTokenID(r)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnauthorized, err)
@@ -32,13 +23,37 @@ func (server *Server) createApplication(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	applicationCreated, err := service.CreateApplicationService(server.DB, body, uint(tokenID))
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
+	applicationCreated, err := service.CreateApplicationService(server.DB, body, uint(tokenID))
+
 	responses.JSON(w, http.StatusCreated, applicationCreated)
+}
+
+func (server *Server) createBCCApplication(w http.ResponseWriter, r *http.Request) {
+	tokenID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, err)
+		return
+	}
+	if tokenID == 0 {
+		responses.ERROR(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	responseData, err := service.CreateBCCApplication(body)
+
+	responses.JSON(w, http.StatusCreated, responseData)
 }
 
 func (server *Server) allApplications(w http.ResponseWriter, r *http.Request) {
@@ -87,23 +102,4 @@ func (server *Server) getApplication(w http.ResponseWriter, r *http.Request) {
 	}
 
 	responses.JSON(w, http.StatusOK, applicationGotten)
-}
-
-func (server *Server) encodePDFtoBase64(w http.ResponseWriter, r *http.Request) {
-	f, err := os.Open("templates/resultMedia/outputPDF/autocredit.pdf")
-	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
-		return
-	}
-
-	reader := bufio.NewReader(f)
-	content, err := io.ReadAll(reader)
-	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
-		return
-	}
-
-	encoded := base64.StdEncoding.EncodeToString(content)
-
-	responses.JSON(w, http.StatusOK, encoded)
 }

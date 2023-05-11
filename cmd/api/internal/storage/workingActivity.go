@@ -29,3 +29,24 @@ func (w *WorkingActivity) All(db *gorm.DB) (*[]WorkingActivity, error) {
 
 	return &workingActivities, nil
 }
+
+func (w *WorkingActivity) Update(db *gorm.DB, id int) (*WorkingActivity, error) {
+	err := db.Debug().Model(&WorkingActivity{}).Where("id = ?", id).Updates(&w).Error
+	if err != nil {
+		return nil, err
+	}
+	return w, nil
+}
+
+func (w *WorkingActivity) SoftDelete(db *gorm.DB, id uint) (int64, error) {
+	err := db.Debug().Model(&WorkingActivity{}).Where("id = ?", id).Take(&WorkingActivity{}).Select(clause.Associations).Delete(&WorkingActivity{})
+	if err != nil {
+		return 0, err.Error
+	}
+
+	if err.Error != nil {
+		return 0, err.Error
+	}
+
+	return err.RowsAffected, nil
+}

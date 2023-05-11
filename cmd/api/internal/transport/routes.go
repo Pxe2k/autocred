@@ -14,6 +14,7 @@ func (server *Server) InitializeRoutes() {
 	authApi.HandleFunc("/create", middlewares.SetMiddlewareJSON(server.createUser)).Methods("POST")
 	authApi.HandleFunc("/login", middlewares.SetMiddlewareJSON(server.login)).Methods("POST")
 	authApi.HandleFunc("/submit", middlewares.SetMiddlewareJSON(server.submit)).Methods("POST")
+	authApi.HandleFunc("/role", middlewares.SetMiddlewareJSON(server.getRoleID)).Methods("GET")
 
 	clientApi := server.Router.PathPrefix("/api/client").Subrouter()
 
@@ -33,9 +34,9 @@ func (server *Server) InitializeRoutes() {
 	applicationApi := server.Router.PathPrefix("/api/application").Subrouter()
 
 	applicationApi.HandleFunc("/create", middlewares.SetMiddlewareJSON(server.createApplication)).Methods("POST")
+	applicationApi.HandleFunc("/create-bcc", middlewares.SetMiddlewareJSON(server.createBCCApplication)).Methods("POST")
 	applicationApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allApplications)).Methods("GET")
 	applicationApi.HandleFunc("/get/{id}", middlewares.SetMiddlewareJSON(server.getApplication)).Methods("GET")
-	applicationApi.HandleFunc("/encode", middlewares.SetMiddlewareJSON(server.encodePDFtoBase64)).Methods("POST")
 
 	bankApi := server.Router.PathPrefix("/api/bank").Subrouter()
 
@@ -52,6 +53,10 @@ func (server *Server) InitializeRoutes() {
 
 	workApi.HandleFunc("/create-activity", middlewares.SetMiddlewareJSON(server.createWorkActivity)).Methods("POST")
 	workApi.HandleFunc("/create-title", middlewares.SetMiddlewareJSON(server.createJobTitle)).Methods("POST")
+	workApi.HandleFunc("/update-activity/{id}", middlewares.SetMiddlewareJSON(server.updateWorkActivity)).Methods("PATCH")
+	workApi.HandleFunc("/update-title/{id}", middlewares.SetMiddlewareJSON(server.updateJobTitle)).Methods("PATCH")
+	workApi.HandleFunc("/delete-activity/{id}", middlewares.SetMiddlewareJSON(server.deleteWorkActivity)).Methods("DELETE")
+	workApi.HandleFunc("/delete-title/{id}", middlewares.SetMiddlewareJSON(server.deleteJobTitle)).Methods("DELETE")
 	workApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allWorkActivity)).Methods("GET")
 
 	cityApi := server.Router.PathPrefix("/api/city").Subrouter()
