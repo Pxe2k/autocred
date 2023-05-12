@@ -103,3 +103,10 @@ func (server *Server) getApplication(w http.ResponseWriter, r *http.Request) {
 
 	responses.JSON(w, http.StatusOK, applicationGotten)
 }
+
+func (server *Server) getBCCResponse(w http.ResponseWriter, r *http.Request) {
+	m := make(map[string]string)
+	m["message"] = "Accepted"
+
+	responses.JSON(w, http.StatusAccepted, m)
+}
