@@ -2,12 +2,11 @@ package transport
 
 import (
 	"autocredit/cmd/api/auth"
-	"autocredit/cmd/api/helpers/requests"
 	"autocredit/cmd/api/helpers/responses"
 	"autocredit/cmd/api/internal/service"
 	"autocredit/cmd/api/internal/storage"
 	"context"
-	"encoding/json"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"github.com/redis/go-redis/v9"
@@ -15,6 +14,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -150,52 +150,47 @@ func (server *Server) getBCCResponse(w http.ResponseWriter, r *http.Request) {
 }
 
 func (server *Server) getBankToken(w http.ResponseWriter, r *http.Request) {
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
+	var username, password string
 
-	var requestData requests.BankTokenRequestData
-
-	err = json.Unmarshal(body, &requestData)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	if requestData.Username == "" {
-		err = errors.New("bad credentials")
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-	if requestData.Username == "" {
-		err = errors.New("wrong password")
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
+	authHeader := r.Header.Get("Authorization")
+	if authHeader != "" {
+		// Check if the Authorization header starts with "Basic "
+		if strings.HasPrefix(authHeader, "Basic ") {
+			// Extract the base64-encoded username and password
+			encodedCreds := authHeader[6:]
+			creds, err := base64.StdEncoding.DecodeString(encodedCreds)
+			if err == nil {
+				// Split the decoded credentials into username and password
+				credentials := strings.SplitN(string(creds), ":", 2)
+				if len(credentials) == 2 {
+					username = credentials[0]
+					password = credentials[1]
+				}
+			}
+		}
 	}
 
 	var loginStatus bool
 
-	if requestData.Username == "bcc" {
-		if requestData.Password == "xLTx6J9ddfl9F5sTU#lG8y30o" {
+	if username == "bcc" {
+		if password == "xLTx6J9ddfl9F5sTU#lG8y30o" {
 			loginStatus = true
 		}
 	}
 
 	if loginStatus == false {
-		err = errors.New("login error")
+		err := errors.New("login error")
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	token, err := auth.CreateBankToken(requestData.Username)
+	token, err := auth.CreateBankToken(username)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	err = setToken(requestData.Username, token)
+	err = setToken(username, token)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
