@@ -37,6 +37,7 @@ func (server *Server) InitializeRoutes() {
 	applicationApi.HandleFunc("/create-bcc", middlewares.SetMiddlewareJSON(server.createBCCApplication)).Methods("POST")
 	applicationApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allApplications)).Methods("GET")
 	applicationApi.HandleFunc("/get/{id}", middlewares.SetMiddlewareJSON(server.getApplication)).Methods("GET")
+	applicationApi.HandleFunc("/token", middlewares.SetMiddlewareJSON(server.getBankToken)).Methods("GET")
 	applicationApi.HandleFunc("/response-bcc", middlewares.SetMiddlewareJSON(server.getBCCResponse)).Methods("POST")
 
 	bankApi := server.Router.PathPrefix("/api/bank").Subrouter()

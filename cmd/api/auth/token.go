@@ -24,6 +24,16 @@ func CreateToken(userID uint32, roleID *uint) (string, error) {
 	return token.SignedString([]byte(os.Getenv("API_SECRET")))
 }
 
+func CreateBankToken(bank string) (string, error) {
+	claims := jwt.MapClaims{}
+	claims["authorized"] = true
+	claims["bank"] = bank
+	claims["exp"] = time.Now().Add(time.Hour * 1).Unix() //Token expires after 1 hour
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	return token.SignedString([]byte(os.Getenv("API_SECRET")))
+}
+
 func TokenValid(r *http.Request) error {
 	tokenString := ExtractToken(r)
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {

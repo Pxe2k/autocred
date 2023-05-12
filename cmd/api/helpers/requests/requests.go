@@ -52,6 +52,7 @@ type BCCApplicationRequestData struct {
 	MsgID string `json:"msg_id"`
 }
 
-type IntegrationRequestData struct {
-	ClientID uint `json:"ClientID"`
+type BankTokenRequestData struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
 }

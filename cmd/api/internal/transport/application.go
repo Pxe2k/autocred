@@ -2,15 +2,29 @@ package transport
 
 import (
 	"autocredit/cmd/api/auth"
+	"autocredit/cmd/api/helpers/requests"
 	"autocredit/cmd/api/helpers/responses"
 	"autocredit/cmd/api/internal/service"
 	"autocredit/cmd/api/internal/storage"
+	"context"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"github.com/redis/go-redis/v9"
 	"io"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/gorilla/mux"
 )
+
+var ctx = context.Background()
+
+var Redis = redis.NewClient(&redis.Options{
+	Addr:     os.Getenv("REDIS_ADDRESS") + ":" + os.Getenv("REDIS_PORT"),
+	Password: "",
+})
 
 func (server *Server) createApplication(w http.ResponseWriter, r *http.Request) {
 	tokenID, err := auth.ExtractTokenID(r)
@@ -105,8 +119,99 @@ func (server *Server) getApplication(w http.ResponseWriter, r *http.Request) {
 }
 
 func (server *Server) getBCCResponse(w http.ResponseWriter, r *http.Request) {
+	tokenString := auth.ExtractToken(r)
+	if tokenString == "" {
+		responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("empty token"))
+		return
+	}
+
+	fmt.Println(tokenString)
+
+	val, err := Redis.Get(ctx, "bcc").Result()
+	if err == redis.Nil {
+		err = errors.New("key does not exist")
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	} else if err != nil {
+		fmt.Println(err)
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	if val != tokenString {
+		responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("wrong token"))
+		return
+	}
+
 	m := make(map[string]string)
 	m["message"] = "Accepted"
 
 	responses.JSON(w, http.StatusAccepted, m)
+}
+
+func (server *Server) getBankToken(w http.ResponseWriter, r *http.Request) {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	var requestData requests.BankTokenRequestData
+
+	err = json.Unmarshal(body, &requestData)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	if requestData.Username == "" {
+		err = errors.New("bad credentials")
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	if requestData.Username == "" {
+		err = errors.New("wrong password")
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	var loginStatus bool
+
+	if requestData.Username == "bcc" {
+		if requestData.Password == "xLTx6J9ddfl9F5sTU#lG8y30o" {
+			loginStatus = true
+		}
+	}
+
+	if loginStatus == false {
+		err = errors.New("login error")
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	token, err := auth.CreateBankToken(requestData.Username)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	err = setToken(requestData.Username, token)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	m := make(map[string]string)
+	m["message"] = token
+
+	responses.JSON(w, http.StatusAccepted, m)
+}
+
+func setToken(bank, token string) error {
+	err := Redis.Set(ctx, bank, token, 6000000000000).Err()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
