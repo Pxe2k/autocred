@@ -20,6 +20,15 @@ func (j *JobTitle) Save(db *gorm.DB) (*JobTitle, error) {
 	return j, nil
 }
 
+func (j *JobTitle) Get(db *gorm.DB, id uint) (*JobTitle, error) {
+	err := db.Debug().Model(&JobTitle{}).Where("id = ?", id).Take(j).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return j, nil
+}
+
 func (j *JobTitle) Update(db *gorm.DB, id int) (*JobTitle, error) {
 	err := db.Debug().Model(&JobTitle{}).Where("id = ?", id).Updates(&j).Error
 	if err != nil {

@@ -206,3 +206,31 @@ func (server *Server) deleteJobTitle(w http.ResponseWriter, r *http.Request) {
 
 	responses.JSON(w, http.StatusCreated, jobTitleDeleted)
 }
+
+func (server *Server) getJobTitle(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	jobTitleID, err := strconv.ParseUint(vars["id"], 10, 32)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	tokenID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
+		return
+	}
+	if tokenID == 0 {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("token is missing"))
+		return
+	}
+
+	jobTitle := storage.JobTitle{}
+	jobTitleGotten, err := jobTitle.Get(server.DB, uint(jobTitleID))
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusCreated, jobTitleGotten)
+}

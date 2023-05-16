@@ -60,6 +60,7 @@ func (server *Server) InitializeRoutes() {
 	workApi.HandleFunc("/delete-activity/{id}", middlewares.SetMiddlewareJSON(server.deleteWorkActivity)).Methods("DELETE")
 	workApi.HandleFunc("/delete-title/{id}", middlewares.SetMiddlewareJSON(server.deleteJobTitle)).Methods("DELETE")
 	workApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allWorkActivity)).Methods("GET")
+	workApi.HandleFunc("/title/{id}", middlewares.SetMiddlewareJSON(server.getJobTitle)).Methods("GET")
 
 	cityApi := server.Router.PathPrefix("/api/city").Subrouter()
 
