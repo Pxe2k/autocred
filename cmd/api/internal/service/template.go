@@ -1,6 +1,7 @@
 package service
 
 import (
+	"autocredit/cmd/api/helpers"
 	"autocredit/cmd/api/internal/storage"
 	"bytes"
 	"encoding/json"
@@ -46,7 +47,9 @@ func GeneratePdf(db *gorm.DB, body []byte, id uint) (*storage.Media, error) {
 		return &storage.Media{}, err
 	}
 
-	outputPath := "templates/resultMedia/outputPDF/" + fileName + ".pdf"
+	docNumber := helpers.RandEmailCode()
+
+	outputPath := "storage/" + fileName + docNumber + ".pdf"
 	err = r.ConvertHTMLtoPdf(outputPath)
 	if err != nil {
 		return &storage.Media{}, err

@@ -20,12 +20,14 @@ func (server *Server) generateTemplate(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
 	}
 
 	generatedPDF, err := service.GeneratePdf(server.DB, body, uint(id))
 
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
 	}
 
 	responses.JSON(w, http.StatusCreated, generatedPDF)
