@@ -23,10 +23,17 @@ type BCCTokenResponseData struct {
 	Scope       string `json:"bcc.application.private"`
 }
 
-type BCCApplicationData struct {
+type BCCResponseData struct {
 	Status    string `json:"status"`
 	Message   string `json:"message"`
 	RequestId string `json:"requestId"`
+}
+
+type EUResponseData struct {
+	OrderID string `json:"orderId"`
+	Success bool   `json:"success"`
+	Status  string `json:"status"`
+	Msg     string `json:"msg"`
 }
 
 func JSON(w http.ResponseWriter, statusCode int, data interface{}) {

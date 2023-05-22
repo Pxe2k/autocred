@@ -52,6 +52,49 @@ type BCCApplicationRequestData struct {
 	MsgID string `json:"msg_id"`
 }
 
+type EUApplicationRequestData struct {
+	Car struct {
+		Brand       string `json:"brand"`
+		Colour      string `json:"colour"`
+		Condition   string `json:"condition"`
+		Country     string `json:"country"`
+		FuelType    string `json:"fuelType"`
+		Insurance   string `json:"insurance"`
+		Model       string `json:"model"`
+		Price       string `json:"price"`
+		Type        string `json:"type"`
+		Year        string `json:"year"`
+		ChannelType string `json:"channelType"`
+	} `json:"car"`
+	City                 string `json:"city"`
+	CarCityLocation      string `json:"carCityLocation"`
+	ClientName           string `json:"clientName"`
+	DeliveryAddress      string `json:"deliveryAddress"`
+	DownpaySum           string `json:"downpaySum"`
+	Duration             string `json:"duration"`
+	Email                string `json:"email"`
+	Income               bool   `json:"income"`
+	IsPartnerOwner       bool   `json:"isPartnerOwner"`
+	Phone                string `json:"phone"`
+	StoreAddress         string `json:"storeAddress"`
+	IncomeMain           int    `json:"incomeMain"`
+	MaritalStatus        string `json:"MaritalStatus"`
+	ContactPersonName    string `json:"ContactPersonName"`
+	ContactPersonContact string `json:"ContactPersonContact"`
+	Iin                  string `json:"iin"`
+	OrderId              string `json:"orderId"`
+	Gsvp                 struct {
+		Name          string `json:"name"`
+		Ext           string `json:"ext"`
+		Base64Content string `json:"base64content"`
+	} `json:"gsvp"`
+	IdcdBack struct {
+		Name          string `json:"name"`
+		Ext           string `json:"ext"`
+		Base64Content string `json:"base64content"`
+	} `json:"idcdBack"`
+}
+
 type BankTokenRequestData struct {
 	Username string `json:"username"`
 	Password string `json:"password"`

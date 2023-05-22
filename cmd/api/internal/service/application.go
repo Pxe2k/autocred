@@ -34,34 +34,34 @@ func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (*storage.Appl
 	return createdApplication, nil
 }
 
-func CreateBCCApplication(body []byte) (responses.BCCApplicationData, error) {
+func CreateBCCApplication(body []byte) (responses.BCCResponseData, error) {
 	authToken, err := getBCCToken()
 	if err != nil {
-		return responses.BCCApplicationData{}, err
+		return responses.BCCResponseData{}, err
 	}
 
 	var requestData requests.BCCApplicationRequestData
 	err = json.Unmarshal(body, &requestData)
 	if err != nil {
-		return responses.BCCApplicationData{}, err
+		return responses.BCCResponseData{}, err
 	}
 
-	requestData.Document.File, err = encodePDFtoBase64(requestData.Document.File)
+	requestData.Document.File, err = encodeFileToBase64("templates/resultMedia/outputPDF/autocredit.pdf")
 	if err != nil {
-		return responses.BCCApplicationData{}, err
+		return responses.BCCResponseData{}, err
 	}
 
 	fmt.Println("requestData: ", requestData)
 
 	requestBody, err := json.Marshal(requestData)
 	if err != nil {
-		return responses.BCCApplicationData{}, err
+		return responses.BCCResponseData{}, err
 	}
 
 	url := os.Getenv("BCC_APPLICATION")
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
 	if err != nil {
-		return responses.BCCApplicationData{}, err
+		return responses.BCCResponseData{}, err
 	}
 
 	// Add header parameters to the request
@@ -72,21 +72,75 @@ func CreateBCCApplication(body []byte) (responses.BCCApplicationData, error) {
 	client := http.DefaultClient
 	resp, err := client.Do(req)
 	if err != nil {
-		return responses.BCCApplicationData{}, err
+		return responses.BCCResponseData{}, err
 	}
 
 	defer resp.Body.Close()
 
 	serverResponse, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return responses.BCCApplicationData{}, err
+		return responses.BCCResponseData{}, err
 	}
 
-	var responseData responses.BCCApplicationData
+	var responseData responses.BCCResponseData
 
 	err = json.Unmarshal(serverResponse, &responseData)
 	if err != nil {
-		return responses.BCCApplicationData{}, err
+		return responses.BCCResponseData{}, err
+	}
+
+	return responseData, nil
+}
+
+func CreateEUApplication(body []byte) (responses.EUResponseData, error) {
+	var requestData requests.EUApplicationRequestData
+	err := json.Unmarshal(body, &requestData)
+	if err != nil {
+		return responses.EUResponseData{}, err
+	}
+
+	requestData.Gsvp.Base64Content, err = encodeFileToBase64("templates/resultMedia/outputPDF/autocredit.pdf")
+	if err != nil {
+		return responses.EUResponseData{}, err
+	}
+	requestData.IdcdBack.Base64Content, err = encodeFileToBase64("eu-bank.jpg")
+	if err != nil {
+		return responses.EUResponseData{}, err
+	}
+
+	requestBody, err := json.Marshal(requestData)
+	if err != nil {
+		return responses.EUResponseData{}, err
+	}
+
+	url := os.Getenv("EU_APPLICATION")
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
+	if err != nil {
+		return responses.EUResponseData{}, err
+	}
+
+	// Add header parameters to the request
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("x-eub-token", os.Getenv("EU_TOKEN"))
+
+	client := http.DefaultClient
+	resp, err := client.Do(req)
+	if err != nil {
+		return responses.EUResponseData{}, err
+	}
+
+	defer resp.Body.Close()
+
+	serverResponse, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return responses.EUResponseData{}, err
+	}
+
+	var responseData responses.EUResponseData
+
+	err = json.Unmarshal(serverResponse, &responseData)
+	if err != nil {
+		return responses.EUResponseData{}, err
 	}
 
 	return responseData, nil
@@ -129,8 +183,8 @@ func getBCCToken() (string, error) {
 	return respData.AccessToken, nil
 }
 
-func encodePDFtoBase64(filePath string) (string, error) {
-	f, err := os.Open("templates/resultMedia/outputPDF/autocredit.pdf")
+func encodeFileToBase64(filePath string) (string, error) {
+	f, err := os.Open(filePath)
 	if err != nil {
 		return "error", err
 	}

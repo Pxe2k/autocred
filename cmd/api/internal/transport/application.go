@@ -91,6 +91,28 @@ func (server *Server) allApplications(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, applications)
 }
 
+func (server *Server) createEUApplication(w http.ResponseWriter, r *http.Request) {
+	tokenID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, err)
+		return
+	}
+	if tokenID == 0 {
+		responses.ERROR(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	responseData, err := service.CreateEUApplication(body)
+
+	responses.JSON(w, http.StatusCreated, responseData)
+}
+
 func (server *Server) getApplication(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.ParseUint(vars["id"], 10, 32)
