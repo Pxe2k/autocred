@@ -1,13 +1,28 @@
 package responses
 
 import (
+	"autocredit/cmd/api/internal/storage"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 type LoginResponse struct {
 	Code string `json:"code"`
+}
+
+type UnauthorizedUserResponseData struct {
+	ID                 uint                        `json:"ID"`
+	TypeOfClient       string                      `json:"typeOfClient"` // Тип клиента
+	FirstName          string                      `json:"firstName"`
+	MiddleName         string                      `json:"middleName"`
+	LastName           *string                     `json:"lastName,omitempty"`
+	BirthDate          string                      `json:"birthDate"`
+	Phone              string                      `json:"phone"` // Телефон
+	Document           *storage.Document           `json:"document,omitempty"`
+	ResidentialAddress *storage.ResidentialAddress `json:"residentialAddress,omitempty"` // Адрес проживания
+	CreatedAt          time.Time                   `json:"createdAt"`
 }
 
 type SubmitResponse struct {

@@ -72,6 +72,7 @@ type EUApplicationRequestData struct {
 	DeliveryAddress      string `json:"deliveryAddress"`
 	DownpaySum           string `json:"downpaySum"`
 	Duration             string `json:"duration"`
+	DownPayment          uint   `json:"downpayment"`
 	Email                string `json:"email"`
 	Income               bool   `json:"income"`
 	IsPartnerOwner       bool   `json:"isPartnerOwner"`

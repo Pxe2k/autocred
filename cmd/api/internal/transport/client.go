@@ -70,11 +70,11 @@ func (server *Server) getClient(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tokenID, err := auth.ExtractTokenID(r)
-	if tokenID == 0 {
+	if err != nil {
 		responses.ERROR(w, http.StatusUnauthorized, err)
 		return
 	}
-	if err != nil {
+	if tokenID == 0 {
 		responses.ERROR(w, http.StatusUnauthorized, err)
 		return
 	}
@@ -83,6 +83,23 @@ func (server *Server) getClient(w http.ResponseWriter, r *http.Request) {
 	clientGotten, err := client.Get(server.DB, uint(id))
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	if clientGotten.UserID != uint(tokenID) {
+		responseData := responses.UnauthorizedUserResponseData{}
+		responseData.TypeOfClient = clientGotten.TypeOfClient
+		responseData.Document = clientGotten.Document
+		responseData.Phone = clientGotten.Phone
+		responseData.ID = clientGotten.ID
+		responseData.BirthDate = clientGotten.BirthDate
+		responseData.CreatedAt = clientGotten.CreatedAt
+		responseData.FirstName = clientGotten.FirstName
+		responseData.MiddleName = clientGotten.MiddleName
+		responseData.LastName = clientGotten.LastName
+		responseData.ResidentialAddress = clientGotten.ResidentialAddress
+
+		responses.JSON(w, http.StatusOK, responseData)
 		return
 	}
 
