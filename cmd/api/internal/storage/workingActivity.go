@@ -7,8 +7,7 @@ import (
 
 type WorkingActivity struct {
 	gorm.Model
-	Title     string      `json:"title"`
-	JobTitles *[]JobTitle `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"jobTitles,omitempty"`
+	Title string `json:"title"`
 }
 
 func (w *WorkingActivity) Save(db *gorm.DB) (*WorkingActivity, error) {

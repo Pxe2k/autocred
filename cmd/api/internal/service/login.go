@@ -12,15 +12,9 @@ import (
 	"github.com/redis/go-redis/v9"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	"os"
 )
 
 var ctx = context.Background()
-
-var Redis = redis.NewClient(&redis.Options{
-	Addr:     os.Getenv("REDIS_ADDRESS") + ":" + os.Getenv("REDIS_PORT"),
-	Password: "",
-})
 
 func CreateUserService(db *gorm.DB, body []byte) (*storage.User, error) {
 	requestData := requests.UserRequestData{}
@@ -69,18 +63,7 @@ func SignIn(phone, password string, db *gorm.DB) (string, error) {
 		return "error", err
 	}
 
-	authCode, err := generateCode(phone)
-	if err != nil {
-		return "error", err
-	}
-
-	return authCode, nil
-}
-
-func generateCode(phone string) (string, error) {
-	authCode := helpers.RandEmailCode()
-
-	err := Redis.Set(ctx, phone, authCode, 6000000000000).Err()
+	authCode, err := helpers.GenerateCode(phone)
 	if err != nil {
 		return "error", err
 	}
@@ -103,7 +86,7 @@ func CreateToken(db *gorm.DB, body []byte) (string, error) {
 		return "error", err
 	}
 
-	val, err := Redis.Get(ctx, requestData.Phone).Result()
+	val, err := helpers.Redis.Get(helpers.Ctx, requestData.Phone).Result()
 	if err == redis.Nil {
 		fmt.Println("key does not exist")
 		return "key does not exist", err
