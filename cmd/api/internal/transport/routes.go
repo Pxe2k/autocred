@@ -23,7 +23,8 @@ func (server *Server) InitializeRoutes() {
 	clientApi.HandleFunc("/filter", middlewares.SetMiddlewareJSON(server.allClients)).Methods("GET")
 	clientApi.HandleFunc("/{id}", middlewares.SetMiddlewareJSON(server.getClient)).Methods("GET")
 	clientApi.HandleFunc("/upload-avatar/{id}", middlewares.SetMiddlewareJSON(server.uploadAvatar)).Methods("PUT")
-	clientApi.HandleFunc("/edit/{id}", middlewares.SetMiddlewareJSON(server.updateClient)).Methods("PATCH")
+	clientApi.HandleFunc("/otp", middlewares.SetMiddlewareJSON(server.generateClientOTP)).Methods("POST")
+	clientApi.HandleFunc("/submit", middlewares.SetMiddlewareJSON(server.submitClientOTP)).Methods("PATCH")
 
 	pledgeApi := server.Router.PathPrefix("/api/pledge").Subrouter()
 
@@ -54,13 +55,9 @@ func (server *Server) InitializeRoutes() {
 	workApi := server.Router.PathPrefix("/api/work").Subrouter()
 
 	workApi.HandleFunc("/create-activity", middlewares.SetMiddlewareJSON(server.createWorkActivity)).Methods("POST")
-	workApi.HandleFunc("/create-title", middlewares.SetMiddlewareJSON(server.createJobTitle)).Methods("POST")
 	workApi.HandleFunc("/update-activity/{id}", middlewares.SetMiddlewareJSON(server.updateWorkActivity)).Methods("PATCH")
-	workApi.HandleFunc("/update-title/{id}", middlewares.SetMiddlewareJSON(server.updateJobTitle)).Methods("PATCH")
 	workApi.HandleFunc("/delete-activity/{id}", middlewares.SetMiddlewareJSON(server.deleteWorkActivity)).Methods("DELETE")
-	workApi.HandleFunc("/delete-title/{id}", middlewares.SetMiddlewareJSON(server.deleteJobTitle)).Methods("DELETE")
 	workApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allWorkActivity)).Methods("GET")
-	workApi.HandleFunc("/title/{id}", middlewares.SetMiddlewareJSON(server.getJobTitle)).Methods("GET")
 
 	cityApi := server.Router.PathPrefix("/api/city").Subrouter()
 

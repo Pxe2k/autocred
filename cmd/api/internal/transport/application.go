@@ -2,29 +2,21 @@ package transport
 
 import (
 	"autocredit/cmd/api/auth"
+	"autocredit/cmd/api/helpers"
 	"autocredit/cmd/api/helpers/responses"
 	"autocredit/cmd/api/internal/service"
 	"autocredit/cmd/api/internal/storage"
-	"context"
 	"encoding/base64"
 	"errors"
 	"fmt"
 	"github.com/redis/go-redis/v9"
 	"io"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 
 	"github.com/gorilla/mux"
 )
-
-var ctx = context.Background()
-
-var Redis = redis.NewClient(&redis.Options{
-	Addr:     os.Getenv("REDIS_ADDRESS") + ":" + os.Getenv("REDIS_PORT"),
-	Password: "",
-})
 
 func (server *Server) createApplication(w http.ResponseWriter, r *http.Request) {
 	tokenID, err := auth.ExtractTokenID(r)
@@ -127,7 +119,7 @@ func (server *Server) getBCCResponse(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(tokenString)
 
-	val, err := Redis.Get(ctx, "bcc").Result()
+	val, err := helpers.Redis.Get(helpers.Ctx, "bcc").Result()
 	if err == redis.Nil {
 		err = errors.New("key does not exist")
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
@@ -190,7 +182,7 @@ func (server *Server) getBankToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = setToken(username, token)
+	err = helpers.SetToken(username, token)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
@@ -200,13 +192,4 @@ func (server *Server) getBankToken(w http.ResponseWriter, r *http.Request) {
 	m["message"] = token
 
 	responses.JSON(w, http.StatusAccepted, m)
-}
-
-func setToken(bank, token string) error {
-	err := Redis.Set(ctx, bank, token, 6000000000000).Err()
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
