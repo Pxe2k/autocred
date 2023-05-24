@@ -2,10 +2,12 @@ package service
 
 import (
 	"autocredit/cmd/api/helpers"
+	"autocredit/cmd/api/helpers/requests"
 	"autocredit/cmd/api/internal/storage"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 	"io"
 	"mime/multipart"
@@ -81,67 +83,48 @@ func UploadAvatarForClient(db *gorm.DB, uid uint32, file multipart.File, handler
 	return updatedClient, nil
 }
 
-func UpdateClientInfo(db *gorm.DB, body []byte, id uint, userID uint) (*storage.Client, error) {
+func GenerateClientOTP(body []byte) (string, error) {
+	requestData := requests.OTPRequestData{}
+	err := json.Unmarshal(body, &requestData)
+	if err != nil {
+		return "error", err
+	}
+
+	code, err := helpers.GenerateCode(requestData.Phone)
+	if err != nil {
+		return "error", err
+	}
+
+	return code, nil
+}
+
+func SubmitClientOTP(db *gorm.DB, body []byte, id uint) (string, error) {
+	requestData := requests.OTPRequestData{}
+	err := json.Unmarshal(body, &requestData)
+	if err != nil {
+		return "error", err
+	}
+
+	val, err := helpers.Redis.Get(helpers.Ctx, requestData.Phone).Result()
+	if err == redis.Nil {
+		fmt.Println("key does not exist")
+		return "key does not exist", err
+	} else if err != nil {
+		fmt.Println(err)
+		return "error ", err
+	}
+
+	if val != requestData.Code {
+		return "wrong code", errors.New("code != value")
+	}
+
 	client := storage.Client{}
-	err := json.Unmarshal(body, &client)
+	client.UserID = id
+
+	err = client.UpdateUserID(db, client)
 	if err != nil {
-		return nil, err
+		return "error", err
 	}
 
-	client.ID = id
-	client.UserID = userID
-	updatedClient, err := client.Update(*db, client)
-	if err != nil {
-		return nil, err
-	}
-
-	return updatedClient, nil
-}
-
-func UpdateMaritalStatus(db *gorm.DB, body []byte, id uint) (*storage.MaritalStatus, error) {
-	maritalStatus := storage.MaritalStatus{}
-	err := json.Unmarshal(body, &maritalStatus)
-	if err != nil {
-		return nil, err
-	}
-
-	maritalStatus.ID = id
-	updatedMaritalStatus, err := maritalStatus.Update(*db, maritalStatus)
-	if err != nil {
-		return nil, err
-	}
-
-	return updatedMaritalStatus, nil
-}
-
-func UpdateDocument(db *gorm.DB, body []byte, id uint) (*storage.Document, error) {
-	document := storage.Document{}
-	err := json.Unmarshal(body, &document)
-	if err != nil {
-		return nil, err
-	}
-
-	document.ID = id
-	updatedDocument, err := document.Update(*db, document)
-	if err != nil {
-		return nil, err
-	}
-
-	return updatedDocument, nil
-}
-
-func UpdateWorkPlace(db *gorm.DB, body []byte, id uint) (*storage.WorkPlaceInfo, error) {
-	workPlace := storage.WorkPlaceInfo{}
-	err := json.Unmarshal(body, &workPlace)
-	if err != nil {
-		return nil, err
-	}
-
-	workPlace.ID = id
-	updatedWorkPlace, err := workPlace.Update(*db, workPlace)
-	if err != nil {
-		return nil, err
-	}
-
-	return updatedWorkPlace, nil
+	return "success", nil
 }

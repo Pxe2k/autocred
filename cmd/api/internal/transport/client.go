@@ -156,14 +156,7 @@ func (server *Server) issuingAuthorityAll(w http.ResponseWriter, r *http.Request
 
 }
 
-func (server *Server) updateClient(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	clientID, err := strconv.ParseUint(vars["id"], 10, 32)
-	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
-		return
-	}
-
+func (server *Server) generateClientOTP(w http.ResponseWriter, r *http.Request) {
 	tokenID, err := auth.ExtractTokenID(r)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
@@ -180,11 +173,43 @@ func (server *Server) updateClient(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	updatedClient, err := service.UpdateClientInfo(server.DB, body, uint(clientID), uint(tokenID))
+	code, err := service.GenerateClientOTP(body)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	responses.JSON(w, http.StatusAccepted, updatedClient)
+	responseData := make(map[string]string)
+	responseData["code"] = code
+
+	responses.JSON(w, http.StatusAccepted, responseData)
+}
+
+func (server *Server) submitClientOTP(w http.ResponseWriter, r *http.Request) {
+	tokenID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
+		return
+	}
+	if tokenID == 0 {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("token is missing"))
+		return
+	}
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	status, err := service.SubmitClientOTP(server.DB, body, uint(tokenID))
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	responseData := make(map[string]string)
+	responseData["message"] = status
+
+	responses.JSON(w, http.StatusAccepted, responseData)
 }

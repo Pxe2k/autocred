@@ -112,11 +112,11 @@ func (c *Client) UpdateAvatar(db *gorm.DB, id uint) (*Client, error) {
 	return c, nil
 }
 
-func (c *Client) Update(db gorm.DB, client Client) (*Client, error) {
-	err := db.Debug().Session(&gorm.Session{FullSaveAssociations: true}).Save(&client).Error
+func (c *Client) UpdateUserID(db *gorm.DB, client Client) error {
+	err := db.Debug().Model(&Client{}).Where("phone = ?", client.Phone).Update("user_id", client.UserID).Save(&client).Error
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return &client, nil
+	return nil
 }

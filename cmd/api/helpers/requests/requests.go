@@ -100,3 +100,8 @@ type BankTokenRequestData struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
+
+type OTPRequestData struct {
+	Phone string `json:"phone"`
+	Code  string `json:"code"`
+}
