@@ -19,7 +19,7 @@ type User struct {
 	JobTitle       string        `gorm:"size:100;" json:"jobTitle"`
 	OrderNumber    string        `gorm:"size:100;" json:"orderNumber"`
 	Phone          string        `gorm:"size:100;not null;" json:"phone"`
-	WorkPhone      string        `gorm:"size:100;not null;" json:"workPhone"`
+	WorkPhone      string        `gorm:"size:100;" json:"workPhone"`
 	Password       string        `gorm:"size:100;"`
 	AutoDealerID   *uint         `json:"autoDealerID,omitempty"`
 	RoleID         *uint         `gorm:"default:1;" json:"roleID,omitempty"`
