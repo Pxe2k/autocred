@@ -11,14 +11,20 @@ import (
 
 type User struct {
 	gorm.Model
-	Email        string        `gorm:"size:100;unique"`
-	FullName     string        `gorm:"size:100;" json:"fullName"`
-	Phone        string        `gorm:"size:100;not null;unique"`
-	Address      string        `gorm:"size:100;"`
-	Password     string        `gorm:"size:100;"`
-	RoleID       *uint         `gorm:"default:2;" json:"roleID,omitempty"`
-	Role         Role          `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"role"`
-	Applications []Application `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"applications"`
+	Email          string        `gorm:"size:100;unique"`
+	FullName       string        `gorm:"size:100;" json:"fullName"`
+	IIN            string        `gorm:"size:100;" json:"iin"`
+	Document       string        `gorm:"size:100;" json:"document"`
+	DocumentNumber string        `gorm:"size:100;" json:"documentNumber"`
+	JobTitle       string        `gorm:"size:100;" json:"jobTitle"`
+	OrderNumber    string        `gorm:"size:100;" json:"orderNumber"`
+	Phone          string        `gorm:"size:100;not null;" json:"phone"`
+	WorkPhone      string        `gorm:"size:100;not null;" json:"workPhone"`
+	Password       string        `gorm:"size:100;"`
+	AutoDealerID   *uint         `json:"autoDealerID,omitempty"`
+	RoleID         *uint         `gorm:"default:1;" json:"roleID,omitempty"`
+	Role           Role          `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"role"`
+	Applications   []Application `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"applications"`
 }
 
 func Hash(password string) ([]byte, error) {

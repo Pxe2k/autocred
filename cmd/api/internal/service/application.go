@@ -146,6 +146,60 @@ func CreateEUApplication(body []byte) (responses.EUResponseData, error) {
 	return responseData, nil
 }
 
+func CreateShinhanApplication(body []byte) (responses.EUResponseData, error) {
+	var requestData requests.EUApplicationRequestData
+	err := json.Unmarshal(body, &requestData)
+	if err != nil {
+		return responses.EUResponseData{}, err
+	}
+
+	requestData.Gsvp.Base64Content, err = encodeFileToBase64("templates/resultMedia/outputPDF/autocredit.pdf")
+	if err != nil {
+		return responses.EUResponseData{}, err
+	}
+	requestData.IdcdBack.Base64Content, err = encodeFileToBase64("eu-bank.jpg")
+	if err != nil {
+		return responses.EUResponseData{}, err
+	}
+
+	requestBody, err := json.Marshal(requestData)
+	if err != nil {
+		return responses.EUResponseData{}, err
+	}
+
+	url := os.Getenv("EU_APPLICATION")
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
+	if err != nil {
+		return responses.EUResponseData{}, err
+	}
+
+	// Add header parameters to the request
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("x-eub-token", os.Getenv("EU_TOKEN"))
+
+	client := http.DefaultClient
+	resp, err := client.Do(req)
+	if err != nil {
+		return responses.EUResponseData{}, err
+	}
+
+	defer resp.Body.Close()
+
+	serverResponse, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return responses.EUResponseData{}, err
+	}
+
+	var responseData responses.EUResponseData
+
+	err = json.Unmarshal(serverResponse, &responseData)
+	if err != nil {
+		return responses.EUResponseData{}, err
+	}
+
+	return responseData, nil
+}
+
 func getBCCToken() (string, error) {
 	var respData responses.BCCTokenResponseData
 

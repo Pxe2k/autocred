@@ -9,11 +9,12 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"github.com/redis/go-redis/v9"
 	"io"
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/redis/go-redis/v9"
 
 	"github.com/gorilla/mux"
 )
@@ -101,6 +102,28 @@ func (server *Server) createEUApplication(w http.ResponseWriter, r *http.Request
 	}
 
 	responseData, err := service.CreateEUApplication(body)
+
+	responses.JSON(w, http.StatusCreated, responseData)
+}
+
+func (server *Server) createShinhanApplication(w http.ResponseWriter, r *http.Request) {
+	tokenID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, err)
+		return
+	}
+	if tokenID == 0 {
+		responses.ERROR(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	responseData, err := service.CreateShinhanApplication(body)
 
 	responses.JSON(w, http.StatusCreated, responseData)
 }

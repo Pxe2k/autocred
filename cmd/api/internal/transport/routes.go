@@ -65,6 +65,14 @@ func (server *Server) InitializeRoutes() {
 	cityApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allCity)).Methods("GET")
 	cityApi.HandleFunc("/{id}", middlewares.SetMiddlewareJSON(server.findCityById)).Methods("GET")
 
+	autoDealerApi := server.Router.PathPrefix("/api/autodealer").Subrouter()
+
+	autoDealerApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allAutoDealers)).Methods("GET")
+	autoDealerApi.HandleFunc("/{id}", middlewares.SetMiddlewareJSON(server.getAutoDealer)).Methods("GET")
+	autoDealerApi.HandleFunc("/delete/{id}", middlewares.SetMiddlewareJSON(server.deleteAutoDealer)).Methods("DELETE")
+	autoDealerApi.HandleFunc("/update/{id}", middlewares.SetMiddlewareJSON(server.updateAutoDealer)).Methods("PATCH")
+	autoDealerApi.HandleFunc("/create", middlewares.SetMiddlewareJSON(server.createAutoDealer)).Methods("POST")
+
 	templateApi := server.Router.PathPrefix("/api/template").Subrouter()
 	templateApi.HandleFunc("/create/{id}", middlewares.SetMiddlewareJSON(server.generateTemplate)).Methods("POST")
 

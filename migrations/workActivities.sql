@@ -15,30 +15,3 @@ INSERT INTO working_activities (title) VALUES ('Издательская дея�
 INSERT INTO working_activities (title) VALUES ('Растениеводство');
 INSERT INTO working_activities (title) VALUES ('Животноводство');
 
-
-INSERT INTO job_titles (title, working_activity_id) VALUES ('Директор', 1);
-INSERT INTO job_titles (title, working_activity_id) VALUES ('Охранник', 1);
-INSERT INTO job_titles (title, working_activity_id) VALUES ('Директор', 2);
-INSERT INTO job_titles (title, working_activity_id) VALUES ('Охранник', 2);
-INSERT INTO job_titles (title, working_activity_id) VALUES ('Директор', 3);
-INSERT INTO job_titles (title, working_activity_id) VALUES ('Охранник', 3);
-INSERT INTO job_titles (title, working_activity_id) VALUES ('Директор', 4);
-INSERT INTO job_titles (title, working_activity_id) VALUES ('Охранник', 4);
-INSERT INTO job_titles (title, working_activity_id) VALUES ('Директор', 5);
-INSERT INTO job_titles (title, working_activity_id) VALUES ('Охранник', 5);
-INSERT INTO job_titles (title, working_activity_id) VALUES ('Директор', 6);
-INSERT INTO job_titles (title, working_activity_id) VALUES ('Охранник', 6);
-INSERT INTO job_titles (title, working_activity_id) VALUES ('Директор', 7);
-INSERT INTO job_titles (title, working_activity_id) VALUES ('Охранник', 7);
-INSERT INTO job_titles (title, working_activity_id) VALUES ('Директор', 8);
-INSERT INTO job_titles (title, working_activity_id) VALUES ('Охранник', 8);
-INSERT INTO job_titles (title, working_activity_id) VALUES ('Директор', 9);
-INSERT INTO job_titles (title, working_activity_id) VALUES ('Охранник', 9);
-INSERT INTO job_titles (title, working_activity_id) VALUES ('Директор', 10);
-INSERT INTO job_titles (title, working_activity_id) VALUES ('Охранник', 10);
-INSERT INTO job_titles (title, working_activity_id) VALUES ('Директор', 11);
-INSERT INTO job_titles (title, working_activity_id) VALUES ('Охранник', 11);
-INSERT INTO job_titles (title, working_activity_id) VALUES ('Директор', 12);
-INSERT INTO job_titles (title, working_activity_id) VALUES ('Охранник', 12);
-INSERT INTO job_titles (title, working_activity_id) VALUES ('Директор', 13);
-INSERT INTO job_titles (title, working_activity_id) VALUES ('Охранник', 13);

@@ -3,13 +3,14 @@ package transport
 import (
 	"autocredit/cmd/api/internal/storage"
 	"fmt"
+	"log"
+	"net/http"
+	"os"
+
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"log"
-	"net/http"
-	"os"
 )
 
 type Server struct {
@@ -31,6 +32,7 @@ func (server *Server) Initialize(Dbdriver, DbUser, DbPassword, DbPort, DbHost, D
 	}
 
 	server.DB.Debug().AutoMigrate(
+		storage.AutoDealer{},
 		storage.Role{},
 		storage.User{},
 		storage.Client{},
