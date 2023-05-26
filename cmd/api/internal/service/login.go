@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+
 	"github.com/redis/go-redis/v9"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -17,17 +18,11 @@ import (
 var ctx = context.Background()
 
 func CreateUserService(db *gorm.DB, body []byte) (*storage.User, error) {
-	requestData := requests.UserRequestData{}
-
-	err := json.Unmarshal(body, &requestData)
+	user := storage.User{}
+	err := json.Unmarshal(body, &user)
 	if err != nil {
 		return &storage.User{}, err
 	}
-
-	user := storage.User{}
-	user.Email = requestData.Email
-	user.Phone = requestData.Phone
-	user.Password = requestData.Password
 
 	if user.Email == "" {
 		return &storage.User{}, err
