@@ -7,13 +7,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/redis/go-redis/v9"
-	"gorm.io/gorm"
 	"io"
 	"mime/multipart"
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/redis/go-redis/v9"
+	"gorm.io/gorm"
 )
 
 func CreateClientService(db *gorm.DB, body []byte, uid uint) (*storage.Client, error) {
@@ -24,6 +25,11 @@ func CreateClientService(db *gorm.DB, body []byte, uid uint) (*storage.Client, e
 	}
 
 	client.UserID = uid
+	if client.Country == "Kazakhstan" {
+		client.Residency = true
+	} else {
+		client.Residency = false
+	}
 
 	createdClient, err := client.Save(db)
 	if err != nil {

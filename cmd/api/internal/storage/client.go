@@ -14,7 +14,7 @@ type Client struct {
 	Sex                 string               `gorm:"size:100;" json:"sex"`       // Пол
 	BirthDate           string               `gorm:"size:100;" json:"birthDate"` // ДР
 	Country             string               `gorm:"size:100;" json:"country"`
-	Residency           string               `gorm:"size:100;" json:"residency"` // Резиденство
+	Residency           bool                 `gorm:"size:100;" json:"residency"` // Резиденство
 	Bin                 string               `gorm:"size:100;" json:"bin"`       // ИИН
 	Phone               string               `gorm:"size:100;" json:"phone"`     // Телефон
 	SecondPhone         string               `gorm:"size:100;" json:"secondPhone"`
