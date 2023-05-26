@@ -97,6 +97,7 @@ func (server *Server) getClient(w http.ResponseWriter, r *http.Request) {
 		responseData.FirstName = clientGotten.FirstName
 		responseData.MiddleName = clientGotten.MiddleName
 		responseData.LastName = clientGotten.LastName
+		responseData.Status = false
 		responseData.ResidentialAddress = clientGotten.ResidentialAddress
 
 		responses.JSON(w, http.StatusOK, responseData)

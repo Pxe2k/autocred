@@ -12,7 +12,9 @@ import (
 type User struct {
 	gorm.Model
 	Email          string        `gorm:"size:100;unique"`
-	FullName       string        `gorm:"size:100;" json:"fullName"`
+	FirstName      string        `gorm:"size:100;" json:"firstName"`
+	MiddleName     string        `gorm:"size:100;" json:"middleName"`
+	LastName       *string       `gorm:"size:100;" json:"lastName,omitempty"`
 	IIN            string        `gorm:"size:100;" json:"iin"`
 	Document       string        `gorm:"size:100;" json:"document"`
 	DocumentNumber string        `gorm:"size:100;" json:"documentNumber"`
@@ -22,7 +24,7 @@ type User struct {
 	WorkPhone      string        `gorm:"size:100;" json:"workPhone"`
 	Password       string        `gorm:"size:100;"`
 	AutoDealerID   *uint         `json:"autoDealerID,omitempty"`
-	RoleID         *uint         `gorm:"default:1;" json:"roleID,omitempty"`
+	RoleID         *uint         `json:"roleID,omitempty"`
 	Role           Role          `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"role"`
 	Applications   []Application `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"applications"`
 }

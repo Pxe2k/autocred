@@ -11,7 +11,6 @@ type Application struct {
 	Subsidy          bool              `json:"subsidy"`                      // Субсудия
 	CarPrice         int               `json:"carPrice"`                     // Цена авто
 	InitFee          int               `json:"initFee"`                      // Первоначалка
-	TrenchesNumber   int               `json:"trenchesNumber"`               // Кол-во траншей
 	LoanPercentage   int               `json:"loanPercentage"`               // Процент кредита
 	BankApplications []BankApplication `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bankApplications"`
 	UserID           uint              `json:"userID"`

@@ -5,6 +5,7 @@ import "gorm.io/gorm"
 type BankApplication struct {
 	gorm.Model
 	Bank            string `gorm:"size:100;" json:"bank"`
+	TrenchesNumber  int    `json:"trenchesNumber"`  // Кол-во траншей
 	CreditProductID uint   `json:"creditProductID"` // Кредитный продукт
 	KaskoID         *uint  `json:"kaskoID,omitempty"`
 	RoadHelpID      *uint  `json:"roadHelpID,omitempty"`

@@ -22,6 +22,7 @@ type UnauthorizedUserResponseData struct {
 	Phone              string                      `json:"phone"` // Телефон
 	Document           *storage.Document           `json:"document,omitempty"`
 	ResidentialAddress *storage.ResidentialAddress `json:"residentialAddress,omitempty"` // Адрес проживания
+	Status             bool                        `json:"status"`
 	CreatedAt          time.Time                   `json:"createdAt"`
 }
 
