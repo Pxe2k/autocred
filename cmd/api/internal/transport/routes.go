@@ -104,4 +104,9 @@ func (server *Server) InitializeRoutes() {
 
 	documentApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.issuingAuthorityAll)).Methods("GET")
 	documentApi.HandleFunc("/create", middlewares.SetMiddlewareJSON(server.uploadFile)).Methods("POST")
+
+	userApi := server.Router.PathPrefix("/api/user").Subrouter()
+
+	userApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allUsers)).Methods("GET")
+	userApi.HandleFunc("/{id}", middlewares.SetMiddlewareJSON(server.getUser)).Methods("GET")
 }

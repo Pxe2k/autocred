@@ -7,7 +7,6 @@ type BonusInfo struct {
 	AmountIncome                       int     `json:"amountIncome"`                         // Сумма доходов
 	AmountExpenses                     int     `json:"amountExpenses"`                       // Сумма расходов
 	NetIncome                          int     `json:"netIncome"`                            // Чистый доход
-	RecentBankContacts                 bool    `json:"recentBankContacts"`                   // Обращались ли вы в банки за последние 3 мес
 	BankTitle                          *string `gorm:"size:100;" json:"bankTitle,omitempty"` // Название банков
 	Returnee                           bool    `json:"returnee"`                             // Статус Оралман
 	ThirdPersons                       bool    `json:"thirdPerson"`                          // Проведение операции клиентом под руководством третьего лица и/или лиц присутствующих при операции

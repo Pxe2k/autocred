@@ -24,6 +24,7 @@ type User struct {
 	WorkPhone      string        `gorm:"size:100;" json:"workPhone"`
 	Password       string        `gorm:"size:100;"`
 	AutoDealerID   *uint         `json:"autoDealerID,omitempty"`
+	AutoDealer     AutoDealer    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"autodealer"`
 	RoleID         *uint         `json:"roleID,omitempty"`
 	Role           Role          `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"role"`
 	Applications   []Application `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"applications"`
@@ -77,7 +78,7 @@ func (u *User) Validate(action string) error {
 	}
 }
 
-func (u *User) SaveUser(db *gorm.DB) (*User, error) {
+func (u *User) Save(db *gorm.DB) (*User, error) {
 	err := u.BeforeSave()
 	if err != nil {
 		return &User{}, err
@@ -98,4 +99,14 @@ func (u *User) Get(db *gorm.DB, uid uint) (*User, error) {
 	errors.Is(err, gorm.ErrRecordNotFound)
 
 	return u, nil
+}
+
+func (u *User) All(db *gorm.DB) (*[]User, error) {
+	var users []User
+	err := db.Debug().Model(&User{}).Preload("AutoDealer").Preload("Role").Limit(100).Find(&users).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &users, nil
 }

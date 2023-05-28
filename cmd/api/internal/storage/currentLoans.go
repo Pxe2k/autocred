@@ -4,6 +4,7 @@ import "gorm.io/gorm"
 
 type CurrentLoans struct {
 	gorm.Model
+	OverdraftAmount     int    `json:"overdraftAmount"` // Сумма ОД по текущим кредитам
 	BankTitle           string `gorm:"size:100;" json:"bankTitle"`
 	AgreementNumber     string `gorm:"size:100;" json:"agreementNumber"`
 	Sum                 int    `json:"sum"`

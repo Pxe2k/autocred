@@ -14,9 +14,9 @@ type Client struct {
 	Sex                 string               `gorm:"size:100;" json:"sex"`       // Пол
 	BirthDate           string               `gorm:"size:100;" json:"birthDate"` // ДР
 	Country             string               `gorm:"size:100;" json:"country"`
-	Residency           bool                 `gorm:"size:100;" json:"residency"` // Резиденство
-	Bin                 string               `gorm:"size:100;" json:"bin"`       // ИИН
-	Phone               string               `gorm:"size:100;" json:"phone"`     // Телефон
+	Residency           bool                 `gorm:"size:100;" json:"residency"`    // Резиденство
+	Bin                 string               `gorm:"size:100;" json:"bin"`          // ИИН
+	Phone               string               `gorm:"size:100,unique;" json:"phone"` // Телефон
 	SecondPhone         string               `gorm:"size:100;" json:"secondPhone"`
 	Email               string               `gorm:"size:100;" json:"email"`     // Email
 	Education           string               `gorm:"size:100;" json:"education"` // Образование
@@ -25,8 +25,7 @@ type Client struct {
 	User                *User                `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"user,omitempty"`
 	Document            *Document            `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"document,omitempty"`            // Документы
 	MaritalStatus       *MaritalStatus       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"maritalStatus,omitempty"`       // Семейное положение
-	WorkPlaceInfo       *WorkPlaceInfo       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"workPlaceInfo,omitempty"`       // Информация о месте работы
-	RelationWithBank    *RelationWithBank    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"relationWithBank,omitempty"`    // Отношения с банками
+	WorkPlaceInfo       *WorkPlaceInfo       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"workPlaceInfo,omitempty"`       // Информация о месте работы   // Отношения с банками
 	RegistrationAddress *RegistrationAddress `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"registrationAddress,omitempty"` // Адрес прописки
 	ResidentialAddress  *ResidentialAddress  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"residentialAddress,omitempty"`  // Адрес проживания
 	Contacts            *[]ClientContact     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"contacts,omitempty"`            // Доп. контакты
@@ -51,7 +50,7 @@ func (c *Client) Save(db *gorm.DB) (*Client, error) {
 func (c *Client) All(db *gorm.DB, fullName, sex, birthDate, userID string) (*[]Client, error) {
 	var clients []Client
 
-	query := db.Debug().Model(&Client{}).Preload("User")
+	query := db.Debug().Model(&Client{}).Preload("User").Preload("User.AutoDealer")
 
 	if fullName != "" {
 		fullNameParam := "%" + fullName + "%"
@@ -79,6 +78,8 @@ func (c *Client) All(db *gorm.DB, fullName, sex, birthDate, userID string) (*[]C
 
 func (c *Client) Get(db *gorm.DB, id uint) (*Client, error) {
 	err := db.Debug().Model(&Client{}).Where("id = ?", id).
+		Preload("User").
+		Preload("User.AutoDealer").
 		Preload("Document").
 		Preload("WorkPlaceInfo").
 		Preload("MaritalStatus").

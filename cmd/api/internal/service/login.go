@@ -28,7 +28,7 @@ func CreateUserService(db *gorm.DB, body []byte) (*storage.User, error) {
 		return &storage.User{}, err
 	}
 
-	userCreated, err := user.SaveUser(db)
+	userCreated, err := user.Save(db)
 	if err != nil {
 		return nil, err
 	}
