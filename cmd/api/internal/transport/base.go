@@ -44,7 +44,6 @@ func (server *Server) Initialize(Dbdriver, DbUser, DbPassword, DbPort, DbHost, D
 		storage.ResidentialAddress{},
 		storage.ClientContact{},
 		storage.BeneficialOwner{},
-		storage.ClientComment{},
 		storage.BonusInfo{},
 		storage.PersonalProperty{},
 		storage.CurrentLoans{},

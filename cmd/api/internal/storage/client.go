@@ -20,7 +20,8 @@ type Client struct {
 	SecondPhone         string               `gorm:"size:100;" json:"secondPhone"`
 	Email               string               `gorm:"size:100;" json:"email"`     // Email
 	Education           string               `gorm:"size:100;" json:"education"` // Образование
-	Image               string               `gorm:"size:100;" json:"image"`     // Аватарка
+	Comment             string               `json:"comment"`
+	Image               string               `gorm:"size:100;" json:"image"` // Аватарка
 	UserID              uint                 `json:"userId"`
 	User                *User                `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"user,omitempty"`
 	Document            *Document            `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"document,omitempty"`            // Документы
@@ -33,8 +34,7 @@ type Client struct {
 	PersonalProperty    *[]PersonalProperty  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"personalProperty,omitempty"`    // Личное имущество
 	CurrentLoans        *[]CurrentLoans      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"currentLoans,omitempty"`        // Действующие кредиты и займы
 	BeneficialOwners    *[]BeneficialOwner   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"beneficialOwners,omitempty"`    // Бенефициарные владельцы
-	ClientComment       *ClientComment       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"clientComment,omitempty"`
-	Pledges             *[]Pledge            `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"pledges,omitempty"` // Залоги
+	Pledges             *[]Pledge            `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"pledges,omitempty"`             // Залоги
 	Documents           *[]Media             `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"documents"`
 }
 

@@ -3,6 +3,7 @@ package transport
 import (
 	"autocredit/cmd/api/auth"
 	"autocredit/cmd/api/helpers/responses"
+	"autocredit/cmd/api/internal/service"
 	"autocredit/cmd/api/internal/storage"
 	"encoding/json"
 	"errors"
@@ -13,26 +14,74 @@ import (
 )
 
 func (server *Server) createBank(w http.ResponseWriter, r *http.Request) {
-	body, err := io.ReadAll(r.Body)
+	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+	file, handler, err := r.FormFile("image")
+	if err != nil {
+		retrErr := errors.New("error while uploading file")
+		responses.ERROR(w, http.StatusInternalServerError, retrErr)
+		return
+	}
+	title := r.FormValue("title")
+
+	tokenID, _ := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
+		return
+	}
+	if tokenID == 0 {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("token is missing"))
 		return
 	}
 
-	bank := storage.Bank{}
-	err = json.Unmarshal(body, &bank)
+	bankCreated, err := service.CreateBankService(server.DB, title, file, handler)
 	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+	responses.JSON(w, http.StatusOK, bankCreated)
+}
+
+func (server *Server) updateBank(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	bankID, err := strconv.ParseUint(vars["id"], 10, 32)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
 		return
 	}
 
-	bankCreated, err := bank.Save(server.DB)
+	err = r.ParseMultipartForm(10 << 20)
 	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+	file, handler, err := r.FormFile("image")
+	if err != nil {
+		retrErr := errors.New("error while uploading file")
+		responses.ERROR(w, http.StatusInternalServerError, retrErr)
+		return
+	}
+	title := r.FormValue("title")
+
+	tokenID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
+		return
+	}
+	if tokenID == 0 {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("token is missing"))
 		return
 	}
 
-	responses.JSON(w, http.StatusCreated, bankCreated)
+	bankUpdated, err := service.UpdateBankService(server.DB, uint32(bankID), title, file, handler)
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+	responses.JSON(w, http.StatusOK, bankUpdated)
 }
 
 func (server *Server) allBank(w http.ResponseWriter, r *http.Request) {
@@ -46,45 +95,45 @@ func (server *Server) allBank(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, banks)
 }
 
-func (server *Server) updateBank(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	bankID, err := strconv.ParseUint(vars["id"], 10, 32)
-	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
-		return
-	}
-
-	tokenID, err := auth.ExtractTokenID(r)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
-		return
-	}
-	if tokenID == 0 {
-		responses.ERROR(w, http.StatusUnauthorized, errors.New("token is missing"))
-		return
-	}
-
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	bank := storage.Bank{}
-	err = json.Unmarshal(body, &bank)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	bankUpdate, err := bank.Update(server.DB, int(bankID))
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	responses.JSON(w, http.StatusCreated, bankUpdate)
-}
+//func (server *Server) updateBank(w http.ResponseWriter, r *http.Request) {
+//	vars := mux.Vars(r)
+//	bankID, err := strconv.ParseUint(vars["id"], 10, 32)
+//	if err != nil {
+//		responses.ERROR(w, http.StatusBadRequest, err)
+//		return
+//	}
+//
+//	tokenID, err := auth.ExtractTokenID(r)
+//	if err != nil {
+//		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
+//		return
+//	}
+//	if tokenID == 0 {
+//		responses.ERROR(w, http.StatusUnauthorized, errors.New("token is missing"))
+//		return
+//	}
+//
+//	body, err := io.ReadAll(r.Body)
+//	if err != nil {
+//		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+//		return
+//	}
+//
+//	bank := storage.Bank{}
+//	err = json.Unmarshal(body, &bank)
+//	if err != nil {
+//		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+//		return
+//	}
+//
+//	bankUpdate, err := bank.Update(server.DB, int(bankID))
+//	if err != nil {
+//		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+//		return
+//	}
+//
+//	responses.JSON(w, http.StatusCreated, bankUpdate)
+//}
 
 func (server *Server) createProduct(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)

@@ -24,7 +24,7 @@ func (b *Bank) Save(db *gorm.DB) (*Bank, error) {
 	return b, nil
 }
 
-func (b *Bank) Update(db *gorm.DB, id int) (*Bank, error) {
+func (b *Bank) Update(db *gorm.DB, id uint) (*Bank, error) {
 	err := db.Debug().Model(&Bank{}).Where("id = ?", id).Updates(&b).Error
 	if err != nil {
 		return nil, err
