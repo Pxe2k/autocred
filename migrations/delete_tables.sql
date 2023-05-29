@@ -16,13 +16,12 @@ drop table media cascade;
 drop table client_contacts cascade;
 drop table clients cascade;
 
+drop table pledges cascade;
 
 drop table bank_applications cascade;
 drop table applications cascade;
 
 drop table car_brands cascade;
 drop table car_models cascade;
-
-drop table pledges cascade;
 
 drop table users cascade;

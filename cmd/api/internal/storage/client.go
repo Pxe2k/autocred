@@ -83,12 +83,10 @@ func (c *Client) Get(db *gorm.DB, id uint) (*Client, error) {
 		Preload("Document").
 		Preload("WorkPlaceInfo").
 		Preload("MaritalStatus").
-		Preload("RelationWithBank").
 		Preload("RegistrationAddress").
 		Preload("ResidentialAddress").
 		Preload("Contacts").
 		Preload("BeneficialOwners").
-		Preload("ClientComment").
 		Preload("Documents").
 		Preload("Pledges").
 		Preload("Pledges.CarModel").

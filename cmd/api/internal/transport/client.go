@@ -127,7 +127,7 @@ func (server *Server) uploadAvatar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tokenID, _ := auth.ExtractTokenID(r)
+	tokenID, err := auth.ExtractTokenID(r)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
 		return

@@ -19,15 +19,27 @@ func (server *Server) createBank(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return
 	}
-	file, handler, err := r.FormFile("image")
-	if err != nil {
-		retrErr := errors.New("error while uploading file")
-		responses.ERROR(w, http.StatusInternalServerError, retrErr)
-		return
-	}
+
 	title := r.FormValue("title")
 
-	tokenID, _ := auth.ExtractTokenID(r)
+	file, handler, err := r.FormFile("image")
+	if err == http.ErrMissingFile {
+		bank := storage.Bank{}
+		bank.Title = title
+		bankCreated, err1 := bank.Save(server.DB)
+		if err1 != nil {
+			responses.ERROR(w, http.StatusInternalServerError, err)
+			return
+		}
+		responses.JSON(w, http.StatusOK, bankCreated)
+		return
+	}
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	tokenID, err := auth.ExtractTokenID(r)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
 		return
