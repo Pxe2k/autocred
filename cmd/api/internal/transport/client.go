@@ -79,28 +79,9 @@ func (server *Server) getClient(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	client := storage.Client{}
-	clientGotten, err := client.Get(server.DB, uint(id))
+	clientGotten, err := service.GetClientService(server.DB, uint(id), uint(tokenID))
 	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	if clientGotten.UserID != uint(tokenID) {
-		responseData := responses.UnauthorizedUserResponseData{}
-		responseData.TypeOfClient = clientGotten.TypeOfClient
-		responseData.Document = clientGotten.Document
-		responseData.Phone = clientGotten.Phone
-		responseData.ID = clientGotten.ID
-		responseData.BirthDate = clientGotten.BirthDate
-		responseData.CreatedAt = clientGotten.CreatedAt
-		responseData.FirstName = clientGotten.FirstName
-		responseData.MiddleName = clientGotten.MiddleName
-		responseData.LastName = clientGotten.LastName
-		responseData.Status = false
-		responseData.ResidentialAddress = clientGotten.ResidentialAddress
-
-		responses.JSON(w, http.StatusOK, responseData)
+		responses.ERROR(w, http.StatusBadRequest, err)
 		return
 	}
 

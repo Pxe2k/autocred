@@ -21,7 +21,7 @@ type Client struct {
 	Email               string               `gorm:"size:100;" json:"email"`     // Email
 	Education           string               `gorm:"size:100;" json:"education"` // Образование
 	Comment             string               `json:"comment"`
-	Image               string               `gorm:"size:100;" json:"image"` // Аватарка
+	Image               string               `json:"image"` // Аватарка
 	UserID              uint                 `json:"userId"`
 	User                *User                `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"user,omitempty"`
 	Document            *Document            `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"document,omitempty"`            // Документы

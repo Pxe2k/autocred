@@ -3,6 +3,7 @@ package service
 import (
 	"autocredit/cmd/api/helpers"
 	"autocredit/cmd/api/helpers/requests"
+	"autocredit/cmd/api/helpers/responses"
 	"autocredit/cmd/api/internal/storage"
 	"encoding/json"
 	"errors"
@@ -37,6 +38,57 @@ func CreateClientService(db *gorm.DB, body []byte, uid uint) (*storage.Client, e
 	}
 
 	return createdClient, nil
+}
+
+func GetClientService(db *gorm.DB, id, tokenID uint) (responses.UserResponseData, error) {
+	client := storage.Client{}
+	responseData := responses.UserResponseData{}
+	clientGotten, err := client.Get(db, id)
+	if err != nil {
+		return responses.UserResponseData{}, err
+	}
+
+	responseData.ID = clientGotten.ID
+	responseData.TypeOfClient = clientGotten.TypeOfClient
+	responseData.FirstName = clientGotten.FirstName
+	responseData.MiddleName = clientGotten.MiddleName
+	responseData.LastName = clientGotten.LastName
+	responseData.BirthDate = clientGotten.BirthDate
+	responseData.Phone = clientGotten.Phone
+	responseData.Document = clientGotten.Document
+	responseData.ResidentialAddress = clientGotten.ResidentialAddress
+	responseData.CreatedAt = clientGotten.CreatedAt
+
+	if clientGotten.UserID != tokenID {
+		responseData.Status = false
+		return responseData, nil
+	}
+
+	responseData.Status = true
+	*responseData.Sex = clientGotten.Sex
+	*responseData.Country = clientGotten.Country
+	*responseData.Residency = clientGotten.Residency
+	*responseData.Bin = clientGotten.Bin
+	*responseData.SecondPhone = clientGotten.SecondPhone
+	*responseData.Email = clientGotten.Email
+	*responseData.Education = clientGotten.Education
+	*responseData.Comment = clientGotten.Comment
+	*responseData.Image = clientGotten.Image
+	*responseData.UserID = clientGotten.UserID
+	responseData.User = clientGotten.User
+	responseData.MaritalStatus = clientGotten.MaritalStatus
+	responseData.WorkPlaceInfo = clientGotten.WorkPlaceInfo
+	responseData.RegistrationAddress = clientGotten.RegistrationAddress
+	responseData.ResidentialAddress = clientGotten.ResidentialAddress
+	responseData.Contacts = clientGotten.Contacts
+	responseData.BonusInfo = clientGotten.BonusInfo
+	responseData.PersonalProperty = clientGotten.PersonalProperty
+	responseData.CurrentLoans = clientGotten.CurrentLoans
+	responseData.BeneficialOwners = clientGotten.BeneficialOwners
+	responseData.Pledges = clientGotten.Pledges
+	responseData.Documents = clientGotten.Documents
+
+	return responseData, nil
 }
 
 func UploadAvatarForClient(db *gorm.DB, uid uint32, file multipart.File, handler *multipart.FileHeader) (*storage.Client, error) {
