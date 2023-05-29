@@ -44,7 +44,7 @@ type UserResponseData struct {
 	CurrentLoans        *[]storage.CurrentLoans      `json:"currentLoans,omitempty"`        // Действующие кредиты и займы
 	BeneficialOwners    *[]storage.BeneficialOwner   `json:"beneficialOwners,omitempty"`    // Бенефициарные владельцы
 	Pledges             *[]storage.Pledge            `json:"pledges,omitempty"`             // Залоги
-	Documents           *[]storage.Media             `json:"document,omitempty"`
+	Documents           *[]storage.Media             `json:"documents,omitempty"`
 	CreatedAt           time.Time                    `json:"createdAt"`
 }
 
