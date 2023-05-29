@@ -178,6 +178,7 @@ func SubmitClientOTP(db *gorm.DB, body []byte, id uint) (string, error) {
 
 	client := storage.Client{}
 	client.UserID = id
+	client.Phone = requestData.Phone
 
 	err = client.UpdateUserID(db, client)
 	if err != nil {
