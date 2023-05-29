@@ -65,18 +65,24 @@ func (server *Server) updateBank(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = r.ParseMultipartForm(10 << 20)
-	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
-		return
-	}
-	file, handler, err := r.FormFile("image")
-	if err != nil {
-		retrErr := errors.New("error while uploading file")
-		responses.ERROR(w, http.StatusInternalServerError, retrErr)
-		return
-	}
 	title := r.FormValue("title")
+
+	file, handler, err := r.FormFile("image")
+	if err == http.ErrMissingFile {
+		bank := storage.Bank{}
+		bank.Title = title
+		bankUpdated, err1 := bank.Update(server.DB, uint(bankID))
+		if err1 != nil {
+			responses.ERROR(w, http.StatusInternalServerError, err)
+			return
+		}
+		responses.JSON(w, http.StatusOK, bankUpdated)
+		return
+	}
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
 
 	tokenID, err := auth.ExtractTokenID(r)
 	if err != nil {
