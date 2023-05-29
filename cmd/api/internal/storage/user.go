@@ -11,7 +11,7 @@ import (
 
 type User struct {
 	gorm.Model
-	Email          string        `gorm:"size:100;unique"`
+	Email          string        `gorm:"size:100;"`
 	FirstName      string        `gorm:"size:100;" json:"firstName"`
 	MiddleName     string        `gorm:"size:100;" json:"middleName"`
 	LastName       *string       `gorm:"size:100;" json:"lastName,omitempty"`
@@ -20,7 +20,7 @@ type User struct {
 	DocumentNumber string        `gorm:"size:100;" json:"documentNumber"`
 	JobTitle       string        `gorm:"size:100;" json:"jobTitle"`
 	OrderNumber    string        `gorm:"size:100;" json:"orderNumber"`
-	Phone          string        `gorm:"size:100;not null;" json:"phone"`
+	Phone          string        `gorm:"size:100;unique;" json:"phone"`
 	WorkPhone      string        `gorm:"size:100;" json:"workPhone"`
 	Password       string        `gorm:"size:100;"`
 	AutoDealerID   *uint         `json:"autoDealerID,omitempty"`
