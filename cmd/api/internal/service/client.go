@@ -65,16 +65,16 @@ func GetClientService(db *gorm.DB, id, tokenID uint) (responses.UserResponseData
 	}
 
 	responseData.Status = true
-	*responseData.Sex = clientGotten.Sex
-	*responseData.Country = clientGotten.Country
-	*responseData.Residency = clientGotten.Residency
-	*responseData.Bin = clientGotten.Bin
-	*responseData.SecondPhone = clientGotten.SecondPhone
-	*responseData.Email = clientGotten.Email
-	*responseData.Education = clientGotten.Education
-	*responseData.Comment = clientGotten.Comment
-	*responseData.Image = clientGotten.Image
-	*responseData.UserID = clientGotten.UserID
+	responseData.Sex = clientGotten.Sex
+	responseData.Country = clientGotten.Country
+	responseData.Residency = clientGotten.Residency
+	responseData.Bin = clientGotten.Bin
+	responseData.SecondPhone = clientGotten.SecondPhone
+	responseData.Email = clientGotten.Email
+	responseData.Education = clientGotten.Education
+	responseData.Comment = clientGotten.Comment
+	responseData.Image = clientGotten.Image
+	responseData.UserID = clientGotten.UserID
 	responseData.User = clientGotten.User
 	responseData.MaritalStatus = clientGotten.MaritalStatus
 	responseData.WorkPlaceInfo = clientGotten.WorkPlaceInfo
