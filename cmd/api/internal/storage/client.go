@@ -10,18 +10,17 @@ type Client struct {
 	TypeOfClient        string               `gorm:"size:100;" json:"typeOfClient"` // Тип клиента
 	FirstName           string               `gorm:"size:100;" json:"firstName"`
 	MiddleName          string               `gorm:"size:100;" json:"middleName"`
-	LastName            string               `gorm:"size:100;" json:"lastName,omitempty"`
+	LastName            *string              `gorm:"size:100;" json:"lastName,omitempty"`
 	Sex                 string               `gorm:"size:100;" json:"sex"`       // Пол
 	BirthDate           string               `gorm:"size:100;" json:"birthDate"` // ДР
 	Country             string               `gorm:"size:100;" json:"country"`
-	Residency           bool                 `gorm:"size:100;" json:"residency"`    // Резиденство
-	Bin                 string               `gorm:"size:100;" json:"bin"`          // ИИН
-	Phone               string               `gorm:"size:100,unique;" json:"phone"` // Телефон
+	Residency           bool                 `gorm:"size:100;" json:"residency"` // Резиденство
+	Bin                 string               `gorm:"size:100;" json:"bin"`       // ИИН
+	Phone               string               `gorm:"size:100;" json:"phone"`     // Телефон
 	SecondPhone         string               `gorm:"size:100;" json:"secondPhone"`
 	Email               string               `gorm:"size:100;" json:"email"`     // Email
 	Education           string               `gorm:"size:100;" json:"education"` // Образование
-	Comment             string               `json:"comment"`
-	Image               string               `json:"image"` // Аватарка
+	Image               string               `gorm:"size:100;" json:"image"`     // Аватарка
 	UserID              uint                 `json:"userId"`
 	User                *User                `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"user,omitempty"`
 	Document            *Document            `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"document,omitempty"`            // Документы
@@ -30,12 +29,12 @@ type Client struct {
 	RegistrationAddress *RegistrationAddress `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"registrationAddress,omitempty"` // Адрес прописки
 	ResidentialAddress  *ResidentialAddress  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"residentialAddress,omitempty"`  // Адрес проживания
 	Contacts            *[]ClientContact     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"contacts,omitempty"`            // Доп. контакты
-	BonusInfo           *BonusInfo           `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bonusInfo,omitempty"`           // Дополнительная информация
+	BonusInfo           *BonusInfo           `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bonusInfo"`                     // Дополнительная информация
 	PersonalProperty    *[]PersonalProperty  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"personalProperty,omitempty"`    // Личное имущество
 	CurrentLoans        *[]CurrentLoans      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"currentLoans,omitempty"`        // Действующие кредиты и займы
 	BeneficialOwners    *[]BeneficialOwner   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"beneficialOwners,omitempty"`    // Бенефициарные владельцы
 	Pledges             *[]Pledge            `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"pledges,omitempty"`             // Залоги
-	Documents           *[]Media             `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"documents,omitempty"`
+	Documents           *[]Media             `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"documents"`
 }
 
 func (c *Client) Save(db *gorm.DB) (*Client, error) {
@@ -83,10 +82,12 @@ func (c *Client) Get(db *gorm.DB, id uint) (*Client, error) {
 		Preload("Document").
 		Preload("WorkPlaceInfo").
 		Preload("MaritalStatus").
+		Preload("RelationWithBank").
 		Preload("RegistrationAddress").
 		Preload("ResidentialAddress").
 		Preload("Contacts").
 		Preload("BeneficialOwners").
+		Preload("ClientComment").
 		Preload("Documents").
 		Preload("Pledges").
 		Preload("Pledges.CarModel").

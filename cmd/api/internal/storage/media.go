@@ -16,3 +16,16 @@ func (m *Media) Save(db *gorm.DB) (*Media, error) {
 	}
 	return m, nil
 }
+
+func (m *Media) SoftDelete(db *gorm.DB, id uint) (int64, error) {
+	err := db.Debug().Model(&Media{}).Where("id = ?", id).Take(&Media{}).Delete(&Media{})
+	if err != nil {
+		return 0, err.Error
+	}
+
+	if err.Error != nil {
+		return 0, err.Error
+	}
+
+	return err.RowsAffected, nil
+}

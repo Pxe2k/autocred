@@ -17,11 +17,15 @@ import (
 
 var ctx = context.Background()
 
-func CreateUserService(db *gorm.DB, body []byte) (*storage.User, error) {
+func CreateUserService(db *gorm.DB, body []byte, autoDealerID uint) (*storage.User, error) {
 	user := storage.User{}
 	err := json.Unmarshal(body, &user)
 	if err != nil {
 		return &storage.User{}, err
+	}
+
+	if autoDealerID != 0 {
+		user.AutoDealerID = &autoDealerID
 	}
 
 	if user.Email == "" {
