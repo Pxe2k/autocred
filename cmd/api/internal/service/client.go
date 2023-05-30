@@ -52,7 +52,7 @@ func GetClientService(db *gorm.DB, id, tokenID uint) (responses.UserResponseData
 	responseData.TypeOfClient = clientGotten.TypeOfClient
 	responseData.FirstName = clientGotten.FirstName
 	responseData.MiddleName = clientGotten.MiddleName
-	responseData.LastName = clientGotten.LastName
+	responseData.LastName = *clientGotten.LastName
 	responseData.BirthDate = clientGotten.BirthDate
 	responseData.Phone = clientGotten.Phone
 	responseData.Document = clientGotten.Document

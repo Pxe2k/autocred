@@ -5,6 +5,7 @@ import (
 	"autocredit/cmd/api/helpers/requests"
 	"autocredit/cmd/api/helpers/responses"
 	"autocredit/cmd/api/internal/service"
+	"autocredit/cmd/api/internal/storage"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -28,32 +29,32 @@ func (server *Server) createUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var autoDealerID uint
+
+	if roleID == 2 {
+		user := storage.User{}
+		userGotten, err1 := user.Get(server.DB, uint(tokenID))
+		if err1 != nil {
+			responses.ERROR(w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		autoDealerID = *userGotten.AutoDealerID
+	}
+
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
 	}
 
-	var autoDealerID uint
-
-	err = json.Unmarshal(body, &userRequest)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	if roleID == 2 {
-		// Set the AutoDealerID from the user if the roleID is 2
-		autoDealerID = uint(tokenID)
-	}
-
-	userCreated, err := service.CreateUserService(server.DB, autoDealerID)
+	userCreated, err := service.CreateUserService(server.DB, body, autoDealerID)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	w.Header().Set("Location", fmt.Sprintf("%s%s/%d", r.Host, r.RequestURI, userCreated.ID))
+
 	responses.JSON(w, http.StatusOK, userCreated)
 }
 
