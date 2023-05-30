@@ -30,7 +30,7 @@ func (a *AutoDealer) Update(db *gorm.DB, id int) (*AutoDealer, error) {
 }
 
 func (a *AutoDealer) Get(db *gorm.DB, id uint) (*AutoDealer, error) {
-	err := db.Debug().Model(&AutoDealer{}).Where("id = ?", id).First(&a).Error
+	err := db.Debug().Model(&AutoDealer{}).Preload("Users").Where("id = ?", id).First(&a).Error
 	if err != nil {
 		return nil, err
 	}
