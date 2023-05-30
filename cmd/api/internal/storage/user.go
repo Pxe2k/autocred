@@ -23,7 +23,7 @@ type User struct {
 	Phone          string        `gorm:"size:100,unique" json:"phone"`
 	WorkPhone      string        `gorm:"size:100" json:"workPhone"`
 	Password       string        `gorm:"size:100"`
-	AutoDealerID   *uint         `json:"autoDealerID,omitempty"`
+	AutoDealerID   uint          `json:"autoDealerID,omitempty"`
 	AutoDealer     AutoDealer    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"autodealer"`
 	RoleID         *uint         `json:"roleID,omitempty"`
 	Role           Role          `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"role"`

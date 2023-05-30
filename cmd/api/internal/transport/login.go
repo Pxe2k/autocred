@@ -39,7 +39,7 @@ func (server *Server) createUser(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		autoDealerID = *userGotten.AutoDealerID
+		autoDealerID = userGotten.AutoDealerID
 	}
 
 	body, err := io.ReadAll(r.Body)

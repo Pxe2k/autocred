@@ -13,7 +13,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-func CreateToken(userID uint32, roleID *uint, autodealerID *uint) (string, error) {
+func CreateToken(userID uint32, roleID *uint, autodealerID uint) (string, error) {
 	claims := jwt.MapClaims{}
 	claims["authorized"] = true
 	claims["user_id"] = userID

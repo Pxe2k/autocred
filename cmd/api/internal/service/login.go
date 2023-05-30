@@ -25,7 +25,7 @@ func CreateUserService(db *gorm.DB, body []byte, autoDealerID uint) (*storage.Us
 	}
 
 	if autoDealerID != 0 {
-		user.AutoDealerID = &autoDealerID
+		user.AutoDealerID = autoDealerID
 	}
 
 	if user.Email == "" {
