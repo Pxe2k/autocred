@@ -11,18 +11,18 @@ import (
 
 type User struct {
 	gorm.Model
-	Email          string        `gorm:"size:100;unique;"`
-	FirstName      string        `gorm:"size:100;" json:"firstName"`
-	MiddleName     string        `gorm:"size:100;" json:"middleName"`
-	LastName       *string       `gorm:"size:100;" json:"lastName,omitempty"`
-	IIN            string        `gorm:"size:100;unique;" json:"iin"`
-	Document       string        `gorm:"size:100;" json:"document"`
-	DocumentNumber string        `gorm:"size:100;" json:"documentNumber"`
-	JobTitle       string        `gorm:"size:100;" json:"jobTitle"`
-	OrderNumber    string        `gorm:"size:100;" json:"orderNumber"`
-	Phone          string        `gorm:"size:100;unique;" json:"phone"`
-	WorkPhone      string        `gorm:"size:100;" json:"workPhone"`
-	Password       string        `gorm:"size:100;"`
+	Email          string        `gorm:"size:100,unique"`
+	FirstName      string        `gorm:"size:100" json:"firstName"`
+	MiddleName     string        `gorm:"size:100" json:"middleName"`
+	LastName       *string       `gorm:"size:100" json:"lastName,omitempty"`
+	IIN            string        `gorm:"size:100,unique" json:"iin"`
+	Document       string        `gorm:"size:100" json:"document"`
+	DocumentNumber string        `gorm:"size:100" json:"documentNumber"`
+	JobTitle       string        `gorm:"size:100" json:"jobTitle"`
+	OrderNumber    string        `gorm:"size:100" json:"orderNumber"`
+	Phone          string        `gorm:"size:100,unique" json:"phone"`
+	WorkPhone      string        `gorm:"size:100" json:"workPhone"`
+	Password       string        `gorm:"size:100"`
 	AutoDealerID   *uint         `json:"autoDealerID,omitempty"`
 	AutoDealer     AutoDealer    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"autodealer"`
 	RoleID         *uint         `json:"roleID,omitempty"`

@@ -21,7 +21,8 @@ drop table pledges cascade;
 drop table bank_applications cascade;
 drop table applications cascade;
 
+drop table users cascade;
+
+
 drop table car_brands cascade;
 drop table car_models cascade;
-
-drop table users cascade;

@@ -122,17 +122,6 @@ func (server *Server) deactivateUser(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusCreated, userDeleted)
 }
 
-func (server *Server) allDeactivatedUsers(w http.ResponseWriter, r *http.Request) {
-	user := storage.User{}
-	users, err := user.All(server.DB)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	responses.JSON(w, http.StatusOK, users)
-}
-
 func (server *Server) allSoftDeletedUsers(w http.ResponseWriter, r *http.Request) {
 	user := storage.User{}
 	users, err := user.AllSoftDeleted(server.DB)

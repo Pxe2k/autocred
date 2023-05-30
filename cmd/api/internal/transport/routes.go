@@ -104,15 +104,15 @@ func (server *Server) InitializeRoutes() {
 
 	documentApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.issuingAuthorityAll)).Methods("GET")
 	documentApi.HandleFunc("/create", middlewares.SetMiddlewareJSON(server.uploadFile)).Methods("POST")
-	documentApi.HandleFunc("/create", middlewares.SetMiddlewareJSON(server.deleteMedia)).Methods("DELETE")
+	documentApi.HandleFunc("/delete/{id}", middlewares.SetMiddlewareJSON(server.deleteMedia)).Methods("DELETE")
 
 	userApi := server.Router.PathPrefix("/api/user").Subrouter()
 
 	userApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allUsers)).Methods("GET")
+	userApi.HandleFunc("/all-deleted", middlewares.SetMiddlewareJSON(server.allSoftDeletedUsers)).Methods("GET")
 	userApi.HandleFunc("/{id}", middlewares.SetMiddlewareJSON(server.getUser)).Methods("GET")
 	userApi.HandleFunc("/update/{id}", middlewares.SetMiddlewareJSON(server.updateUser)).Methods("PATCH")
 	userApi.HandleFunc("/deactivate/{id}", middlewares.SetMiddlewareJSON(server.deactivateUser)).Methods("DELETE")
-	userApi.HandleFunc("/all-deleted/{id}", middlewares.SetMiddlewareJSON(server.allDeactivatedUsers)).Methods("GET")
 	userApi.HandleFunc("/activate/{id}", middlewares.SetMiddlewareJSON(server.recoverUser)).Methods("PATCH")
 
 }
