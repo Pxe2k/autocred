@@ -98,5 +98,5 @@ func CreateToken(db *gorm.DB, body []byte) (string, error) {
 		return "wrong code", errors.New("code != value")
 	}
 
-	return auth.CreateToken(uint32(user.ID), user.RoleID)
+	return auth.CreateToken(uint32(user.ID), user.RoleID, user.AutoDealerID)
 }

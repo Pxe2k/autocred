@@ -13,11 +13,12 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-func CreateToken(userID uint32, roleID *uint) (string, error) {
+func CreateToken(userID uint32, roleID *uint, autodealerID *uint) (string, error) {
 	claims := jwt.MapClaims{}
 	claims["authorized"] = true
 	claims["user_id"] = userID
 	claims["role_id"] = roleID
+	claims["autodealer_id"] = autodealerID
 	claims["exp"] = time.Now().Add(time.Hour * 168).Unix() //Token expires after 1 hour
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
@@ -100,6 +101,28 @@ func ExtractRoleID(r *http.Request) (uint32, error) {
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if ok && token.Valid {
 		uid, err := strconv.ParseUint(fmt.Sprintf("%.0f", claims["role_id"]), 10, 32)
+		if err != nil {
+			return 0, err
+		}
+		return uint32(uid), nil
+	}
+	return 0, nil
+}
+
+func ExtractAutoDealerID(r *http.Request) (uint32, error) {
+	tokenString := ExtractToken(r)
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(os.Getenv("API_SECRET")), nil
+	})
+	if err != nil {
+		return 0, err
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if ok && token.Valid {
+		uid, err := strconv.ParseUint(fmt.Sprintf("%.0f", claims["autodealer_id"]), 10, 32)
 		if err != nil {
 			return 0, err
 		}
