@@ -152,7 +152,7 @@ func (server *Server) allSoftDeletedUsers(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	if autodealerID == 0 {
+	if autodealerID == 1 {
 		vars := mux.Vars(r)
 		paramsID, err1 := strconv.ParseUint(vars["id"], 10, 32)
 		if err1 != nil {
