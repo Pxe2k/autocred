@@ -110,7 +110,7 @@ func (server *Server) InitializeRoutes() {
 
 	userApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allUsers)).Methods("GET")
 	userApi.HandleFunc("/all-deleted", middlewares.SetMiddlewareJSON(server.allSoftDeletedUsers)).Methods("GET")
-	userApi.HandleFunc("/all-deleted/{id}", middlewares.SetMiddlewareJSON(server.allSoftDeletedUsers)).Methods("GET")
+	userApi.HandleFunc("/all-deleted/{id}", middlewares.SetMiddlewareJSON(server.allSoftDeletedUsersByID)).Methods("GET")
 	userApi.HandleFunc("/{id}", middlewares.SetMiddlewareJSON(server.getUser)).Methods("GET")
 	userApi.HandleFunc("/update/{id}", middlewares.SetMiddlewareJSON(server.updateUser)).Methods("PATCH")
 	userApi.HandleFunc("/deactivate/{id}", middlewares.SetMiddlewareJSON(server.deactivateUser)).Methods("DELETE")

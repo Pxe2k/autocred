@@ -153,6 +153,23 @@ func (u *User) AllSoftDeleted(db *gorm.DB, autodealerID uint) (*[]User, error) {
 	return &users, nil
 }
 
+func (u *User) AllSoftDeletedByID(db *gorm.DB, autodealerID uint) (*[]User, error) {
+	var users []User
+	err := db.Debug().Model(&User{}).
+		Unscoped(). // Include soft deleted records
+		Where("auto_dealer_id = ?", autodealerID).
+		Where("deleted_at IS NOT NULL"). // Filter soft deleted records
+		Preload("AutoDealer").
+		Preload("Role").
+		Limit(100).
+		Find(&users).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &users, nil
+}
+
 func (u *User) Recover(db *gorm.DB, id uint) error {
 	return db.Unscoped().Model(&User{}).Where("id = ?", id).Update("deleted_at", nil).Error
 }

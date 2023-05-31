@@ -152,19 +152,35 @@ func (server *Server) allSoftDeletedUsers(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	if autodealerID == 1 {
-		vars := mux.Vars(r)
-		paramsID, err1 := strconv.ParseUint(vars["id"], 10, 32)
-		if err1 != nil {
-			responses.ERROR(w, http.StatusBadRequest, err1)
-			return
-		}
+	user := storage.User{}
+	users, err := user.AllSoftDeleted(server.DB, uint(autodealerID))
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
 
-		autodealerID = uint32(paramsID)
+	responses.JSON(w, http.StatusOK, users)
+}
+
+func (server *Server) allSoftDeletedUsersByID(w http.ResponseWriter, r *http.Request) {
+	tokenID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
+		return
+	}
+	if tokenID == 0 {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("token is missing"))
+		return
+	}
+	vars := mux.Vars(r)
+	autodealerID, err := strconv.ParseUint(vars["id"], 10, 32)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
 	}
 
 	user := storage.User{}
-	users, err := user.AllSoftDeleted(server.DB, uint(autodealerID))
+	users, err := user.AllSoftDeletedByID(server.DB, uint(autodealerID))
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
