@@ -154,9 +154,9 @@ func (server *Server) allSoftDeletedUsers(w http.ResponseWriter, r *http.Request
 
 	if autodealerID == 0 {
 		vars := mux.Vars(r)
-		paramsID, err := strconv.ParseUint(vars["id"], 10, 32)
-		if err != nil {
-			responses.ERROR(w, http.StatusBadRequest, err)
+		paramsID, err1 := strconv.ParseUint(vars["id"], 10, 32)
+		if err1 != nil {
+			responses.ERROR(w, http.StatusBadRequest, err1)
 			return
 		}
 
