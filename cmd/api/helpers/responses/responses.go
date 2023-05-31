@@ -4,6 +4,7 @@ import (
 	"autocredit/cmd/api/internal/storage"
 	"encoding/json"
 	"fmt"
+	"gorm.io/gorm"
 	"net/http"
 	"time"
 )
@@ -13,6 +14,26 @@ type LoginResponse struct {
 }
 
 type UserResponseData struct {
+	gorm.Model
+	Email          string                `json:"email"`
+	FirstName      string                `json:"firstName"`
+	MiddleName     string                `json:"middleName"`
+	LastName       *string               `json:"lastName,omitempty"`
+	IIN            string                `json:"iin"`
+	Document       string                `json:"document"`
+	DocumentNumber string                `json:"documentNumber"`
+	JobTitle       string                `json:"jobTitle"`
+	OrderNumber    string                `json:"orderNumber"`
+	Phone          string                `json:"phone"`
+	WorkPhone      string                `json:"workPhone"`
+	AutoDealerID   uint                  `json:"autoDealerID,omitempty"`
+	AutoDealer     *storage.AutoDealer   `json:"autodealer,omitempty"`
+	RoleID         *uint                 `json:"roleID,omitempty"`
+	Role           storage.Role          `json:"role"`
+	Applications   []storage.Application `json:"applications"`
+}
+
+type ClientResponseData struct {
 	ID                  uint                         `json:"ID"`
 	IsBusiness          bool                         `json:"isBusiness"`   // Физ/не физ
 	TypeOfClient        string                       `json:"typeOfClient"` // Тип клиента

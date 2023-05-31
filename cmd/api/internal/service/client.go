@@ -40,12 +40,12 @@ func CreateClientService(db *gorm.DB, body []byte, uid uint) (*storage.Client, e
 	return createdClient, nil
 }
 
-func GetClientService(db *gorm.DB, id, tokenID uint) (responses.UserResponseData, error) {
+func GetClientService(db *gorm.DB, id, tokenID uint) (responses.ClientResponseData, error) {
 	client := storage.Client{}
-	responseData := responses.UserResponseData{}
+	responseData := responses.ClientResponseData{}
 	clientGotten, err := client.Get(db, id)
 	if err != nil {
-		return responses.UserResponseData{}, err
+		return responses.ClientResponseData{}, err
 	}
 
 	responseData.ID = clientGotten.ID

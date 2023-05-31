@@ -11,16 +11,16 @@ import (
 
 type User struct {
 	gorm.Model
-	Email          string        `gorm:"size:100,unique"`
+	Email          string        `gorm:"size:100;unique" json:"email"`
 	FirstName      string        `gorm:"size:100" json:"firstName"`
 	MiddleName     string        `gorm:"size:100" json:"middleName"`
 	LastName       *string       `gorm:"size:100" json:"lastName,omitempty"`
-	IIN            string        `gorm:"size:100,unique" json:"iin"`
+	IIN            string        `gorm:"size:100;unique" json:"iin"`
 	Document       string        `gorm:"size:100" json:"document"`
 	DocumentNumber string        `gorm:"size:100" json:"documentNumber"`
 	JobTitle       string        `gorm:"size:100" json:"jobTitle"`
 	OrderNumber    string        `gorm:"size:100" json:"orderNumber"`
-	Phone          string        `gorm:"size:100,unique" json:"phone"`
+	Phone          string        `gorm:"size:100;unique" json:"phone"`
 	WorkPhone      string        `gorm:"size:100" json:"workPhone"`
 	Password       string        `gorm:"size:100"`
 	AutoDealerID   uint          `json:"autoDealerID,omitempty"`
@@ -92,7 +92,11 @@ func (u *User) Save(db *gorm.DB) (*User, error) {
 }
 
 func (u *User) Get(db *gorm.DB, uid uint) (*User, error) {
-	err := db.Debug().Model(User{}).Where("id = ?", uid).Take(&u).Error
+	err := db.Debug().Model(User{}).Where("id = ?", uid).
+		Preload("AutoDealer").
+		Preload("Role").
+		Preload("Applications").
+		Take(&u).Error
 	if err != nil {
 		return &User{}, err
 	}

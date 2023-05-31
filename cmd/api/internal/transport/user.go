@@ -3,6 +3,7 @@ package transport
 import (
 	"autocredit/cmd/api/auth"
 	"autocredit/cmd/api/helpers/responses"
+	"autocredit/cmd/api/internal/service"
 	"autocredit/cmd/api/internal/storage"
 	"encoding/json"
 	"errors"
@@ -31,9 +32,7 @@ func (server *Server) getUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user := storage.User{}
-
-	userGotten, err := user.Get(server.DB, uint(userID))
+	userGotten, err := service.GetUserService(server.DB, uint(userID))
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
