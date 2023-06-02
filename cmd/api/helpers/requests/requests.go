@@ -59,13 +59,15 @@ type EUApplicationRequestData struct {
 		Condition   string `json:"condition"`
 		Country     string `json:"country"`
 		FuelType    string `json:"fuelType"`
-		Insurance   string `json:"insurance"`
+		Insurance   bool   `json:"insurance"`
 		Model       string `json:"model"`
 		Price       string `json:"price"`
 		Type        string `json:"type"`
 		Year        string `json:"year"`
 		ChannelType string `json:"channelType"`
 	} `json:"car"`
+	PartyID              string `json:"partyId"`
+	JobPhone             string `json:"JobPhone"`
 	City                 string `json:"city"`
 	CarCityLocation      string `json:"carCityLocation"`
 	ClientName           string `json:"clientName"`
