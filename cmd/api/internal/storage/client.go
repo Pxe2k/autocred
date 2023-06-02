@@ -47,7 +47,7 @@ func (c *Client) Save(db *gorm.DB) (*Client, error) {
 	return c, nil
 }
 
-func (c *Client) All(db *gorm.DB, fullName, sex, birthDate, userID string) (*[]Client, error) {
+func (c *Client) All(db *gorm.DB, fullName, sex, birthDate, userID, sortUser string) (*[]Client, error) {
 	var clients []Client
 
 	query := db.Debug().Model(&Client{}).Preload("User").Preload("User.AutoDealer")
@@ -56,14 +56,17 @@ func (c *Client) All(db *gorm.DB, fullName, sex, birthDate, userID string) (*[]C
 		fullNameParam := "%" + fullName + "%"
 		query = query.Raw("SELECT clients.* FROM clients JOIN (SELECT id, concat_ws(' ', last_name, first_name, middle_name) as fullName FROM clients) clients2 ON clients2.fullName LIKE ? AND clients2.id = clients.id", fullNameParam)
 	}
+	if userID != "" {
+		query = query.Where("user_id = ?", userID)
+	}
 	if sex != "" {
 		query = query.Order("sex " + sex)
 	}
 	if birthDate != "" {
 		query = query.Order("birth_date " + birthDate)
 	}
-	if userID != "" {
-		query = query.Order("user_id " + userID)
+	if sortUser != "" {
+		query = query.Order("user_id " + sortUser)
 	}
 
 	query.Find(&clients)

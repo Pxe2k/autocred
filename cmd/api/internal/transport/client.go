@@ -46,13 +46,14 @@ func (server *Server) allClients(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := r.URL.Query().Get("user_id")
+	userID := r.URL.Query().Get("sort_user")
+	sortUserID := r.URL.Query().Get("sort_user_id")
 	fullName := r.URL.Query().Get("full_name")
 	sex := r.URL.Query().Get("sex")
 	birthDate := r.URL.Query().Get("birth_date")
 
 	client := storage.Client{}
-	clients, err := client.All(server.DB, fullName, sex, birthDate, userID)
+	clients, err := client.All(server.DB, fullName, sex, birthDate, userID, sortUserID)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
