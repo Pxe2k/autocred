@@ -114,6 +114,7 @@ func CreateEUApplication(body []byte) (responses.EUResponseData, error) {
 	}
 
 	url := os.Getenv("EU_APPLICATION")
+	fmt.Println("url: ", url)
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
 	if err != nil {
 		return responses.EUResponseData{}, err
@@ -128,6 +129,8 @@ func CreateEUApplication(body []byte) (responses.EUResponseData, error) {
 	if err != nil {
 		return responses.EUResponseData{}, err
 	}
+
+	fmt.Println("StatusCode ", resp.StatusCode)
 
 	defer resp.Body.Close()
 
