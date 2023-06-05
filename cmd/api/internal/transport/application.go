@@ -102,6 +102,10 @@ func (server *Server) createEUApplication(w http.ResponseWriter, r *http.Request
 	}
 
 	responseData, err := service.CreateEUApplication(body)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
 
 	responses.JSON(w, http.StatusCreated, responseData)
 }

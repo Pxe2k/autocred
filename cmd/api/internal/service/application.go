@@ -103,7 +103,11 @@ func CreateEUApplication(body []byte) (responses.EUResponseData, error) {
 	if err != nil {
 		return responses.EUResponseData{}, err
 	}
-	requestData.IdcdBack.Base64Content, err = encodeFileToBase64("eu-bank.jpg")
+	requestData.Idcd.Base64Content, err = encodeFileToBase64("eu-bank.jpg")
+	if err != nil {
+		return responses.EUResponseData{}, err
+	}
+	requestData.Photo.Base64Content, err = encodeFileToBase64("eu-bank.jpg")
 	if err != nil {
 		return responses.EUResponseData{}, err
 	}
@@ -150,17 +154,21 @@ func CreateEUApplication(body []byte) (responses.EUResponseData, error) {
 }
 
 func CreateShinhanApplication(body []byte) (responses.EUResponseData, error) {
-	var requestData requests.EUApplicationRequestData
+	var requestData requests.ShinhanApplicationRequestData
 	err := json.Unmarshal(body, &requestData)
 	if err != nil {
 		return responses.EUResponseData{}, err
 	}
 
-	requestData.Gsvp.Base64Content, err = encodeFileToBase64("templates/resultMedia/outputPDF/autocredit.pdf")
+	requestData.Customer.Document.PhotoBack, err = encodeFileToBase64("eu-bank.jpg")
 	if err != nil {
 		return responses.EUResponseData{}, err
 	}
-	requestData.IdcdBack.Base64Content, err = encodeFileToBase64("eu-bank.jpg")
+	requestData.Customer.Document.PhotoFront, err = encodeFileToBase64("eu-bank.jpg")
+	if err != nil {
+		return responses.EUResponseData{}, err
+	}
+	requestData.Customer.Photo, err = encodeFileToBase64("eu-bank.jpg")
 	if err != nil {
 		return responses.EUResponseData{}, err
 	}
