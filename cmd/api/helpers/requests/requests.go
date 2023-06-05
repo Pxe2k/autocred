@@ -54,46 +54,126 @@ type BCCApplicationRequestData struct {
 
 type EUApplicationRequestData struct {
 	Car struct {
-		Brand       string `json:"brand"`
-		Colour      string `json:"colour"`
-		Condition   string `json:"condition"`
-		Country     string `json:"country"`
-		FuelType    string `json:"fuelType"`
-		Insurance   string `json:"insurance"`
-		Model       string `json:"model"`
-		Price       string `json:"price"`
-		Type        string `json:"type"`
-		Year        string `json:"year"`
-		ChannelType string `json:"channelType"`
+		Condition string `json:"condition"`
+		Brand     string `json:"brand"`
+		Model     string `json:"model"`
+		Insurance bool   `json:"insurance"`
+		Price     uint   `json:"price"`
+		Year      uint   `json:"year"`
 	} `json:"car"`
 	City                 string `json:"city"`
-	CarCityLocation      string `json:"carCityLocation"`
-	ClientName           string `json:"clientName"`
-	DeliveryAddress      string `json:"deliveryAddress"`
-	DownpaySum           string `json:"downpaySum"`
-	Duration             string `json:"duration"`
-	DownPayment          uint   `json:"downpayment"`
-	Email                string `json:"email"`
 	Income               bool   `json:"income"`
-	IsPartnerOwner       bool   `json:"isPartnerOwner"`
+	PartyID              string `json:"partyId"`
+	DownPayment          uint   `json:"downpayment"`
+	Duration             uint   `json:"duration"`
+	OrderID              string `json:"orderId"`
+	Iin                  string `json:"iin"`
 	Phone                string `json:"phone"`
-	StoreAddress         string `json:"storeAddress"`
+	JobPhone             string `json:"JobPhone"`
 	IncomeMain           int    `json:"incomeMain"`
 	MaritalStatus        string `json:"MaritalStatus"`
 	ContactPersonName    string `json:"ContactPersonName"`
 	ContactPersonContact string `json:"ContactPersonContact"`
-	Iin                  string `json:"iin"`
-	OrderId              string `json:"orderId"`
+	IncomeAddConfirmed   string `json:"IncomeAddConfirmed"`
 	Gsvp                 struct {
 		Name          string `json:"name"`
-		Ext           string `json:"ext"`
+		Extension     string `json:"ext"`
 		Base64Content string `json:"base64content"`
 	} `json:"gsvp"`
-	IdcdBack struct {
+	Idcd struct {
 		Name          string `json:"name"`
-		Ext           string `json:"ext"`
+		Extension     string `json:"ext"`
 		Base64Content string `json:"base64content"`
-	} `json:"idcdBack"`
+	} `json:"idcd"`
+	Photo struct {
+		Name          string `json:"name"`
+		Extension     string `json:"ext"`
+		Base64Content string `json:"base64content"`
+	} `json:"phto"`
+}
+
+type ShinhanApplicationRequestData struct {
+	CalculationType string `json:"calculationType"`
+	Car             struct {
+		Brand     string `json:"brand"`
+		Colour    string `json:"colour"`
+		Condition string `json:"condition"`
+		Country   string `json:"country"`
+		FuelType  string `json:"fuelType"`
+		Model     string `json:"model"`
+		Price     string `json:"price"`
+		Type      string `json:"type"`
+		Year      string `json:"year"`
+	} `json:"car"`
+	Cas      bool   `json:"cas"`
+	City     string `json:"city"`
+	Customer struct {
+		ActualAddress struct {
+			District   string `json:"district"`
+			Flat       string `json:"flat"`
+			House      string `json:"house"`
+			Region     string `json:"region"`
+			Settlement string `json:"settlement"`
+			Street     string `json:"street"`
+		} `json:"actualAddress"`
+		BirthDate             string `json:"birthDate"`
+		BirthPlace            string `json:"birthPlace"`
+		ContactPersonFullName string `json:"contactPersonFullName"`
+		ContactPersonPhone    string `json:"contactPersonPhone"`
+		Document              struct {
+			CountryOfResidence string `json:"countryOfResidence"`
+			ExpirationDate     string `json:"expirationDate"`
+			IssuedDate         string `json:"issuedDate"`
+			Issuer             string `json:"issuer"`
+			Number             string `json:"number"`
+			PhotoBack          string `json:"photoBack"`
+			PhotoFront         string `json:"photoFront"`
+			Type               string `json:"type"`
+		} `json:"document"`
+		EmployerAddress struct {
+			District   string `json:"district"`
+			Flat       string `json:"flat"`
+			House      string `json:"house"`
+			Region     string `json:"region"`
+			Settlement string `json:"settlement"`
+			Street     string `json:"street"`
+		} `json:"employerAddress"`
+		EmployerName        string `json:"employerName"`
+		EmployerPhone       string `json:"employerPhone"`
+		EmploymentType      string `json:"employmentType"`
+		Firstname           string `json:"firstname"`
+		Gender              string `json:"gender"`
+		Iin                 string `json:"iin"`
+		Income              bool   `json:"income"`
+		Lastname            string `json:"lastname"`
+		MaritalStatus       string `json:"maritalStatus"`
+		MobilePhone         string `json:"mobilePhone"`
+		NumberOfDependents  string `json:"numberOfDependents"`
+		OfficialIncome      string `json:"officialIncome"`
+		Patronymic          string `json:"patronymic"`
+		Photo               string `json:"photo"`
+		RegistrationAddress struct {
+			District   string `json:"district"`
+			Flat       string `json:"flat"`
+			House      string `json:"house"`
+			Region     string `json:"region"`
+			Settlement string `json:"settlement"`
+			Street     string `json:"street"`
+		} `json:"registrationAddress"`
+		ResidencyStatus string `json:"residencyStatus"`
+	} `json:"customer"`
+	Discount       bool   `json:"discount"`
+	Downpayment    string `json:"downpayment"`
+	Duration       string `json:"duration"`
+	GosProgram     bool   `json:"gosProgram"`
+	Grace          bool   `json:"grace"`
+	InstalmentDate string `json:"instalmentDate"`
+	Insurance      bool   `json:"insurance"`
+	PartnerId      string `json:"partnerId"`
+	Verification   struct {
+		Code string `json:"code"`
+		Date string `json:"date"`
+	} `json:"verification"`
 }
 
 type BankTokenRequestData struct {
