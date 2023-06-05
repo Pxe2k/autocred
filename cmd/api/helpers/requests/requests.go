@@ -61,8 +61,6 @@ type EUApplicationRequestData struct {
 		Price     uint   `json:"price"`
 		Year      uint   `json:"year"`
 	} `json:"car"`
-	PartyID              string `json:"partyId"`
-	JobPhone             string `json:"JobPhone"`
 	City                 string `json:"city"`
 	Income               bool   `json:"income"`
 	PartyID              string `json:"partyId"`

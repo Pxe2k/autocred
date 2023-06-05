@@ -1,6 +1,7 @@
 package service
 
 import (
+	"autocredit/cmd/api/helpers"
 	"autocredit/cmd/api/helpers/requests"
 	"autocredit/cmd/api/helpers/responses"
 	"autocredit/cmd/api/internal/storage"
@@ -111,6 +112,13 @@ func CreateEUApplication(body []byte) (responses.EUResponseData, error) {
 	if err != nil {
 		return responses.EUResponseData{}, err
 	}
+	requestData.OrderID = helpers.RandBankApplicationID(16)
+	requestData.Gsvp.Name = "GSPV"
+	requestData.Gsvp.Extension = "pdf"
+	requestData.Idcd.Name = "IDCD"
+	requestData.Idcd.Extension = "jpg"
+	requestData.Photo.Name = "PHTO"
+	requestData.Photo.Extension = "jpg"
 
 	requestBody, err := json.Marshal(requestData)
 	if err != nil {
