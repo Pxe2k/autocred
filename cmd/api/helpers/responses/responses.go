@@ -95,6 +95,18 @@ type EUResponseData struct {
 	Msg     string `json:"msg"`
 }
 
+type ShinhanResponseData struct {
+	LeadID        int     `json:"leadID"`
+	ApplicationID int     `json:"applicationId"`
+	ClientID      int     `json:"clientId"`
+	CollateralID  []int   `json:"collateral_id"`
+	Status        string  `json:"status"`
+	CarPrice      int     `json:"car price"`
+	Durations     int     `json:"durations"`
+	Insurance     bool    `json:"insurance"`
+	DownPayment   float64 `json:"downpayment"`
+}
+
 func JSON(w http.ResponseWriter, statusCode int, data interface{}) {
 	w.WriteHeader(statusCode)
 	err := json.NewEncoder(w).Encode(data)

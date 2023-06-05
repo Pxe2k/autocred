@@ -161,59 +161,64 @@ func CreateEUApplication(body []byte) (responses.EUResponseData, error) {
 	return responseData, nil
 }
 
-func CreateShinhanApplication(body []byte) (responses.EUResponseData, error) {
+func CreateShinhanApplication(body []byte) (responses.ShinhanResponseData, error) {
 	var requestData requests.ShinhanApplicationRequestData
 	err := json.Unmarshal(body, &requestData)
 	if err != nil {
-		return responses.EUResponseData{}, err
+		return responses.ShinhanResponseData{}, err
 	}
 
 	requestData.Customer.Document.PhotoBack, err = encodeFileToBase64("eu-bank.jpg")
 	if err != nil {
-		return responses.EUResponseData{}, err
+		return responses.ShinhanResponseData{}, err
 	}
 	requestData.Customer.Document.PhotoFront, err = encodeFileToBase64("eu-bank.jpg")
 	if err != nil {
-		return responses.EUResponseData{}, err
+		return responses.ShinhanResponseData{}, err
 	}
 	requestData.Customer.Photo, err = encodeFileToBase64("eu-bank.jpg")
 	if err != nil {
-		return responses.EUResponseData{}, err
+		return responses.ShinhanResponseData{}, err
 	}
+	requestData.CalculationType = "A"
+	requestData.Cas = false
+	requestData.Discount = false
 
 	requestBody, err := json.Marshal(requestData)
 	if err != nil {
-		return responses.EUResponseData{}, err
+		return responses.ShinhanResponseData{}, err
 	}
 
-	url := os.Getenv("EU_APPLICATION")
+	url := os.Getenv("SHINHAN_APPLICATION")
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
 	if err != nil {
-		return responses.EUResponseData{}, err
+		return responses.ShinhanResponseData{}, err
 	}
 
 	// Add header parameters to the request
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("x-eub-token", os.Getenv("EU_TOKEN"))
+	req.Header.Set("Authorization", "Basic "+os.Getenv("SHINHAN_TOKEN"))
 
 	client := http.DefaultClient
 	resp, err := client.Do(req)
 	if err != nil {
-		return responses.EUResponseData{}, err
+		return responses.ShinhanResponseData{}, err
 	}
 
 	defer resp.Body.Close()
 
+	fmt.Println("StatusCode: ", resp.StatusCode)
+
 	serverResponse, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return responses.EUResponseData{}, err
+		return responses.ShinhanResponseData{}, err
 	}
 
-	var responseData responses.EUResponseData
+	var responseData responses.ShinhanResponseData
 
 	err = json.Unmarshal(serverResponse, &responseData)
 	if err != nil {
-		return responses.EUResponseData{}, err
+		return responses.ShinhanResponseData{}, err
 	}
 
 	return responseData, nil
