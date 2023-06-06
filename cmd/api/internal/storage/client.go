@@ -50,7 +50,7 @@ func (c *Client) Save(db *gorm.DB) (*Client, error) {
 func (c *Client) All(db *gorm.DB, fullName, sex, birthDate, userID, sortUser string) (*[]Client, error) {
 	var clients []Client
 
-	query := db.Debug().Model(&Client{}).Preload("User").Preload("User.AutoDealer")
+	query := db.Debug().Model(&Client{})
 
 	if fullName != "" {
 		query = db.Raw("SELECT clients.* FROM clients JOIN (SELECT id, concat_ws(' ', last_name, first_name, middle_name) as fullName FROM clients) clients2 ON clients2.fullName ILIKE ? AND clients2.id = clients.id", "%"+fullName+"%")
@@ -68,7 +68,7 @@ func (c *Client) All(db *gorm.DB, fullName, sex, birthDate, userID, sortUser str
 		query = query.Order("user_id " + sortUser)
 	}
 
-	query.Find(&clients)
+	query.Preload("User").Preload("User.AutoDealer").Find(&clients)
 
 	err := query.Error
 	if err != nil {
