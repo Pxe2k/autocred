@@ -13,7 +13,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func (server *Server) createClient(w http.ResponseWriter, r *http.Request) {
+func (server *Server) createIndividualClient(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
@@ -26,7 +26,7 @@ func (server *Server) createClient(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	clientCreated, err := service.CreateClientService(server.DB, body, uint(tokenID))
+	clientCreated, err := service.CreateIndividualClientService(server.DB, body, uint(tokenID))
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
@@ -35,7 +35,7 @@ func (server *Server) createClient(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusCreated, clientCreated)
 }
 
-func (server *Server) allClients(w http.ResponseWriter, r *http.Request) {
+func (server *Server) allIndividualClient(w http.ResponseWriter, r *http.Request) {
 	tokenID, err := auth.ExtractTokenID(r)
 	if tokenID == 0 {
 		responses.ERROR(w, http.StatusUnauthorized, err)
@@ -52,7 +52,7 @@ func (server *Server) allClients(w http.ResponseWriter, r *http.Request) {
 	sex := r.URL.Query().Get("sex")
 	birthDate := r.URL.Query().Get("birth_date")
 
-	client := storage.Client{}
+	client := storage.IndividualClient{}
 	clients, err := client.All(server.DB, fullName, sex, birthDate, userID, sortUserID)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
@@ -62,7 +62,7 @@ func (server *Server) allClients(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, clients)
 }
 
-func (server *Server) getClient(w http.ResponseWriter, r *http.Request) {
+func (server *Server) getIndividualClient(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.ParseUint(vars["id"], 10, 32)
 	if err != nil {
@@ -80,7 +80,7 @@ func (server *Server) getClient(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	clientGotten, err := service.GetClientService(server.DB, uint(id), uint(tokenID))
+	clientGotten, err := service.GetIndividualClientService(server.DB, uint(id), uint(tokenID))
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return
@@ -119,7 +119,7 @@ func (server *Server) uploadAvatar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	clientAvatar, err := service.UploadAvatarForClient(server.DB, uint32(clientID), file, handler)
+	clientAvatar, err := service.UploadAvatarForIndividualClient(server.DB, uint32(clientID), file, handler)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
@@ -139,7 +139,7 @@ func (server *Server) issuingAuthorityAll(w http.ResponseWriter, r *http.Request
 
 }
 
-func (server *Server) generateClientOTP(w http.ResponseWriter, r *http.Request) {
+func (server *Server) generateIndividualClientOTP(w http.ResponseWriter, r *http.Request) {
 	tokenID, err := auth.ExtractTokenID(r)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
@@ -156,7 +156,7 @@ func (server *Server) generateClientOTP(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	code, err := service.GenerateClientOTP(body)
+	code, err := service.GenerateIndividualClientOTP(body)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
@@ -168,7 +168,7 @@ func (server *Server) generateClientOTP(w http.ResponseWriter, r *http.Request) 
 	responses.JSON(w, http.StatusAccepted, responseData)
 }
 
-func (server *Server) submitClientOTP(w http.ResponseWriter, r *http.Request) {
+func (server *Server) submitIndividualClientOTP(w http.ResponseWriter, r *http.Request) {
 	tokenID, err := auth.ExtractTokenID(r)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
@@ -185,7 +185,7 @@ func (server *Server) submitClientOTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	status, err := service.SubmitClientOTP(server.DB, body, uint(tokenID))
+	status, err := service.SubmitIndividualClientOTP(server.DB, body, uint(tokenID))
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return

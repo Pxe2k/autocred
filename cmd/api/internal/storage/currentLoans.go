@@ -14,5 +14,5 @@ type CurrentLoans struct {
 	FrequencyOfPayments string `gorm:"size:100;" json:"frequencyOfPayments"` // Переодичность выплат
 	LastPayment         string `gorm:"size:100;" json:"lastPayment"`         // Дата последнего платежа
 	PresenceOfDelays    bool   `json:"presenceOfDelays"`                     // Наличие просрочек
-	ClientID            uint
+	IndividualClientID  uint
 }

@@ -18,30 +18,25 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateClientService(db *gorm.DB, body []byte, uid uint) (*storage.Client, error) {
-	client := storage.Client{}
+func CreateIndividualClientService(db *gorm.DB, body []byte, uid uint) (*storage.IndividualClient, error) {
+	client := storage.IndividualClient{}
 	err := json.Unmarshal(body, &client)
 	if err != nil {
-		return &storage.Client{}, err
+		return &storage.IndividualClient{}, err
 	}
 
 	client.UserID = uid
-	if client.Country == "Kazakhstan" {
-		client.Residency = true
-	} else {
-		client.Residency = false
-	}
 
 	createdClient, err := client.Save(db)
 	if err != nil {
-		return &storage.Client{}, err
+		return &storage.IndividualClient{}, err
 	}
 
 	return createdClient, nil
 }
 
-func GetClientService(db *gorm.DB, id, tokenID uint) (responses.ClientResponseData, error) {
-	client := storage.Client{}
+func GetIndividualClientService(db *gorm.DB, id, tokenID uint) (responses.ClientResponseData, error) {
+	client := storage.IndividualClient{}
 	responseData := responses.ClientResponseData{}
 	clientGotten, err := client.Get(db, id)
 	if err != nil {
@@ -67,8 +62,6 @@ func GetClientService(db *gorm.DB, id, tokenID uint) (responses.ClientResponseDa
 	responseData.Status = true
 	responseData.Sex = clientGotten.Sex
 	responseData.Country = clientGotten.Country
-	responseData.Residency = clientGotten.Residency
-	responseData.Bin = clientGotten.Bin
 	responseData.SecondPhone = clientGotten.SecondPhone
 	responseData.Email = clientGotten.Email
 	responseData.Education = clientGotten.Education
@@ -82,7 +75,6 @@ func GetClientService(db *gorm.DB, id, tokenID uint) (responses.ClientResponseDa
 	responseData.ResidentialAddress = clientGotten.ResidentialAddress
 	responseData.Contacts = clientGotten.Contacts
 	responseData.BonusInfo = clientGotten.BonusInfo
-	responseData.PersonalProperty = clientGotten.PersonalProperty
 	responseData.CurrentLoans = clientGotten.CurrentLoans
 	responseData.BeneficialOwners = clientGotten.BeneficialOwners
 	responseData.Pledges = clientGotten.Pledges
@@ -91,8 +83,8 @@ func GetClientService(db *gorm.DB, id, tokenID uint) (responses.ClientResponseDa
 	return responseData, nil
 }
 
-func UploadAvatarForClient(db *gorm.DB, uid uint32, file multipart.File, handler *multipart.FileHeader) (*storage.Client, error) {
-	client := storage.Client{}
+func UploadAvatarForIndividualClient(db *gorm.DB, uid uint32, file multipart.File, handler *multipart.FileHeader) (*storage.IndividualClient, error) {
+	client := storage.IndividualClient{}
 	clientGotten, err := client.Get(db, uint(uid))
 	if err != nil {
 		return nil, nil
@@ -141,7 +133,7 @@ func UploadAvatarForClient(db *gorm.DB, uid uint32, file multipart.File, handler
 	return updatedClient, nil
 }
 
-func GenerateClientOTP(body []byte) (string, error) {
+func GenerateIndividualClientOTP(body []byte) (string, error) {
 	requestData := requests.OTPRequestData{}
 	err := json.Unmarshal(body, &requestData)
 	if err != nil {
@@ -156,7 +148,7 @@ func GenerateClientOTP(body []byte) (string, error) {
 	return code, nil
 }
 
-func SubmitClientOTP(db *gorm.DB, body []byte, id uint) (string, error) {
+func SubmitIndividualClientOTP(db *gorm.DB, body []byte, id uint) (string, error) {
 	requestData := requests.OTPRequestData{}
 	err := json.Unmarshal(body, &requestData)
 	if err != nil {
@@ -176,7 +168,7 @@ func SubmitClientOTP(db *gorm.DB, body []byte, id uint) (string, error) {
 		return "wrong code", errors.New("code != value")
 	}
 
-	client := storage.Client{}
+	client := storage.IndividualClient{}
 	client.UserID = id
 	client.Phone = requestData.Phone
 

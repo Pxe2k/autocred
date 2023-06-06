@@ -40,11 +40,11 @@ func (ic *IndividualClient) Save(db *gorm.DB) (*IndividualClient, error) {
 		return nil, err
 	}
 
-	return c, nil
+	return ic, nil
 }
 
 func (ic *IndividualClient) All(db *gorm.DB, fullName, sex, birthDate, userID, sortUser string) (*[]IndividualClient, error) {
-	var clients []IndividualClient
+	var individualClients []IndividualClient
 
 	query := db.Debug().Model(&IndividualClient{})
 
@@ -64,18 +64,18 @@ func (ic *IndividualClient) All(db *gorm.DB, fullName, sex, birthDate, userID, s
 		query = query.Order("user_id " + sortUser)
 	}
 
-	query.Preload("User").Preload("User.AutoDealer").Find(&clients)
+	query.Preload("User").Preload("User.AutoDealer").Find(&individualClients)
 
 	err := query.Error
 	if err != nil {
 		return nil, err
 	}
 
-	return &clients, nil
+	return &individualClients, nil
 }
 
-func (c *Client) Get(db *gorm.DB, id uint) (*Client, error) {
-	err := db.Debug().Model(&Client{}).Where("id = ?", id).
+func (ic *IndividualClient) Get(db *gorm.DB, id uint) (*IndividualClient, error) {
+	err := db.Debug().Model(&IndividualClient{}).Where("id = ?", id).
 		Preload("User").
 		Preload("User.AutoDealer").
 		Preload("Document").
@@ -89,28 +89,28 @@ func (c *Client) Get(db *gorm.DB, id uint) (*Client, error) {
 		Preload("Pledges").
 		Preload("Pledges.CarModel").
 		Preload("Pledges.CarBrand").
-		Take(&c).Error
+		Take(&ic).Error
 	if err != nil {
 		return nil, err
 	}
 
-	return c, nil
+	return ic, nil
 }
 
-func (c *Client) UpdateAvatar(db *gorm.DB, id uint) (*Client, error) {
-	err := db.Debug().Model(&Client{}).Where("id = ?", id).Take(&Client{}).UpdateColumns(
+func (ic *IndividualClient) UpdateAvatar(db *gorm.DB, id uint) (*IndividualClient, error) {
+	err := db.Debug().Model(&IndividualClient{}).Where("id = ?", id).Take(&IndividualClient{}).UpdateColumns(
 		map[string]interface{}{
-			"image": c.Image,
+			"image": ic.Image,
 		},
 	).Error
 	if err != nil {
-		return &Client{}, err
+		return &IndividualClient{}, err
 	}
-	return c, nil
+	return ic, nil
 }
 
-func (c *Client) UpdateUserID(db *gorm.DB, client Client) error {
-	err := db.Debug().Model(&Client{}).Where("phone = ?", client.Phone).Update("user_id", client.UserID).Save(&client).Error
+func (ic *IndividualClient) UpdateUserID(db *gorm.DB, client IndividualClient) error {
+	err := db.Debug().Model(&IndividualClient{}).Where("phone = ?", client.Phone).Update("user_id", client.UserID).Save(&client).Error
 	if err != nil {
 		return err
 	}

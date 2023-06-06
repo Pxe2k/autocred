@@ -18,13 +18,12 @@ func (server *Server) InitializeRoutes() {
 
 	clientApi := server.Router.PathPrefix("/api/client").Subrouter()
 
-	clientApi.HandleFunc("/create", middlewares.SetMiddlewareJSON(server.createClient)).Methods("POST")
-	clientApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allClients)).Methods("GET")
-	clientApi.HandleFunc("/filter", middlewares.SetMiddlewareJSON(server.allClients)).Methods("GET")
-	clientApi.HandleFunc("/{id}", middlewares.SetMiddlewareJSON(server.getClient)).Methods("GET")
-	clientApi.HandleFunc("/upload-avatar/{id}", middlewares.SetMiddlewareJSON(server.uploadAvatar)).Methods("PUT")
-	clientApi.HandleFunc("/otp", middlewares.SetMiddlewareJSON(server.generateClientOTP)).Methods("POST")
-	clientApi.HandleFunc("/submit", middlewares.SetMiddlewareJSON(server.submitClientOTP)).Methods("PATCH")
+	clientApi.HandleFunc("/create-individual", middlewares.SetMiddlewareJSON(server.createIndividualClient)).Methods("POST")
+	clientApi.HandleFunc("/individuals-filter", middlewares.SetMiddlewareJSON(server.allIndividualClient)).Methods("GET")
+	clientApi.HandleFunc("/individual/{id}", middlewares.SetMiddlewareJSON(server.getIndividualClient)).Methods("GET")
+	clientApi.HandleFunc("/upload-avatar/individual/{id}", middlewares.SetMiddlewareJSON(server.uploadAvatar)).Methods("PUT")
+	clientApi.HandleFunc("/individual/otp", middlewares.SetMiddlewareJSON(server.generateIndividualClientOTP)).Methods("POST")
+	clientApi.HandleFunc("/individual/submit", middlewares.SetMiddlewareJSON(server.submitIndividualClientOTP)).Methods("PATCH")
 
 	pledgeApi := server.Router.PathPrefix("/api/pledge").Subrouter()
 

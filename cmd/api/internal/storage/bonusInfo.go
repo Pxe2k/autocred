@@ -23,5 +23,5 @@ type BonusInfo struct {
 	RestrictionsRightCreditTransaction bool    `json:"restrictionsRightCreditTransaction"`   // Установлены ли какие-либо ограничения права заключать кредитную сделку (в т.ч. брачным договором)
 	Pregnancy                          bool    `json:"pregnancy"`                            // Беременность
 	TaxArrears                         bool    `json:"taxArrears"`                           // Имеется ли задолженность по налогам и сборам
-	ClientID                           uint
+	IndividualClientID                 uint
 }

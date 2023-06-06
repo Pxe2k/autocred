@@ -4,9 +4,9 @@ import "gorm.io/gorm"
 
 type Media struct {
 	gorm.Model
-	Title    string `gorm:"size:255;" json:"title"`
-	File     string `gorm:"size:255;" json:"file"`
-	ClientID uint   `json:"clientID"`
+	Title              string `gorm:"size:255;" json:"title"`
+	File               string `gorm:"size:255;" json:"file"`
+	IndividualClientID uint   `json:"clientID"`
 }
 
 func (m *Media) Save(db *gorm.DB) (*Media, error) {

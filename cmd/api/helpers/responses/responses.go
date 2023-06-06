@@ -43,9 +43,7 @@ type ClientResponseData struct {
 	Sex                 string                       `json:"sex,omitempty"` // Пол
 	BirthDate           string                       `json:"birthDate"`     // ДР
 	Country             string                       `json:"country,omitempty"`
-	Residency           bool                         `json:"residency,omitempty"` // Резиденство
-	Bin                 string                       `json:"bin,omitempty"`       // ИИН
-	Phone               string                       `json:"phone"`               // Телефон
+	Phone               string                       `json:"phone"` // Телефон
 	SecondPhone         string                       `json:"secondPhone,omitempty"`
 	Email               string                       `json:"email,omitempty"`     // Email
 	Education           string                       `json:"education,omitempty"` // Образование
@@ -61,7 +59,6 @@ type ClientResponseData struct {
 	ResidentialAddress  *storage.ResidentialAddress  `json:"residentialAddress,omitempty"`  // Адрес проживания
 	Contacts            *[]storage.ClientContact     `json:"contacts,omitempty"`            // Доп. контакты
 	BonusInfo           *storage.BonusInfo           `json:"bonusInfo,omitempty"`           // Дополнительная информация
-	PersonalProperty    *[]storage.PersonalProperty  `json:"personalProperty,omitempty"`    // Личное имущество
 	CurrentLoans        *[]storage.CurrentLoans      `json:"currentLoans,omitempty"`        // Действующие кредиты и займы
 	BeneficialOwners    *[]storage.BeneficialOwner   `json:"beneficialOwners,omitempty"`    // Бенефициарные владельцы
 	Pledges             *[]storage.Pledge            `json:"pledges,omitempty"`             // Залоги

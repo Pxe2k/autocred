@@ -4,24 +4,24 @@ import "gorm.io/gorm"
 
 type Pledge struct {
 	gorm.Model
-	Type                    string    `gorm:"size:100;" json:"type"`
-	Title                   string    `gorm:"size:100;" json:"title"`
-	CarBrandID              uint      `json:"carBrandID"`
-	CarModelID              uint      `json:"carModelID"`
-	YearIssue               string    `gorm:"size:100;" json:"yearIssue"`
-	Condition               string    `gorm:"size:100;" json:"condition"`
-	Mileage                 string    `gorm:"size:100;" json:"mileage"`
-	VINCode                 string    `gorm:"size:100;" json:"vinCode"`
-	RegistrationNumber      string    `gorm:"size:100;" json:"registrationNumber"`
-	DateRegistrationNumber  string    `gorm:"size:100;" json:"dateRegistrationNumber"`
-	AutoNumber              string    `gorm:"size:100;" json:"autoNumber"`
-	CustomsNumber           string    `gorm:"size:100;" json:"customsNumber"`
-	CustomsDate             string    `gorm:"size:100;" json:"customsDate"`
-	CustomsIssuingAuthority string    `gorm:"size:100;" json:"customsIssuingAuthority"`
-	ClientID                uint      `json:"clientID"`
-	CarBrand                *CarBrand `json:"carBrand,omitempty"`
-	CarModel                *CarModel `json:"carModel,omitempty"`
-	Client                  *Client   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"client,omitempty"`
+	Type                    string            `gorm:"size:100;" json:"type"`
+	Title                   string            `gorm:"size:100;" json:"title"`
+	CarBrandID              uint              `json:"carBrandID"`
+	CarModelID              uint              `json:"carModelID"`
+	YearIssue               string            `gorm:"size:100;" json:"yearIssue"`
+	Condition               string            `gorm:"size:100;" json:"condition"`
+	Mileage                 string            `gorm:"size:100;" json:"mileage"`
+	VINCode                 string            `gorm:"size:100;" json:"vinCode"`
+	RegistrationNumber      string            `gorm:"size:100;" json:"registrationNumber"`
+	DateRegistrationNumber  string            `gorm:"size:100;" json:"dateRegistrationNumber"`
+	AutoNumber              string            `gorm:"size:100;" json:"autoNumber"`
+	CustomsNumber           string            `gorm:"size:100;" json:"customsNumber"`
+	CustomsDate             string            `gorm:"size:100;" json:"customsDate"`
+	CustomsIssuingAuthority string            `gorm:"size:100;" json:"customsIssuingAuthority"`
+	ClientID                uint              `json:"clientID"`
+	CarBrand                *CarBrand         `json:"carBrand,omitempty"`
+	CarModel                *CarModel         `json:"carModel,omitempty"`
+	IndividualClient        *IndividualClient `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"client,omitempty"`
 }
 
 func (p *Pledge) Save(db *gorm.DB) (*Pledge, error) {
