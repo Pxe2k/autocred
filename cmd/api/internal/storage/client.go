@@ -53,8 +53,7 @@ func (c *Client) All(db *gorm.DB, fullName, sex, birthDate, userID, sortUser str
 	query := db.Debug().Model(&Client{}).Preload("User").Preload("User.AutoDealer")
 
 	if fullName != "" {
-		fullNameParam := "%" + fullName + "%"
-		query = query.Raw("SELECT clients.* FROM clients JOIN (SELECT id, concat_ws(' ', last_name, first_name, middle_name) as fullName FROM clients) clients2 ON clients2.fullName LIKE ? AND clients2.id = clients.id", fullNameParam)
+		query = db.Raw("SELECT clients.* FROM clients JOIN (SELECT id, concat_ws(' ', last_name, first_name, middle_name) as fullName FROM clients) clients2 ON clients2.fullName ILIKE ? AND clients2.id = clients.id", "%"+fullName+"%")
 	}
 	if userID != "" {
 		query = query.Where("user_id = ?", userID)
