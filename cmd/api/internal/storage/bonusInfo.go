@@ -6,6 +6,7 @@ type BonusInfo struct {
 	gorm.Model
 	AmountIncome                       int     `json:"amountIncome"`                         // Сумма доходов
 	AmountExpenses                     int     `json:"amountExpenses"`                       // Сумма расходов
+	FinAnalysis                        bool    `json:"finAnalysis"`                          // Фин Анализ
 	NetIncome                          int     `json:"netIncome"`                            // Чистый доход
 	BankTitle                          *string `gorm:"size:100;" json:"bankTitle,omitempty"` // Название банков
 	Returnee                           bool    `json:"returnee"`                             // Статус Оралман

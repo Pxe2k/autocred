@@ -4,9 +4,8 @@ import (
 	"gorm.io/gorm"
 )
 
-type Client struct {
+type IndividualClient struct {
 	gorm.Model
-	IsBusiness          bool                 `json:"isBusiness"`                   // Физ/не физ
 	TypeOfClient        string               `gorm:"size:100" json:"typeOfClient"` // Тип клиента
 	FirstName           string               `gorm:"size:100" json:"firstName"`
 	MiddleName          string               `gorm:"size:100" json:"middleName"`
@@ -14,9 +13,7 @@ type Client struct {
 	Sex                 string               `gorm:"size:100" json:"sex"`       // Пол
 	BirthDate           string               `gorm:"size:100" json:"birthDate"` // ДР
 	Country             string               `gorm:"size:100" json:"country"`
-	Residency           bool                 `gorm:"size:100" json:"residency"` // Резиденство
-	Bin                 string               `gorm:"size:100" json:"bin"`       // ИИН
-	Phone               string               `gorm:"size:100" json:"phone"`     // Телефон
+	Phone               string               `gorm:"size:100" json:"phone"` // Телефон
 	SecondPhone         string               `gorm:"size:100" json:"secondPhone"`
 	Email               string               `gorm:"size:100" json:"email"`     // Email
 	Education           string               `gorm:"size:100" json:"education"` // Образование
@@ -27,30 +24,29 @@ type Client struct {
 	Document            *Document            `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"document,omitempty"`            // Документы
 	MaritalStatus       *MaritalStatus       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"maritalStatus,omitempty"`       // Семейное положение
 	WorkPlaceInfo       *WorkPlaceInfo       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"workPlaceInfo,omitempty"`       // Информация о месте работы   // Отношения с банками
+	CurrentLoans        *[]CurrentLoans      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"currentLoans,omitempty"`        // Действующие кредиты и займы
 	RegistrationAddress *RegistrationAddress `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"registrationAddress,omitempty"` // Адрес прописки
 	ResidentialAddress  *ResidentialAddress  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"residentialAddress,omitempty"`  // Адрес проживания
 	Contacts            *[]ClientContact     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"contacts,omitempty"`            // Доп. контакты
 	BonusInfo           *BonusInfo           `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bonusInfo"`                     // Дополнительная информация
-	PersonalProperty    *[]PersonalProperty  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"personalProperty,omitempty"`    // Личное имущество
-	CurrentLoans        *[]CurrentLoans      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"currentLoans,omitempty"`        // Действующие кредиты и займы
 	BeneficialOwners    *[]BeneficialOwner   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"beneficialOwners,omitempty"`    // Бенефициарные владельцы
 	Pledges             *[]Pledge            `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"pledges,omitempty"`             // Залоги
 	Documents           *[]Media             `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"documents"`
 }
 
-func (c *Client) Save(db *gorm.DB) (*Client, error) {
-	err := db.Debug().Create(&c).Error
+func (ic *IndividualClient) Save(db *gorm.DB) (*IndividualClient, error) {
+	err := db.Debug().Create(&ic).Error
 	if err != nil {
-		return &Client{}, err
+		return nil, err
 	}
 
 	return c, nil
 }
 
-func (c *Client) All(db *gorm.DB, fullName, sex, birthDate, userID, sortUser string) (*[]Client, error) {
-	var clients []Client
+func (ic *IndividualClient) All(db *gorm.DB, fullName, sex, birthDate, userID, sortUser string) (*[]IndividualClient, error) {
+	var clients []IndividualClient
 
-	query := db.Debug().Model(&Client{})
+	query := db.Debug().Model(&IndividualClient{})
 
 	if fullName != "" {
 		query = db.Raw("SELECT clients.* FROM clients JOIN (SELECT id, concat_ws(' ', last_name, first_name, middle_name) as fullName FROM clients) clients2 ON clients2.fullName ILIKE ? AND clients2.id = clients.id", "%"+fullName+"%")
