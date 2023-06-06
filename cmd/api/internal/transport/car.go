@@ -86,7 +86,7 @@ func (server *Server) updateCarBrand(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusCreated, carBrandUpdate)
 }
 
-func (server *Server) deleteCarBrand(w http.ResponseWriter, r *http.Request) {
+func (server *Server) softDeleteCarBrand(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	bankProductID, err := strconv.ParseUint(vars["id"], 10, 32)
 	if err != nil {
@@ -207,7 +207,7 @@ func (server *Server) updateCarModel(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusCreated, carModelUpdate)
 }
 
-func (server *Server) deleteCarModel(w http.ResponseWriter, r *http.Request) {
+func (server *Server) softDeleteCarModel(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	carModelID, err := strconv.ParseUint(vars["id"], 10, 32)
 	if err != nil {

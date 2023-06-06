@@ -79,8 +79,15 @@ func (server *Server) InitializeRoutes() {
 
 	carApi := server.Router.PathPrefix("/api/cars").Subrouter()
 
-	carApi.HandleFunc("/create", middlewares.SetMiddlewareJSON(server.createCarBrand)).Methods("POST")
 	carApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allCarBrands)).Methods("GET")
+	carApi.HandleFunc("/create-brand", middlewares.SetMiddlewareJSON(server.createCarBrand)).Methods("POST")
+	carApi.HandleFunc("/create-model", middlewares.SetMiddlewareJSON(server.createCarModel)).Methods("POST")
+	carApi.HandleFunc("/brand/{id}", middlewares.SetMiddlewareJSON(server.getCarBrand)).Methods("GET")
+	carApi.HandleFunc("/model/{id}", middlewares.SetMiddlewareJSON(server.getCarModel)).Methods("GET")
+	carApi.HandleFunc("/update-brand/{id}", middlewares.SetMiddlewareJSON(server.updateCarBrand)).Methods("PATCH")
+	carApi.HandleFunc("/update-model/{id}", middlewares.SetMiddlewareJSON(server.updateCarModel)).Methods("PATCH")
+	carApi.HandleFunc("/delete-brand/{id}", middlewares.SetMiddlewareJSON(server.softDeleteCarBrand)).Methods("DELETE")
+	carApi.HandleFunc("/delete-model/{id}", middlewares.SetMiddlewareJSON(server.softDeleteCarModel)).Methods("DELETE")
 
 	insuranceApi := server.Router.PathPrefix("/api/insurance").Subrouter()
 
