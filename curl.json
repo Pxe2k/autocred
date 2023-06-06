@@ -1,39 +1,74 @@
 {
-    "partnerId": "10155",
-    "partnerName": "TOO BRROKER",
-    "partnerBin": "001002003004",
-    "dealer_id": "",
-    "partnerCity": "Алматы",
-    "costObject": 7090000,
-    "downPaymentAmt": 4000000,
-    "loanAmt": 3090000,
-    "loanDuration": 84,
-    "simpleFinAnalysis": 0,
-    "brand": "Toyota",
-    "model": "Camry",
-    "issueYear": 2021,
-    "iin": "840203402090",
-    "iDocType": "УЛ",
-    "productCode": "0.201.1.0513",
-    "mobilePhoneNo": "7777333863",
-    "workName": "РГУ РЕСПУБЛИКАНСКАЯ СПЕЦИАЛИЗИРОВАННАЯ ШКОЛА-ИНТЕРНАТ КОЛЛЕДЖ",
-    "workAddress": "г.Алматы, Алатауский район, МИКРОРАЙОН ШАНЫРАК 1,УЛ ОТЕМИС УЛЫ оф.71",
-    "workStatus": "Обычный клиент",
-    "organizationPhoneNo": "77050001122",
-    "basicIncome": 5000000,
-    "additionalIncome": 70000,
-    "user_code": "Perizat Baltabekova",
-    "statementType":" ",
-    "contactPerson": [
-        {
-            "fullName": "Натали",
-            "phoneNo": "87076464503"
-        }
-    ],
-    "document": { 
-            "file": "", 
-            "extension": "pdf",
-            "code": "SOG" 
-    },
-    "msg_id": "_______"
+    "RqUID": "testsomehing",
+    "Type": "AutoOnline",
+    "SourceSystem": "ALLUR",
+    "Language": "test",
+    "Request": {
+        "Credit": {
+            "CarCost": 15000000,
+            "CreditTerm": 84,
+            "ProductCode": "060",
+            "SchemeOfFinance": "2",
+            "PaymentType": "2",
+            "Insurance": {
+                "IsNSInsurance": true,
+                "NsProductCode": "201",
+                "NsCompanyCode": "006",
+                "IsKasko": true,
+                "KaskoProductCode": "113",
+                "KaskoCompanyCode": "009",
+                "IsInsuranceInside": true
+            }
+        },
+        "Car": {
+            "Brand": "Chevrolet",
+            "Model": "Chevrolet-Cobalt",
+            "YearNumber": 2022,
+            "VINCode": "testVIN"
+        },
+        "Customer": {
+            "IIN": "000617550816",
+            "Phone": "77786581285",
+            "Docs": {
+                "Photo": {
+                    "FileBase64Code": "Photo",
+                    "FileExtension": "pdf"
+                },
+                "Agreement": {
+                    "FileBase64Code": "Agreement",
+                    "FileExtension": "pdf"
+                },
+                "IdentityDocument_Front": {
+                    "FileBase64Code": "IdentityDocument_Front",
+                    "FileExtension": "png"
+                },
+                "IdentityDocument_Back": {
+                    "FileBase64Code": "IdentityDocument_Back",
+                    "FileExtension": "png"
+                }
+            }
+        },
+        "WorkPlace": {
+            "TypeActivity": "test",
+            "CompanyFullName": "Prime Source",
+            "JobCategory": "Development",
+            "JobTitle": "Fico-developer",
+            "EmploymentStatus": "full",
+            "FullExperienceTerm": 74,
+            "LastExperienceTerm": 12,
+            "AddWorkTypeActivity": "test2",
+            "MainSalary": 750000,
+            "TotalSalary": 750000
+        },
+        "FirstAddPerson": {
+            "MobilePhone": "77075738176",
+            "CustomerRelation": "self"
+        },
+        "SecondAddPerson": {
+            "MobilePhone": "77075738176",
+            "CustomerRelation": "self2"
+        },
+        "SmsId": "1",
+        "PartnerAppId": "string"
+    }
 }

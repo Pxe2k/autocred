@@ -168,11 +168,11 @@ func CreateShinhanApplication(body []byte) (responses.ShinhanResponseData, error
 		return responses.ShinhanResponseData{}, err
 	}
 
-	requestData.Customer.Document.PhotoBack, err = encodeFileToBase64("eu-bank.jpg")
+	requestData.Customer.Document.PhotoBack, err = encodeFileToBase64("templates/resultMedia/outputPDF/autocredit.pdf")
 	if err != nil {
 		return responses.ShinhanResponseData{}, err
 	}
-	requestData.Customer.Document.PhotoFront, err = encodeFileToBase64("eu-bank.jpg")
+	requestData.Customer.Document.PhotoFront, err = encodeFileToBase64("templates/resultMedia/outputPDF/autocredit.pdf")
 	if err != nil {
 		return responses.ShinhanResponseData{}, err
 	}
