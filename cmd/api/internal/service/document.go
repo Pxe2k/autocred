@@ -20,7 +20,7 @@ func UploadFileService(db *gorm.DB, uid uint32, title, folderName string, client
 	}
 	media.File = filePath
 	media.Title = title
-	media.ClientID = clientID
+	media.IndividualClientID = clientID
 	if title == "" {
 		media.Title = handler.Filename
 	}

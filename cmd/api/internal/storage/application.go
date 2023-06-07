@@ -15,7 +15,7 @@ type Application struct {
 	BankApplications []BankApplication `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bankApplications"`
 	UserID           uint              `json:"userID"`
 	ClientID         uint              `json:"clientID"`
-	Client           *Client           `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"client,omitempty"`
+	Client           *IndividualClient `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"client,omitempty"`
 }
 
 func (a *Application) Save(db *gorm.DB) (*Application, error) {

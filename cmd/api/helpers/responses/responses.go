@@ -34,36 +34,36 @@ type UserResponseData struct {
 }
 
 type ClientResponseData struct {
-	ID                  uint                         `json:"ID"`
-	IsBusiness          bool                         `json:"isBusiness"`   // Физ/не физ
-	TypeOfClient        string                       `json:"typeOfClient"` // Тип клиента
-	FirstName           string                       `json:"firstName"`
-	MiddleName          string                       `json:"middleName"`
-	LastName            string                       `json:"lastName,omitempty"`
-	Sex                 string                       `json:"sex,omitempty"` // Пол
-	BirthDate           string                       `json:"birthDate"`     // ДР
-	Country             string                       `json:"country,omitempty"`
-	Phone               string                       `json:"phone"` // Телефон
-	SecondPhone         string                       `json:"secondPhone,omitempty"`
-	Email               string                       `json:"email,omitempty"`     // Email
-	Education           string                       `json:"education,omitempty"` // Образование
-	Status              bool                         `json:"status"`
-	Comment             string                       `json:"comment,omitempty"`
-	Image               string                       `json:"image,omitempty"` // Аватарка
-	UserID              uint                         `json:"userId,omitempty"`
-	User                *storage.User                `json:"user,omitempty"`
-	Document            *storage.Document            `json:"document,omitempty"`            // Документы
-	MaritalStatus       *storage.MaritalStatus       `json:"maritalStatus,omitempty"`       // Семейное положение
-	WorkPlaceInfo       *storage.WorkPlaceInfo       `json:"workPlaceInfo,omitempty"`       // Информация о месте работы   // Отношения с банками
-	RegistrationAddress *storage.RegistrationAddress `json:"registrationAddress,omitempty"` // Адрес прописки
-	ResidentialAddress  *storage.ResidentialAddress  `json:"residentialAddress,omitempty"`  // Адрес проживания
-	Contacts            *[]storage.ClientContact     `json:"contacts,omitempty"`            // Доп. контакты
-	BonusInfo           *storage.BonusInfo           `json:"bonusInfo,omitempty"`           // Дополнительная информация
-	CurrentLoans        *[]storage.CurrentLoans      `json:"currentLoans,omitempty"`        // Действующие кредиты и займы
-	BeneficialOwners    *[]storage.BeneficialOwner   `json:"beneficialOwners,omitempty"`    // Бенефициарные владельцы
-	Pledges             *[]storage.Pledge            `json:"pledges,omitempty"`             // Залоги
-	Documents           *[]storage.Media             `json:"documents,omitempty"`
-	CreatedAt           time.Time                    `json:"createdAt"`
+	ID                  uint                                 `json:"ID"`
+	IsBusiness          bool                                 `json:"isBusiness"`   // Физ/не физ
+	TypeOfClient        string                               `json:"typeOfClient"` // Тип клиента
+	FirstName           string                               `json:"firstName"`
+	MiddleName          string                               `json:"middleName"`
+	LastName            string                               `json:"lastName,omitempty"`
+	Sex                 string                               `json:"sex,omitempty"` // Пол
+	BirthDate           string                               `json:"birthDate"`     // ДР
+	Country             string                               `json:"country,omitempty"`
+	Phone               string                               `json:"phone"` // Телефон
+	SecondPhone         string                               `json:"secondPhone,omitempty"`
+	Email               string                               `json:"email,omitempty"`     // Email
+	Education           string                               `json:"education,omitempty"` // Образование
+	Status              bool                                 `json:"status"`
+	Comment             string                               `json:"comment,omitempty"`
+	Image               string                               `json:"image,omitempty"` // Аватарка
+	UserID              uint                                 `json:"userId,omitempty"`
+	User                *storage.User                        `json:"user,omitempty"`
+	Document            *storage.Document                    `json:"document,omitempty"`            // Документы
+	MaritalStatus       *storage.MaritalStatus               `json:"maritalStatus,omitempty"`       // Семейное положение
+	WorkPlaceInfo       *storage.WorkPlaceInfo               `json:"workPlaceInfo,omitempty"`       // Информация о месте работы   // Отношения с банками
+	RegistrationAddress *storage.RegistrationAddress         `json:"registrationAddress,omitempty"` // Адрес прописки
+	ResidentialAddress  *storage.ResidentialAddress          `json:"residentialAddress,omitempty"`  // Адрес проживания
+	Contacts            *[]storage.ClientContact             `json:"contacts,omitempty"`            // Доп. контакты
+	BonusInfo           *storage.BonusInfo                   `json:"bonusInfo,omitempty"`           // Дополнительная информация
+	CurrentLoans        *[]storage.CurrentLoans              `json:"currentLoans,omitempty"`        // Действующие кредиты и займы
+	BeneficialOwners    *[]storage.BeneficialOwnerIndividual `json:"beneficialOwners,omitempty"`    // Бенефициарные владельцы
+	Pledges             *[]storage.Pledge                    `json:"pledges,omitempty"`             // Залоги
+	Documents           *[]storage.Media                     `json:"documents,omitempty"`
+	CreatedAt           time.Time                            `json:"createdAt"`
 }
 
 type SubmitResponse struct {

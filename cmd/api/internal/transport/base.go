@@ -1,7 +1,6 @@
 package transport
 
 import (
-	"autocredit/cmd/api/internal/storage"
 	"fmt"
 	"log"
 	"net/http"
@@ -31,36 +30,7 @@ func (server *Server) Initialize(Dbdriver, DbUser, DbPassword, DbPort, DbHost, D
 		fmt.Printf("We are connected to the %s database \n", Dbdriver)
 	}
 
-	server.DB.Debug().AutoMigrate(
-		storage.AutoDealer{},
-		storage.Role{},
-		storage.User{},
-		storage.Client{},
-		storage.Document{},
-		storage.WorkPlaceInfo{},
-		storage.MaritalStatus{},
-		storage.RegistrationAddress{},
-		storage.ResidentialAddress{},
-		storage.ClientContact{},
-		storage.BeneficialOwner{},
-		storage.BonusInfo{},
-		storage.PersonalProperty{},
-		storage.CurrentLoans{},
-		storage.Pledge{},
-		storage.Application{},
-		storage.Bank{},
-		storage.BankResponse{},
-		storage.WorkingActivity{},
-		storage.City{},
-		storage.BankProduct{},
-		storage.Media{},
-		storage.CarBrand{},
-		storage.CarModel{},
-		storage.Kasko{},
-		storage.RoadHelp{},
-		storage.LifeInsurance{},
-		storage.BankApplication{},
-		storage.IssuingAuthority{}) //migrations
+	server.DB.Debug().AutoMigrate() //migrations
 
 	server.Router = mux.NewRouter()
 	server.InitializeRoutes()

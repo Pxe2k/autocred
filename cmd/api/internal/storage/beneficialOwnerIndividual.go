@@ -2,7 +2,7 @@ package storage
 
 import "gorm.io/gorm"
 
-type BeneficialOwner struct {
+type BeneficialOwnerIndividual struct {
 	gorm.Model
 	FullName           string `gorm:"size:100;" json:"fullName"`
 	Bin                string `gorm:"size:100;" json:"bin"`

@@ -36,7 +36,7 @@ func GeneratePdf(db *gorm.DB, body []byte, id uint) (*storage.Media, error) {
 	templateFileName := "templates/resultMedia/documentTemplates/" + fileName + ".html"
 	//data := result["data"]
 
-	client := storage.Client{}
+	client := storage.IndividualClient{}
 	clientGotten, err := client.Get(db, id)
 	if err != nil {
 		return nil, err
@@ -139,7 +139,7 @@ func UploadFileToUser(db *gorm.DB, uid uint32, filePath string, title string) (*
 	media := storage.Media{}
 	media.File = filePath
 	media.Title = title
-	media.ClientID = uint(uid)
+	media.IndividualClientID = uint(uid)
 	mediaCreated, err := media.Save(db)
 	if err != nil {
 		return &storage.Media{}, err
