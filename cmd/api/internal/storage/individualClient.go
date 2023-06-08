@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"fmt"
 	"gorm.io/gorm"
 )
 
@@ -49,6 +50,7 @@ func (ic *IndividualClient) All(db *gorm.DB, fullName, sex, birthDate, sortUser 
 	query := db.Debug().Model(&IndividualClient{})
 
 	if fullName != "" {
+		fmt.Println("fullname", fullName)
 		query = db.Raw("SELECT clients.* FROM clients JOIN (SELECT id, concat_ws(' ', last_name, first_name, middle_name) as fullName FROM clients) clients2 ON clients2.fullName ILIKE ? AND clients2.id = clients.id", "%"+fullName+"%")
 	}
 	if sex != "" {

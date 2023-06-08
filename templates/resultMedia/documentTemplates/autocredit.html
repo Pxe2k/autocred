@@ -78,7 +78,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                         
                         <div>
                             <div>
-                                <p>{{ .MiddleName }} </p>
+                                <p>{{ .LastName }} </p>
                             </div>
                         </div>
                     </td>
@@ -114,7 +114,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                         
                         <div>
                             <div>
-                                <p>{{ .LastName }} </p>
+                                <p>{{ .MiddleName }} </p>
                             </div>
                         </div>
                     </td>
@@ -150,7 +150,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                         
                         <div>
                             <div>
-                                <p>{{ .Bin }} </p>
+                                <p>{{ .Document.IIN }} </p>
                             </div>
                         </div>
                     </td>
@@ -186,7 +186,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                         
                         <div>
                             <div>
-                                <p> </p>
+                                <p>{{ .Document.PlaceOfBirth }}</p>
                             </div>
                         </div>
                     </td>
@@ -222,7 +222,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                         
                         <div>
                             <div>
-                                <p>{{ .Residency }} </p>
+                                <p>{{ .Country }} </p>
                             </div>
                         </div>
                     </td>
