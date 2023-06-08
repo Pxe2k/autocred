@@ -35,12 +35,12 @@ func CreateIndividualClientService(db *gorm.DB, body []byte, uid uint) (*storage
 	return createdClient, nil
 }
 
-func GetIndividualClientService(db *gorm.DB, id, tokenID uint) (responses.ClientResponseData, error) {
+func GetIndividualClientService(db *gorm.DB, id, tokenID uint) (responses.IndividualClientResponseData, error) {
 	client := storage.IndividualClient{}
-	responseData := responses.ClientResponseData{}
+	responseData := responses.IndividualClientResponseData{}
 	clientGotten, err := client.Get(db, id)
 	if err != nil {
-		return responses.ClientResponseData{}, err
+		return responses.IndividualClientResponseData{}, err
 	}
 
 	responseData.ID = clientGotten.ID
@@ -133,7 +133,7 @@ func UploadAvatarForIndividualClient(db *gorm.DB, uid uint32, file multipart.Fil
 	return updatedClient, nil
 }
 
-func GenerateIndividualClientOTP(body []byte) (string, error) {
+func GenerateClientOTP(body []byte) (string, error) {
 	requestData := requests.OTPRequestData{}
 	err := json.Unmarshal(body, &requestData)
 	if err != nil {
@@ -171,6 +171,137 @@ func SubmitIndividualClientOTP(db *gorm.DB, body []byte, id uint) (string, error
 	client := storage.IndividualClient{}
 	client.UserID = id
 	client.Phone = requestData.Phone
+
+	err = client.UpdateUserID(db, client)
+	if err != nil {
+		return "error", err
+	}
+
+	return "success", nil
+}
+
+func CreateBusinessClientService(db *gorm.DB, body []byte, uid uint) (*storage.BusinessClient, error) {
+	client := storage.BusinessClient{}
+	err := json.Unmarshal(body, &client)
+	if err != nil {
+		return &storage.BusinessClient{}, err
+	}
+
+	client.UserID = uid
+
+	createdClient, err := client.Save(db)
+	if err != nil {
+		return &storage.BusinessClient{}, err
+	}
+
+	return createdClient, nil
+}
+
+func GetBusinessClientService(db *gorm.DB, id, tokenID uint) (responses.BusinessClientResponseData, error) {
+	client := storage.BusinessClient{}
+	responseData := responses.BusinessClientResponseData{}
+	clientGotten, err := client.Get(db, id)
+	if err != nil {
+		return responses.BusinessClientResponseData{}, err
+	}
+
+	responseData.ID = clientGotten.ID
+	responseData.TypeOfClient = clientGotten.TypeOfClient
+	responseData.CompanyName = clientGotten.CompanyName
+	responseData.CompanyPhone = clientGotten.CompanyPhone
+	responseData.CompanyLifespan = clientGotten.CompanyLifespan
+	responseData.ActivityType = clientGotten.ActivityType
+	responseData.KindActivity = clientGotten.KindActivity
+	responseData.RegistrationDate = clientGotten.RegistrationDate
+	responseData.CreatedAt = clientGotten.CreatedAt
+
+	if clientGotten.UserID != tokenID {
+		responseData.Status = false
+		return responseData, nil
+	}
+
+	responseData.Status = true
+	responseData.Image = clientGotten.Image
+	responseData.UserID = clientGotten.UserID
+	responseData.User = clientGotten.User
+	responseData.RegistrationAddress = clientGotten.RegistrationAddress
+
+	return responseData, nil
+}
+
+func UploadAvatarForBusinessClient(db *gorm.DB, uid uint32, file multipart.File, handler *multipart.FileHeader) (*storage.BusinessClient, error) {
+	client := storage.BusinessClient{}
+	clientGotten, err := client.Get(db, uint(uid))
+	if err != nil {
+		return nil, nil
+	}
+	if clientGotten.Image != "" {
+		err := os.Remove(clientGotten.Image)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+
+	validateStatus := helpers.ImagesValidate(handler.Filename, handler.Size)
+	if validateStatus != true {
+		validateErr := errors.New("image not validated")
+		return nil, validateErr
+	}
+
+	fid := helpers.RandFileId()
+	fidString := strconv.Itoa(fid)
+	fileName := strings.Split(handler.Filename, ".")
+	fileFmt := fileName[len(fileName)-1]
+	storageFileName := "upload-" + "client-avatar" + fidString + "." + fileFmt
+	deleteSpaces := strings.ReplaceAll(storageFileName, " ", "")
+	filePath := "storage/" + deleteSpaces
+
+	tempFile, err := os.Create(filePath)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+	defer tempFile.Close()
+
+	fileBytes, err := io.ReadAll(file)
+	if err != nil {
+		fmt.Println(err)
+	}
+	tempFile.Write(fileBytes)
+
+	clientGotten.Image = filePath
+
+	updatedClient, err := clientGotten.UpdateAvatar(db, uint(uid))
+	if err != nil {
+		return nil, err
+	}
+
+	return updatedClient, nil
+}
+
+func SubmitBusinessClientOTP(db *gorm.DB, body []byte, id uint) (string, error) {
+	requestData := requests.OTPRequestData{}
+	err := json.Unmarshal(body, &requestData)
+	if err != nil {
+		return "error", err
+	}
+
+	val, err := helpers.Redis.Get(helpers.Ctx, requestData.Phone).Result()
+	if err == redis.Nil {
+		fmt.Println("key does not exist")
+		return "key does not exist", err
+	} else if err != nil {
+		fmt.Println(err)
+		return "error ", err
+	}
+
+	if val != requestData.Code {
+		return "wrong code", errors.New("code != value")
+	}
+
+	client := storage.BusinessClient{}
+	client.UserID = id
+	client.CompanyPhone = requestData.Phone
 
 	err = client.UpdateUserID(db, client)
 	if err != nil {

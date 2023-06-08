@@ -35,6 +35,28 @@ func (server *Server) createIndividualClient(w http.ResponseWriter, r *http.Requ
 	responses.JSON(w, http.StatusCreated, clientCreated)
 }
 
+func (server *Server) createBusinessClient(w http.ResponseWriter, r *http.Request) {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	tokenID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	clientCreated, err := service.CreateBusinessClientService(server.DB, body, uint(tokenID))
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusCreated, clientCreated)
+}
+
 func (server *Server) allIndividualClient(w http.ResponseWriter, r *http.Request) {
 	tokenID, err := auth.ExtractTokenID(r)
 	if tokenID == 0 {
@@ -53,6 +75,33 @@ func (server *Server) allIndividualClient(w http.ResponseWriter, r *http.Request
 	birthDate := r.URL.Query().Get("birth_date")
 
 	client := storage.IndividualClient{}
+	clients, err := client.All(server.DB, fullName, sex, birthDate, userID, sortUserID)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusOK, clients)
+}
+
+func (server *Server) allBusinessClient(w http.ResponseWriter, r *http.Request) {
+	tokenID, err := auth.ExtractTokenID(r)
+	if tokenID == 0 {
+		responses.ERROR(w, http.StatusUnauthorized, err)
+		return
+	}
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	userID := r.URL.Query().Get("sort_user")
+	sortUserID := r.URL.Query().Get("sort_user_id")
+	fullName := r.URL.Query().Get("full_name")
+	sex := r.URL.Query().Get("sex")
+	birthDate := r.URL.Query().Get("birth_date")
+
+	client := storage.BusinessClient{}
 	clients, err := client.All(server.DB, fullName, sex, birthDate, userID, sortUserID)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
@@ -89,7 +138,34 @@ func (server *Server) getIndividualClient(w http.ResponseWriter, r *http.Request
 	responses.JSON(w, http.StatusOK, clientGotten)
 }
 
-func (server *Server) uploadAvatar(w http.ResponseWriter, r *http.Request) {
+func (server *Server) getBusinessClient(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.ParseUint(vars["id"], 10, 32)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	tokenID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, err)
+		return
+	}
+	if tokenID == 0 {
+		responses.ERROR(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	clientGotten, err := service.GetBusinessClientService(server.DB, uint(id), uint(tokenID))
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusOK, clientGotten)
+}
+
+func (server *Server) uploadIndividualClientAvatar(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	clientID, err := strconv.ParseUint(vars["id"], 10, 32)
 	if err != nil {
@@ -127,19 +203,45 @@ func (server *Server) uploadAvatar(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, clientAvatar)
 }
 
-func (server *Server) issuingAuthorityAll(w http.ResponseWriter, r *http.Request) {
-	issuingAuthority := storage.IssuingAuthority{}
-	issuingAuthorities, err := issuingAuthority.All(server.DB)
+func (server *Server) uploadBusinessClientAvatar(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	clientID, err := strconv.ParseUint(vars["id"], 10, 32)
 	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		responses.ERROR(w, http.StatusBadRequest, err)
 		return
 	}
 
-	responses.JSON(w, http.StatusOK, issuingAuthorities)
+	err = r.ParseMultipartForm(10 << 20)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+	file, handler, err := r.FormFile("image")
+	if err != nil {
+		retrErr := errors.New("error while uploading file")
+		responses.ERROR(w, http.StatusInternalServerError, retrErr)
+		return
+	}
 
+	tokenID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
+		return
+	}
+	if tokenID == 0 {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("token is missing"))
+		return
+	}
+
+	clientAvatar, err := service.UploadAvatarForBusinessClient(server.DB, uint32(clientID), file, handler)
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+	responses.JSON(w, http.StatusOK, clientAvatar)
 }
 
-func (server *Server) generateIndividualClientOTP(w http.ResponseWriter, r *http.Request) {
+func (server *Server) generateClientOTP(w http.ResponseWriter, r *http.Request) {
 	tokenID, err := auth.ExtractTokenID(r)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
@@ -156,7 +258,7 @@ func (server *Server) generateIndividualClientOTP(w http.ResponseWriter, r *http
 		return
 	}
 
-	code, err := service.GenerateIndividualClientOTP(body)
+	code, err := service.GenerateClientOTP(body)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
@@ -195,4 +297,45 @@ func (server *Server) submitIndividualClientOTP(w http.ResponseWriter, r *http.R
 	responseData["message"] = status
 
 	responses.JSON(w, http.StatusAccepted, responseData)
+}
+
+func (server *Server) submitBusinessClientOTP(w http.ResponseWriter, r *http.Request) {
+	tokenID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
+		return
+	}
+	if tokenID == 0 {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("token is missing"))
+		return
+	}
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	status, err := service.SubmitBusinessClientOTP(server.DB, body, uint(tokenID))
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	responseData := make(map[string]string)
+	responseData["message"] = status
+
+	responses.JSON(w, http.StatusAccepted, responseData)
+}
+
+func (server *Server) issuingAuthorityAll(w http.ResponseWriter, r *http.Request) {
+	issuingAuthority := storage.IssuingAuthority{}
+	issuingAuthorities, err := issuingAuthority.All(server.DB)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusOK, issuingAuthorities)
+
 }
