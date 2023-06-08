@@ -34,7 +34,7 @@ func (bc *BusinessClient) Save(db *gorm.DB) (*BusinessClient, error) {
 }
 
 func (bc *BusinessClient) All(db *gorm.DB, fullName, sex, birthDate, sortUser string, userID uint) (*[]BusinessClient, error) {
-	var individualClients []BusinessClient
+	var businessClients []BusinessClient
 
 	query := db.Debug().Model(&BusinessClient{})
 
@@ -51,14 +51,14 @@ func (bc *BusinessClient) All(db *gorm.DB, fullName, sex, birthDate, sortUser st
 		query = query.Order("user_id " + sortUser)
 	}
 
-	query.Preload("User").Preload("User.AutoDealer").Preload("User.Role").Where("user_id = ?", userID).Find(&individualClients)
+	query.Preload("User").Preload("User.AutoDealer").Preload("User.Role").Where("user_id = ?", userID).Find(&businessClients)
 
 	err := query.Error
 	if err != nil {
 		return nil, err
 	}
 
-	return &individualClients, nil
+	return &businessClients, nil
 }
 
 func (bc *BusinessClient) Get(db *gorm.DB, id uint) (*BusinessClient, error) {

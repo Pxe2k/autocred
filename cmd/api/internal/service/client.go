@@ -47,7 +47,7 @@ func GetIndividualClientService(db *gorm.DB, id, tokenID uint) (responses.Indivi
 	responseData.TypeOfClient = clientGotten.TypeOfClient
 	responseData.FirstName = clientGotten.FirstName
 	responseData.MiddleName = clientGotten.MiddleName
-	responseData.LastName = *clientGotten.LastName
+	responseData.LastName = clientGotten.LastName
 	responseData.BirthDate = clientGotten.BirthDate
 	responseData.Phone = clientGotten.Phone
 	responseData.Document = clientGotten.Document
@@ -220,16 +220,14 @@ func GetBusinessClientService(db *gorm.DB, id, tokenID uint) (responses.Business
 		return responseData, nil
 	}
 
+	fmt.Println(clientGotten.BeneficialOwner.ResidentialAddress)
+
 	responseData.Status = true
 	responseData.Image = clientGotten.Image
 	responseData.UserID = clientGotten.UserID
 	responseData.User = clientGotten.User
 	responseData.RegistrationAddress = clientGotten.RegistrationAddress
 	responseData.BeneficialOwner = clientGotten.BeneficialOwner
-	responseData.BeneficialOwner.DocumentBusiness = clientGotten.BeneficialOwner.DocumentBusiness
-	responseData.BeneficialOwner.RegistrationAddress = clientGotten.BeneficialOwner.RegistrationAddress
-	responseData.BeneficialOwner.ResidentialAddress = clientGotten.BeneficialOwner.ResidentialAddress
-	responseData.BeneficialOwner.BonusInfoBusiness = clientGotten.BeneficialOwner.BonusInfoBusiness
 
 	return responseData, nil
 }
