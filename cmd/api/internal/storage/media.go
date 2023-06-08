@@ -6,7 +6,7 @@ type Media struct {
 	gorm.Model
 	Title              string `gorm:"size:255;" json:"title"`
 	File               string `gorm:"size:255;" json:"file"`
-	IndividualClientID *uint  `json:"clientID,omitempty"`
+	IndividualClientID uint   `json:"clientID,omitempty"`
 	BusinessClientID   *uint  `json:"businessClient,omitempty"`
 }
 
