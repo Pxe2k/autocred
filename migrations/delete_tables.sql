@@ -9,7 +9,6 @@ drop table personal_properties cascade;
 drop table current_loans cascade;
 drop table beneficial_owner_individuals cascade;
 drop table client_comments cascade;
-drop table working_activities cascade;
 drop table relation_with_banks cascade;
 drop table personal_properties cascade;
 drop table media cascade;
@@ -34,6 +33,7 @@ drop table applications cascade;
 drop table users cascade;
 drop table roles cascade;
 drop table auto_dealers cascade;
+drop table working_activities cascade;
 
 drop table car_brands cascade;
 drop table car_models cascade;

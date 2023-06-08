@@ -6,8 +6,8 @@ type Media struct {
 	gorm.Model
 	Title              string `gorm:"size:255;" json:"title"`
 	File               string `gorm:"size:255;" json:"file"`
-	IndividualClientID uint   `json:"clientID,omitempty"`
-	BusinessClientID   uint   `json:"businessClient,omitempty"`
+	IndividualClientID *uint  `json:"clientID,omitempty"`
+	BusinessClientID   *uint  `json:"businessClient,omitempty"`
 }
 
 func (m *Media) Save(db *gorm.DB) (*Media, error) {
