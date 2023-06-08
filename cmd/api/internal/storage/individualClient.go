@@ -51,7 +51,7 @@ func (ic *IndividualClient) All(db *gorm.DB, fullName, sex, birthDate, sortUser 
 
 	if fullName != "" {
 		fmt.Println("fullname", fullName)
-		query = db.Raw("SELECT clients.* FROM clients JOIN (SELECT id, concat_ws(' ', last_name, first_name, middle_name) as fullName FROM clients) clients2 ON clients2.fullName ILIKE ? AND clients2.id = clients.id", "%"+fullName+"%")
+		query = db.Raw("SELECT individual_clients.* FROM individual_clients JOIN (SELECT id, concat_ws(' ', last_name, first_name, middle_name) as fullName FROM individual_clients) individual_clients2 ON individual_clients2.fullName ILIKE ? AND individual_clients2.id = individual_clients.id", "%"+fullName+"%")
 	}
 	if sex != "" {
 		query = query.Order("sex " + sex)
