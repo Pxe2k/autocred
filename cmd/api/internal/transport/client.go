@@ -68,14 +68,13 @@ func (server *Server) allIndividualClient(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	userID := r.URL.Query().Get("sort_user")
 	sortUserID := r.URL.Query().Get("sort_user_id")
 	fullName := r.URL.Query().Get("full_name")
 	sex := r.URL.Query().Get("sex")
 	birthDate := r.URL.Query().Get("birth_date")
 
 	client := storage.IndividualClient{}
-	clients, err := client.All(server.DB, fullName, sex, birthDate, userID, sortUserID)
+	clients, err := client.All(server.DB, fullName, sex, birthDate, sortUserID, uint(tokenID))
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
@@ -95,14 +94,13 @@ func (server *Server) allBusinessClient(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	userID := r.URL.Query().Get("sort_user")
 	sortUserID := r.URL.Query().Get("sort_user_id")
 	fullName := r.URL.Query().Get("full_name")
 	sex := r.URL.Query().Get("sex")
 	birthDate := r.URL.Query().Get("birth_date")
 
 	client := storage.BusinessClient{}
-	clients, err := client.All(server.DB, fullName, sex, birthDate, userID, sortUserID)
+	clients, err := client.All(server.DB, fullName, sex, birthDate, sortUserID, uint(tokenID))
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return

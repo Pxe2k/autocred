@@ -12,6 +12,6 @@ type RegistrationAddress struct {
 	Address5                  uint   `json:"address5"`
 	Address6                  uint   `json:"address6"`
 	Kato                      string `gorm:"size:100;" json:"kato"` // Код КАТО
-	IndividualClientID        uint
-	BeneficialOwnerBusinessID uint
+	IndividualClientID        *uint  `json:"individualClientID,omitempty"`
+	BeneficialOwnerBusinessID *uint  `json:"beneficialOwnerBusinessID,omitempty"`
 }

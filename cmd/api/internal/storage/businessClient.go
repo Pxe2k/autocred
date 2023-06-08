@@ -6,22 +6,22 @@ import (
 
 type BusinessClient struct {
 	gorm.Model
-	TypeOfClient        string                      `gorm:"size:100" json:"typeOfClient"` // Тип клиента
-	Image               string                      `gorm:"size:100" json:"image"`
-	BIN                 string                      `gorm:"size:100;unique" json:"BIN"`  // БИН
-	CompanyName         string                      `gorm:"size:100" json:"companyName"` // Название организации
-	CompanyPhone        string                      `gorm:"size:100" json:"companyPhone"`
-	MonthlyIncome       uint                        `json:"monthlyIncome"`                    // Ежемесячный доход компании
-	CompanyLifespan     string                      `gorm:"size:100" json:"companyLifespan"`  // Срок существования компании
-	KindActivity        string                      `gorm:"size:100" json:"kindActivity"`     // Вид деятельности
-	ActivityType        string                      `gorm:"size:100" json:"activityType"`     // Тип деятельности
-	RegistrationDate    string                      `gorm:"size:100" json:"registrationDate"` // Тип деятельности
-	UserID              uint                        `json:"userID"`
-	User                User                        `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"user"`
-	RegistrationAddress RegistrationAddressBusiness `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"registrationAddress"` // Адрес регистрации юридического лица
-	BeneficialOwner     BeneficialOwnerBusiness     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"beneficialOwner"`
-	Pledges             *[]Pledge                   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"pledges,omitempty"` // Залоги
-	Documents           *[]Media                    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"documents"`
+	TypeOfClient        string                       `gorm:"size:100" json:"typeOfClient"` // Тип клиента
+	Image               string                       `gorm:"size:100" json:"image"`
+	BIN                 string                       `gorm:"size:100;unique" json:"BIN"`  // БИН
+	CompanyName         string                       `gorm:"size:100" json:"companyName"` // Название организации
+	CompanyPhone        string                       `gorm:"size:100" json:"companyPhone"`
+	MonthlyIncome       uint                         `json:"monthlyIncome"`                    // Ежемесячный доход компании
+	CompanyLifespan     string                       `gorm:"size:100" json:"companyLifespan"`  // Срок существования компании
+	KindActivity        string                       `gorm:"size:100" json:"kindActivity"`     // Вид деятельности
+	ActivityType        string                       `gorm:"size:100" json:"activityType"`     // Тип деятельности
+	RegistrationDate    string                       `gorm:"size:100" json:"registrationDate"` // Тип деятельности
+	UserID              uint                         `json:"userID"`
+	User                User                         `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"user"`
+	RegistrationAddress *RegistrationAddressBusiness `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"registrationAddress,omitempty"` // Адрес регистрации юридического лица
+	BeneficialOwner     *BeneficialOwnerBusiness     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"beneficialOwner,omitempty"`
+	Pledges             *[]Pledge                    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"pledges,omitempty"` // Залоги
+	Documents           *[]Media                     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"documents"`
 }
 
 func (bc *BusinessClient) Save(db *gorm.DB) (*BusinessClient, error) {
@@ -33,16 +33,13 @@ func (bc *BusinessClient) Save(db *gorm.DB) (*BusinessClient, error) {
 	return bc, nil
 }
 
-func (bc *BusinessClient) All(db *gorm.DB, fullName, sex, birthDate, userID, sortUser string) (*[]BusinessClient, error) {
+func (bc *BusinessClient) All(db *gorm.DB, fullName, sex, birthDate, sortUser string, userID uint) (*[]BusinessClient, error) {
 	var individualClients []BusinessClient
 
 	query := db.Debug().Model(&BusinessClient{})
 
 	if fullName != "" {
 		query = db.Raw("SELECT clients.* FROM clients JOIN (SELECT id, concat_ws(' ', last_name, first_name, middle_name) as fullName FROM clients) clients2 ON clients2.fullName ILIKE ? AND clients2.id = clients.id", "%"+fullName+"%")
-	}
-	if userID != "" {
-		query = query.Where("user_id = ?", userID)
 	}
 	if sex != "" {
 		query = query.Order("sex " + sex)
@@ -54,7 +51,7 @@ func (bc *BusinessClient) All(db *gorm.DB, fullName, sex, birthDate, userID, sor
 		query = query.Order("user_id " + sortUser)
 	}
 
-	query.Preload("User").Preload("User.AutoDealer").Where("user_id = ?", userID).Find(&individualClients)
+	query.Preload("User").Preload("User.AutoDealer").Preload("User.Role").Where("user_id = ?", userID).Find(&individualClients)
 
 	err := query.Error
 	if err != nil {
@@ -66,6 +63,17 @@ func (bc *BusinessClient) All(db *gorm.DB, fullName, sex, birthDate, userID, sor
 
 func (bc *BusinessClient) Get(db *gorm.DB, id uint) (*BusinessClient, error) {
 	err := db.Debug().Model(&BusinessClient{}).Where("id = ?", id).
+		Preload("User").
+		Preload("User.Role").
+		Preload("BeneficialOwner").
+		Preload("BeneficialOwner.MaritalStatus").
+		Preload("BeneficialOwner.WorkPlaceInfoBusiness").
+		Preload("BeneficialOwner.DocumentBusiness").
+		Preload("BeneficialOwner.RegistrationAddress").
+		Preload("BeneficialOwner.ResidentialAddress").
+		Preload("BeneficialOwner.BusinessContact").
+		Preload("BeneficialOwner.BonusInfoBusiness").
+		Preload("BeneficialOwner.CurrentLoanBusiness").
 		Take(&bc).Error
 	if err != nil {
 		return nil, err

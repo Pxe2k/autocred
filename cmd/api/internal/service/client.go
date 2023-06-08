@@ -225,6 +225,11 @@ func GetBusinessClientService(db *gorm.DB, id, tokenID uint) (responses.Business
 	responseData.UserID = clientGotten.UserID
 	responseData.User = clientGotten.User
 	responseData.RegistrationAddress = clientGotten.RegistrationAddress
+	responseData.BeneficialOwner = clientGotten.BeneficialOwner
+	responseData.BeneficialOwner.DocumentBusiness = clientGotten.BeneficialOwner.DocumentBusiness
+	responseData.BeneficialOwner.RegistrationAddress = clientGotten.BeneficialOwner.RegistrationAddress
+	responseData.BeneficialOwner.ResidentialAddress = clientGotten.BeneficialOwner.ResidentialAddress
+	responseData.BeneficialOwner.BonusInfoBusiness = clientGotten.BeneficialOwner.BonusInfoBusiness
 
 	return responseData, nil
 }

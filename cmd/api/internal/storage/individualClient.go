@@ -43,16 +43,13 @@ func (ic *IndividualClient) Save(db *gorm.DB) (*IndividualClient, error) {
 	return ic, nil
 }
 
-func (ic *IndividualClient) All(db *gorm.DB, fullName, sex, birthDate, userID, sortUser string) (*[]IndividualClient, error) {
+func (ic *IndividualClient) All(db *gorm.DB, fullName, sex, birthDate, sortUser string, userID uint) (*[]IndividualClient, error) {
 	var individualClients []IndividualClient
 
 	query := db.Debug().Model(&IndividualClient{})
 
 	if fullName != "" {
 		query = db.Raw("SELECT clients.* FROM clients JOIN (SELECT id, concat_ws(' ', last_name, first_name, middle_name) as fullName FROM clients) clients2 ON clients2.fullName ILIKE ? AND clients2.id = clients.id", "%"+fullName+"%")
-	}
-	if userID != "" {
-		query = query.Where("user_id = ?", userID)
 	}
 	if sex != "" {
 		query = query.Order("sex " + sex)
