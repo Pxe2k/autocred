@@ -20,9 +20,9 @@ type Pledge struct {
 	CustomsIssuingAuthority string            `gorm:"size:100;" json:"customsIssuingAuthority"`
 	CarBrand                *CarBrand         `json:"carBrand,omitempty"`
 	CarModel                *CarModel         `json:"carModel,omitempty"`
-	IndividualClientID      uint              `json:"individualClientID"`
+	IndividualClientID      *uint             `json:"individualClientID,omitempty"`
 	IndividualClient        *IndividualClient `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"individualClient,omitempty"`
-	BusinessClientID        uint              `json:"businessClientID"`
+	BusinessClientID        *uint             `json:"businessClientID,omitempty"`
 	BusinessClient          *BusinessClient   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"businessClient,omitempty"`
 }
 
