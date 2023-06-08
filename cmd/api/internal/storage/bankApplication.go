@@ -12,9 +12,8 @@ type BankApplication struct {
 	LifeInsuranceID *uint  `json:"lifeInsuranceID,omitempty"`
 	LoanAmount      int    `json:"loanAmount"` // Сумма займа
 	ApplicationID   uint
-	CreditProduct   *BankProduct    `json:"creditProduct,omitempty"`
-	Kasko           *Kasko          `json:"kasko,omitempty"`
-	RoadHelp        *RoadHelp       `json:"roadHelp,omitempty"`
-	LifeInsurance   *LifeInsurance  `json:"lifeInsurance,omitempty"`
-	BankResponses   *[]BankResponse `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bankResponses,omitempty"`
+	CreditProduct   *BankProduct   `json:"creditProduct,omitempty"`
+	Kasko           *Kasko         `json:"kasko,omitempty"`
+	RoadHelp        *RoadHelp      `json:"roadHelp,omitempty"`
+	LifeInsurance   *LifeInsurance `json:"lifeInsurance,omitempty"`
 }

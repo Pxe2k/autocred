@@ -8,7 +8,7 @@ type BusinessClient struct {
 	gorm.Model
 	TypeOfClient        string                      `gorm:"size:100" json:"typeOfClient"` // Тип клиента
 	Image               string                      `gorm:"size:100" json:"image"`
-	BIN                 string                      `gorm:"size:100" json:"BIN"`         // БИН
+	BIN                 string                      `gorm:"size:100;unique" json:"BIN"`  // БИН
 	CompanyName         string                      `gorm:"size:100" json:"companyName"` // Название организации
 	CompanyPhone        string                      `gorm:"size:100" json:"companyPhone"`
 	MonthlyIncome       uint                        `json:"monthlyIncome"`                    // Ежемесячный доход компании
@@ -19,7 +19,9 @@ type BusinessClient struct {
 	UserID              uint                        `json:"userID"`
 	User                User                        `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"user"`
 	RegistrationAddress RegistrationAddressBusiness `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"registrationAddress"` // Адрес регистрации юридического лица
-	BeneficialOwner     BeneficialOwnerBusiness     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"benefbcialOwner"`
+	BeneficialOwner     BeneficialOwnerBusiness     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"beneficialOwner"`
+	Pledges             *[]Pledge                   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"pledges,omitempty"` // Залоги
+	Documents           *[]Media                    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"documents"`
 }
 
 func (bc *BusinessClient) Save(db *gorm.DB) (*BusinessClient, error) {
@@ -64,19 +66,6 @@ func (bc *BusinessClient) All(db *gorm.DB, fullName, sex, birthDate, userID, sor
 
 func (bc *BusinessClient) Get(db *gorm.DB, id uint) (*BusinessClient, error) {
 	err := db.Debug().Model(&BusinessClient{}).Where("id = ?", id).
-		Preload("User").
-		Preload("User.AutoDealer").
-		Preload("Document").
-		Preload("WorkPlaceInfo").
-		Preload("MaritalStatus").
-		Preload("RegistrationAddress").
-		Preload("ResidentialAddress").
-		Preload("Contacts").
-		Preload("BenefbcialOwners").
-		Preload("Documents").
-		Preload("Pledges").
-		Preload("Pledges.CarModel").
-		Preload("Pledges.CarBrand").
 		Take(&bc).Error
 	if err != nil {
 		return nil, err

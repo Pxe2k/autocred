@@ -13,7 +13,7 @@ type IndividualClient struct {
 	Sex                 string                       `gorm:"size:100" json:"sex"`       // Пол
 	BirthDate           string                       `gorm:"size:100" json:"birthDate"` // ДР
 	Country             string                       `gorm:"size:100" json:"country"`
-	Phone               string                       `gorm:"size:100" json:"phone"` // Телефон
+	Phone               string                       `gorm:"size:100;unique" json:"phone"` // Телефон
 	SecondPhone         string                       `gorm:"size:100" json:"secondPhone"`
 	Email               string                       `gorm:"size:100" json:"email"`     // Email
 	Education           string                       `gorm:"size:100" json:"education"` // Образование

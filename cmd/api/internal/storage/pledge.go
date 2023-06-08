@@ -18,10 +18,12 @@ type Pledge struct {
 	CustomsNumber           string            `gorm:"size:100;" json:"customsNumber"`
 	CustomsDate             string            `gorm:"size:100;" json:"customsDate"`
 	CustomsIssuingAuthority string            `gorm:"size:100;" json:"customsIssuingAuthority"`
-	ClientID                uint              `json:"clientID"`
 	CarBrand                *CarBrand         `json:"carBrand,omitempty"`
 	CarModel                *CarModel         `json:"carModel,omitempty"`
-	IndividualClient        *IndividualClient `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"client,omitempty"`
+	IndividualClientID      uint              `json:"individualClientID"`
+	IndividualClient        *IndividualClient `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"individualClient,omitempty"`
+	BusinessClientID        uint              `json:"businessClientID"`
+	BusinessClient          *BusinessClient   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"businessClient,omitempty"`
 }
 
 func (p *Pledge) Save(db *gorm.DB) (*Pledge, error) {

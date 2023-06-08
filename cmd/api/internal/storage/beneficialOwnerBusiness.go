@@ -16,13 +16,13 @@ type BeneficialOwnerBusiness struct {
 	SecondPhone           string                `gorm:"size:100" json:"secondPhone"`        //
 	Education             string                `gorm:"size:100" json:"education"`          //
 	MaritalStatus         MaritalStatusBusiness `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"maritalStatus"`
-	WorkPlaceInfoBusiness WorkPlaceInfoBusiness `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"workPlaceInfoBusiness"`
-	DocumentBusiness      DocumentBusiness      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"documentBusiness"`
-	ResidentialAddress    ResidentialAddress    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"residentialAddress"`
-	RegistrationAddress   RegistrationAddress   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"registrationAddress"`
-	BusinessContact       BusinessContact       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"businessContact"`
-	BonusInfoBusiness     BonusInfoBusiness     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bonusInfoBusiness"`
-	CurrentLoanBusiness   CurrentLoanBusiness   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"currentLoanBusiness"`
+	WorkPlaceInfoBusiness WorkPlaceInfoBusiness `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"workPlaceInfo"`
+	DocumentBusiness      DocumentBusiness      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"document"`
+	ResidentialAddress    ResidentialAddress    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"residential"`
+	RegistrationAddress   RegistrationAddress   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"registration"`
+	BusinessContact       []BusinessContact     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"businessContact"`
+	BonusInfoBusiness     BonusInfoBusiness     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bonusInfo"`
+	CurrentLoanBusiness   []CurrentLoanBusiness `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"currentLoan"`
 	Comment               string                `gorm:"size:1000" json:"comment"` // Комментарий
-	BusinessClientID      uint
+	BusinessClientID      uint                  `json:"businessClientID"`
 }

@@ -7,15 +7,17 @@ import (
 
 type Application struct {
 	gorm.Model
-	LoanPurpose      string            `gorm:"size:100;" json:"loanPurpose"` // Цель кредита
-	Subsidy          bool              `json:"subsidy"`                      // Субсудия
-	CarPrice         int               `json:"carPrice"`                     // Цена авто
-	InitFee          int               `json:"initFee"`                      // Первоначалка
-	LoanPercentage   int               `json:"loanPercentage"`               // Процент кредита
-	BankApplications []BankApplication `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bankApplications"`
-	UserID           uint              `json:"userID"`
-	ClientID         uint              `json:"clientID"`
-	Client           *IndividualClient `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"client,omitempty"`
+	LoanPurpose        string            `gorm:"size:100;" json:"loanPurpose"` // Цель кредита
+	Subsidy            bool              `json:"subsidy"`                      // Субсудия
+	CarPrice           int               `json:"carPrice"`                     // Цена авто
+	InitFee            int               `json:"initFee"`                      // Первоначалка
+	LoanPercentage     int               `json:"loanPercentage"`               // Процент кредита
+	BankApplications   []BankApplication `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bankApplications"`
+	UserID             uint              `json:"userID"`
+	IndividualClientID uint              `json:"individualClientID"`
+	BusinessClientID   uint              `json:"businessClientID"`
+	IndividualClient   *IndividualClient `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"individualClient,omitempty"`
+	BusinessClient     *BusinessClient   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"businessClient,omitempty"`
 }
 
 func (a *Application) Save(db *gorm.DB) (*Application, error) {
