@@ -109,7 +109,7 @@ func (ic *IndividualClient) UpdateAvatar(db *gorm.DB, id uint) (*IndividualClien
 }
 
 func (ic *IndividualClient) UpdateUserID(db *gorm.DB, client IndividualClient) error {
-	err := db.Debug().Model(&IndividualClient{}).Where("phone = ?", client.Phone).Update("user_id", client.UserID).Save(&client).Error
+	err := db.Debug().Model(&IndividualClient{}).Where("phone = ?", client.Phone).UpdateColumn("user_id", client.UserID).Error
 	if err != nil {
 		return err
 	}

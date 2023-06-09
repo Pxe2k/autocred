@@ -95,7 +95,7 @@ func (bc *BusinessClient) UpdateAvatar(db *gorm.DB, id uint) (*BusinessClient, e
 }
 
 func (bc *BusinessClient) UpdateUserID(db *gorm.DB, client BusinessClient) error {
-	err := db.Debug().Model(&BusinessClient{}).Where("phone = ?", client.BIN).Update("user_id", client.UserID).Save(&client).Error
+	err := db.Debug().Model(&BusinessClient{}).Where("phone = ?", client.BIN).UpdateColumn("user_id", client.UserID).Error
 	if err != nil {
 		return err
 	}
