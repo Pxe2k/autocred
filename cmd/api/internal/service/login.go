@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
 
 	"github.com/redis/go-redis/v9"
 	"golang.org/x/crypto/bcrypt"
@@ -67,9 +68,12 @@ func SignIn(phone, password string, db *gorm.DB) (string, error) {
 		return "error", err
 	}
 
-	err = helpers.SendMessage(authCode, phone)
-	if err != nil {
-		return "error", err
+	serverENV := os.Getenv("SERVER")
+	if serverENV == "PROD" {
+		err = helpers.SendMessage(authCode, phone)
+		if err != nil {
+			return "error", err
+		}
 	}
 
 	return authCode, nil

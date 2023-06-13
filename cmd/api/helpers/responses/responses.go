@@ -67,8 +67,8 @@ type IndividualClientResponseData struct {
 
 type BusinessClientResponseData struct {
 	ID                  uint                                 `json:"ID"`
-	TypeOfClient        string                               `gorm:"size:100" json:"typeOfClient"` // Тип клиента
-	Image               string                               `gorm:"size:100" json:"image"`
+	TypeOfClient        string                               `json:"typeOfClient"` // Тип клиента
+	Image               string                               `json:"image"`
 	BIN                 string                               `gorm:"size:100" json:"BIN"`         // БИН
 	CompanyName         string                               `gorm:"size:100" json:"companyName"` // Название организации
 	CompanyPhone        string                               `gorm:"size:100" json:"companyPhone"`
@@ -124,9 +124,13 @@ type ShinhanResponseData struct {
 }
 
 type SMSResponse struct {
-	CampaignID int `json:"campaignId"`
-	MessageID  int `json:"messageId"`
-	Status     int `json:"status"`
+	Code int `json:"code"`
+	Data struct {
+		CampaignId string `json:"campaignId"`
+		MessageId  string `json:"messageId"`
+		Status     int    `json:"status"`
+	} `json:"data"`
+	Message string `json:"message"`
 }
 
 func JSON(w http.ResponseWriter, statusCode int, data interface{}) {

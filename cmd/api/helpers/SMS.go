@@ -8,12 +8,14 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strings"
 )
 
 func SendMessage(OTP, phone string) error {
 	url := os.Getenv("SMS_LINK")
 
-	requestData := "recipient=" + phone + "&text=Your SMS Code = " + OTP
+	phoneNumber := strings.TrimPrefix(phone, "+")
+	requestData := "recipient=" + phoneNumber[1:] + "&text=Your SMS Code = " + OTP
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer([]byte(requestData)))
 	if err != nil {
@@ -21,7 +23,7 @@ func SendMessage(OTP, phone string) error {
 	}
 
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Set("cache-control:", "no-cache")
+	req.Header.Set("cache-control", "no-cache")
 
 	client := http.DefaultClient
 	resp, err := client.Do(req)
@@ -36,9 +38,8 @@ func SendMessage(OTP, phone string) error {
 		return err
 	}
 
-	fmt.Println("Server Response: ", serverResponse)
-
 	var responseData responses.SMSResponse
+	fmt.Println("Server Response: ", responseData)
 
 	err = json.Unmarshal(serverResponse, &responseData)
 	if err != nil {

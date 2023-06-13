@@ -145,6 +145,14 @@ func GenerateClientOTP(body []byte) (string, error) {
 		return "error", err
 	}
 
+	serverENV := os.Getenv("SERVER")
+	if serverENV == "PROD" {
+		err = helpers.SendMessage(code, requestData.Phone)
+		if err != nil {
+			return "error", err
+		}
+	}
+
 	return code, nil
 }
 
