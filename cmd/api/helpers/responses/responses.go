@@ -123,6 +123,12 @@ type ShinhanResponseData struct {
 	DownPayment   float64 `json:"downpayment"`
 }
 
+type SMSResponse struct {
+	CampaignID int `json:"campaignId"`
+	MessageID  int `json:"messageId"`
+	Status     int `json:"status"`
+}
+
 func JSON(w http.ResponseWriter, statusCode int, data interface{}) {
 	w.WriteHeader(statusCode)
 	err := json.NewEncoder(w).Encode(data)
