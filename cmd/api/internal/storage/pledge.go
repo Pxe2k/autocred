@@ -8,6 +8,7 @@ type Pledge struct {
 	Title                   string            `gorm:"size:100;" json:"title"`
 	CarBrandID              uint              `json:"carBrandID"`
 	CarModelID              uint              `json:"carModelID"`
+	OriginCountry           string            `gorm:"size:100;" json:"originCountry"`
 	YearIssue               string            `gorm:"size:100;" json:"yearIssue"`
 	Condition               string            `gorm:"size:100;" json:"condition"`
 	Mileage                 string            `gorm:"size:100;" json:"mileage"`
