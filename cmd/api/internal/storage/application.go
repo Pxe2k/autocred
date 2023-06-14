@@ -7,6 +7,11 @@ import (
 
 type Application struct {
 	gorm.Model
+	CarBrand           string            `gorm:"size:100;" json:"carBrand"`
+	CarModel           string            `gorm:"size:100;" json:"carModel"`
+	OriginCountry      string            `gorm:"size:100;" json:"originCountry"`
+	YearIssue          string            `gorm:"size:100;" json:"yearIssue"`
+	Condition          bool              `gorm:"size:100;" json:"condition"`
 	LoanPurpose        string            `gorm:"size:100;" json:"loanPurpose"` // Цель кредита
 	Subsidy            bool              `json:"subsidy"`                      // Субсудия
 	CarPrice           int               `json:"carPrice"`                     // Цена авто

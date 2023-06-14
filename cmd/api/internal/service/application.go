@@ -13,6 +13,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 
 	"gorm.io/gorm"
@@ -22,37 +23,46 @@ func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (*storage.Appl
 	application := storage.Application{}
 	err := json.Unmarshal(body, &application)
 	if err != nil {
-		return &storage.Application{}, err
+		return nil, err
+	}
+
+	individualClient := storage.IndividualClient{}
+	individualClientGotten, err := individualClient.Get(db, *application.IndividualClientID)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, bankApplication := range application.BankApplications {
+		if bankApplication.Bank == "BCC" {
+			bccResponseData, err := createBCCApplication(individualClientGotten, application, bankApplication)
+			if err != nil {
+				fmt.Println("error: ", err)
+			}
+			fmt.Println("bcc resp data: ", bccResponseData)
+		}
+		if bankApplication.Bank == "EU" {
+			fmt.Println("Kaspi")
+		}
+		if bankApplication.Bank == "Kaspi" {
+			fmt.Println("Kaspi")
+		}
 	}
 
 	application.UserID = uid
 
-	createdApplication, err := application.Save(db)
-	if err != nil {
-		return &storage.Application{}, err
-	}
-
-	return createdApplication, nil
+	return &application, nil
 }
 
-func CreateBCCApplication(body []byte) (responses.BCCResponseData, error) {
+func createBCCApplication(individualClient *storage.IndividualClient, application storage.Application, bankApplication storage.BankApplication) (responses.BCCResponseData, error) {
 	authToken, err := getBCCToken()
 	if err != nil {
 		return responses.BCCResponseData{}, err
 	}
 
-	var requestData requests.BCCApplicationRequestData
-	err = json.Unmarshal(body, &requestData)
+	requestData, err := fillingBCCRequestData(individualClient, application, bankApplication)
 	if err != nil {
 		return responses.BCCResponseData{}, err
 	}
-
-	requestData.Document.File, err = encodeFileToBase64("templates/resultMedia/outputPDF/autocredit.pdf")
-	if err != nil {
-		return responses.BCCResponseData{}, err
-	}
-
-	fmt.Println("requestData: ", requestData)
 
 	requestBody, err := json.Marshal(requestData)
 	if err != nil {
@@ -91,6 +101,64 @@ func CreateBCCApplication(body []byte) (responses.BCCResponseData, error) {
 	}
 
 	return responseData, nil
+}
+
+func fillingBCCRequestData(client *storage.IndividualClient, applicationData storage.Application, bankApplicationData storage.BankApplication) (requests.BCCApplicationRequestData, error) {
+	var requestData requests.BCCApplicationRequestData
+
+	issueYear, err := strconv.Atoi(applicationData.YearIssue)
+	if err != nil {
+		return requests.BCCApplicationRequestData{}, err
+	}
+
+	requestData.PartnerID = "185124"
+	requestData.PartnerName = "TOO BRROKER"
+	requestData.PartnerBin = "170540017799"
+	requestData.DealerID = "4011"
+	requestData.PartnerCity = "Алматы"
+	requestData.CostObject = applicationData.CarPrice
+	requestData.DownPaymentAmt = applicationData.InitFee
+	requestData.LoanAmt = bankApplicationData.LoanAmount
+	requestData.LoanDuration = bankApplicationData.TrenchesNumber
+	requestData.SimpleFinAnalysis = 0
+	requestData.Brand = applicationData.CarBrand
+	requestData.Model = applicationData.CarModel
+	requestData.IssueYear = issueYear
+	requestData.Iin = client.Document.IIN
+	requestData.IDocType = "УЛ"
+	if applicationData.Condition == false {
+		requestData.ProductCode = "0.201.1.0514"
+	} else {
+		requestData.ProductCode = "0.201.1.0513"
+	}
+	requestData.MobilePhoneNo = client.Phone
+	requestData.WorkName = client.WorkPlaceInfo.OrganizationName
+	requestData.WorkAddress = client.WorkPlaceInfo.Address
+	switch client.WorkPlaceInfo.WorkingActivityID {
+	case 1:
+		requestData.WorkStatus = "Пенсионер"
+	case 2:
+		requestData.WorkStatus = "Работающий пенсионер"
+	case 3:
+		requestData.WorkStatus = "Военнослужащий"
+	default:
+		requestData.WorkStatus = "Обычный клиент"
+	}
+	requestData.OrganizationPhoneNo = client.WorkPlaceInfo.OrganizationPhone
+	requestData.BasicIncome = client.BonusInfo.AmountIncome
+	requestData.AdditionalIncome = 0
+	requestData.UserCode = client.MiddleName + " " + client.FirstName + " " + client.LastName
+	for _, contact := range *client.Contacts {
+		requestData.ContactPerson = append(requestData.ContactPerson, requests.ContactPerson{
+			FullName: contact.FullName,
+			PhoneNo:  contact.Phone,
+		})
+	}
+	requestData.Document.File, err = encodeFileToBase64("storage/bcc-data-processing_" + helpers.CurrentDateString() + ".pdf")
+	requestData.Document.Extension = "pdf"
+	requestData.Document.Code = "SOG"
+
+	return requestData, nil
 }
 
 func CreateEUApplication(body []byte) (responses.EUResponseData, error) {
@@ -261,6 +329,7 @@ func getBCCToken() (string, error) {
 	return respData.AccessToken, nil
 }
 
+// TODO Перенести в Helpers
 func encodeFileToBase64(filePath string) (string, error) {
 	f, err := os.Open(filePath)
 	if err != nil {

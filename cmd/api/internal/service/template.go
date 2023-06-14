@@ -2,11 +2,14 @@ package service
 
 import (
 	"autocredit/cmd/api/helpers"
+	"autocredit/cmd/api/helpers/requests"
 	"autocredit/cmd/api/internal/storage"
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/SebastiaanKlippert/go-wkhtmltopdf"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 	"html/template"
 	"os"
@@ -32,31 +35,50 @@ func GeneratePdf(db *gorm.DB, body []byte, id uint) (*storage.Media, error) {
 	if err != nil {
 		return &storage.Media{}, err
 	}
-	fileName := fmt.Sprint(result["templateName"])
-	templateFileName := "templates/resultMedia/documentTemplates/" + fileName + ".html"
-	//data := result["data"]
+
+	BCCTemplateFile := "templates/resultMedia/documentTemplates/BCCDataProcessing.html"
 
 	client := storage.IndividualClient{}
+	documentData := requests.BCCTemplateData{}
 	clientGotten, err := client.Get(db, id)
 	if err != nil {
 		return nil, err
 	}
 
-	err = r.ParseTemplate(fmt.Sprint(templateFileName), clientGotten)
+	documentData.FIO = clientGotten.MiddleName + " " + clientGotten.FirstName + " " + clientGotten.LastName
+	documentData.Phone = clientGotten.Phone
+	documentData.CurrentDate = helpers.CurrentDateString()
+	documentData.OTP = fmt.Sprint(result["OTP"])
+	documentData.Place = clientGotten.User.AutoDealer.Address
+	fmt.Println(documentData.Place)
+
+	// TODO вынести Redis отдельно
+	val, err := helpers.Redis.Get(helpers.Ctx, clientGotten.Phone).Result()
+	if err == redis.Nil {
+		fmt.Println("key does not exist")
+		return nil, err
+	} else if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	if val != documentData.OTP {
+		return nil, errors.New("code != value")
+	}
+
+	err = r.ParseTemplate(fmt.Sprint(BCCTemplateFile), documentData)
 	if err != nil {
 		return &storage.Media{}, err
 	}
 
-	docNumber := helpers.RandEmailCode()
+	fileName := "bcc-data-processing" + "_" + documentData.CurrentDate
 
-	outputPath := "storage/" + fileName + docNumber + ".pdf"
+	outputPath := "storage/" + fileName + ".pdf"
 	err = r.ConvertHTMLtoPdf(outputPath)
 	if err != nil {
 		return &storage.Media{}, err
 	}
-	//fileBytes, err := os.ReadFile("outputPdf/" + fileName + ".pdf")
 
-	//mediaCreated, err := UploadFileService(db, uid, fileName, "", fileBytes, fileBytes)
 	mediaCreated, err := UploadFileToUser(db, uint32(id), outputPath, fileName)
 	return mediaCreated, nil
 }

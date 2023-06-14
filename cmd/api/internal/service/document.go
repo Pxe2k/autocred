@@ -26,7 +26,7 @@ func UploadFileService(db *gorm.DB, uid uint32, title, folderName string, client
 	}
 	//media.Format = strings.ToLower(filepath.Ext(handler.Filename))[1:]
 	//validate := helpers.MediaValidate(handler.Filename, handler.Size)
-
+	//
 	//if validate == false {
 	//	return storage.Media{}, errors.New("wrong file format")
 	//}
