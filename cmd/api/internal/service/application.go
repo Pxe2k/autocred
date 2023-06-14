@@ -18,21 +18,43 @@ import (
 	"gorm.io/gorm"
 )
 
+//func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (*storage.Application, error) {
+//	application := storage.Application{}
+//	err := json.Unmarshal(body, &application)
+//	if err != nil {
+//		return &storage.Application{}, err
+//	}
+//
+//	application.UserID = uid
+//
+//	createdApplication, err := application.Save(db)
+//	if err != nil {
+//		return &storage.Application{}, err
+//	}
+//
+//	return createdApplication, nil
+//}
+
 func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (*storage.Application, error) {
 	application := storage.Application{}
 	err := json.Unmarshal(body, &application)
 	if err != nil {
-		return &storage.Application{}, err
+		return nil, err
 	}
 
-	application.UserID = uid
-
-	createdApplication, err := application.Save(db)
-	if err != nil {
-		return &storage.Application{}, err
+	for _, bankApplication := range application.BankApplications {
+		if bankApplication.Bank == "Sber" {
+			fmt.Println("Sber")
+		}
+		if bankApplication.Bank == "Orbis" {
+			fmt.Println("Kaspi")
+		}
+		if bankApplication.Bank == "Kaspi" {
+			fmt.Println("Kaspi")
+		}
 	}
 
-	return createdApplication, nil
+	return &application, nil
 }
 
 func CreateBCCApplication(body []byte) (responses.BCCResponseData, error) {
