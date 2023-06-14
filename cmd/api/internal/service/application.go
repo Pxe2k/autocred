@@ -103,12 +103,12 @@ func createBCCApplication(individualClient *storage.IndividualClient, applicatio
 	}
 
 	var responseData responses.BCCResponseData
-	var result map[string]interface{}
 
 	err = json.Unmarshal(serverResponse, &responseData)
 	if err != nil {
 		return responses.BCCResponseData{}, err
 	}
+	var result map[string]interface{}
 	err = json.Unmarshal(serverResponse, &result)
 
 	fmt.Println("result", result)
@@ -217,6 +217,13 @@ func createEUApplication(individualClient *storage.IndividualClient, application
 		return responses.EUResponseData{}, err
 	}
 
+	var result map[string]interface{}
+	err = json.Unmarshal(serverResponse, &result)
+	if err != nil {
+		return responses.EUResponseData{}, err
+	}
+	fmt.Println("result", result)
+
 	return responseData, nil
 }
 
@@ -244,8 +251,8 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 	requestData.DownPayment = uint(applicationData.InitFee)
 	requestData.Duration = uint(bankApplicationData.TrenchesNumber)
 	requestData.Iin = client.Document.IIN
-	requestData.Phone = client.Phone
-	requestData.JobPhone = client.WorkPlaceInfo.OrganizationPhone
+	requestData.Phone = client.Phone[1:]
+	requestData.JobPhone = client.WorkPlaceInfo.OrganizationPhone[1:]
 	requestData.IncomeMain = client.BonusInfo.AmountIncome
 	switch client.MaritalStatus.Status {
 	case "Холост/Не замужен":
@@ -262,7 +269,7 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 		requestData.MaritalStatus = "0"
 	}
 	for _, contact := range *client.Contacts {
-		requestData.ContactPersonContact = contact.Phone
+		requestData.ContactPersonContact = contact.Phone[1:]
 		requestData.ContactPersonName = contact.FullName
 	}
 	requestData.IncomeAddConfirmed = strconv.Itoa(0)
