@@ -19,18 +19,19 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (*storage.Application, error) {
+func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (responses.ApplicationResponseData, error) {
 	application := storage.Application{}
+	responseData := responses.ApplicationResponseData{}
 	err := json.Unmarshal(body, &application)
 	if err != nil {
-		return nil, err
+		return responses.ApplicationResponseData{}, err
 	}
 
 	individualClient := storage.IndividualClient{}
 
-	individualClientGotten, err := individualClient.Get(db, 10)
+	individualClientGotten, err := individualClient.Get(db, 3)
 	if err != nil {
-		return nil, err
+		return responses.ApplicationResponseData{}, err
 	}
 
 	for _, bankApplication := range application.BankApplications {
@@ -39,10 +40,14 @@ func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (*storage.Appl
 			if err != nil {
 				fmt.Println("error: ", err)
 			}
-			fmt.Println("bcc resp data: ", bccResponseData)
+			responseData.BCCResponseData = bccResponseData
 		}
-		if bankApplication.Bank == "EU" {
-			fmt.Println("Kaspi")
+		if bankApplication.Bank == "EuBank" {
+			euBankResponseData, err := createEUApplication(individualClientGotten, application, bankApplication)
+			if err != nil {
+				fmt.Println("error: ", err)
+			}
+			responseData.EUResponseData = euBankResponseData
 		}
 		if bankApplication.Bank == "Kaspi" {
 			fmt.Println("Kaspi")
@@ -51,7 +56,7 @@ func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (*storage.Appl
 
 	application.UserID = uid
 
-	return &application, nil
+	return responses.ApplicationResponseData{}, nil
 }
 
 func createBCCApplication(individualClient *storage.IndividualClient, application storage.Application, bankApplication storage.BankApplication) (responses.BCCResponseData, error) {
@@ -59,6 +64,8 @@ func createBCCApplication(individualClient *storage.IndividualClient, applicatio
 	if err != nil {
 		return responses.BCCResponseData{}, err
 	}
+
+	fmt.Println("test22")
 
 	requestData, err := fillingBCCRequestData(individualClient, application, bankApplication)
 	if err != nil {
@@ -71,6 +78,7 @@ func createBCCApplication(individualClient *storage.IndividualClient, applicatio
 	}
 
 	url := os.Getenv("BCC_APPLICATION")
+	fmt.Println("bcc route", url)
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
 	if err != nil {
 		return responses.BCCResponseData{}, err
@@ -112,6 +120,7 @@ func fillingBCCRequestData(client *storage.IndividualClient, applicationData sto
 		return requests.BCCApplicationRequestData{}, err
 	}
 
+	// TODO Поправить данные
 	requestData.PartnerID = "185124"
 	requestData.PartnerName = "TOO BRROKER"
 	requestData.PartnerBin = "170540017799"
@@ -146,6 +155,7 @@ func fillingBCCRequestData(client *storage.IndividualClient, applicationData sto
 		requestData.WorkStatus = "Обычный клиент"
 	}
 	requestData.OrganizationPhoneNo = client.WorkPlaceInfo.OrganizationPhone
+	fmt.Println("зп", client.BonusInfo.AmountIncome)
 	requestData.BasicIncome = client.BonusInfo.AmountIncome
 	requestData.AdditionalIncome = 0
 	requestData.UserCode = client.MiddleName + " " + client.FirstName + " " + client.LastName
@@ -162,32 +172,9 @@ func fillingBCCRequestData(client *storage.IndividualClient, applicationData sto
 	return requestData, nil
 }
 
-func CreateEUApplication(body []byte) (responses.EUResponseData, error) {
-	var requestData requests.EUApplicationRequestData
-	err := json.Unmarshal(body, &requestData)
-	if err != nil {
-		return responses.EUResponseData{}, err
-	}
-
-	requestData.Gsvp.Base64Content, err = encodeFileToBase64("templates/resultMedia/outputPDF/autocredit.pdf")
-	if err != nil {
-		return responses.EUResponseData{}, err
-	}
-	requestData.Idcd.Base64Content, err = encodeFileToBase64("eu-bank.jpg")
-	if err != nil {
-		return responses.EUResponseData{}, err
-	}
-	requestData.Photo.Base64Content, err = encodeFileToBase64("eu-bank.jpg")
-	if err != nil {
-		return responses.EUResponseData{}, err
-	}
-	requestData.OrderID = helpers.RandBankApplicationID(16)
-	requestData.Gsvp.Name = "GSPV"
-	requestData.Gsvp.Extension = "pdf"
-	requestData.Idcd.Name = "IDCD"
-	requestData.Idcd.Extension = "jpg"
-	requestData.Photo.Name = "PHTO"
-	requestData.Photo.Extension = "jpg"
+// TODO createApplication -> filling
+func createEUApplication(individualClient *storage.IndividualClient, application storage.Application, bankApplication storage.BankApplication) (responses.EUResponseData, error) {
+	requestData, err := fillingEUBankRequestData(individualClient, application, bankApplication)
 
 	requestBody, err := json.Marshal(requestData)
 	if err != nil {
@@ -228,6 +215,75 @@ func CreateEUApplication(body []byte) (responses.EUResponseData, error) {
 	}
 
 	return responseData, nil
+}
+
+func fillingEUBankRequestData(client *storage.IndividualClient, applicationData storage.Application, bankApplicationData storage.BankApplication) (requests.EUApplicationRequestData, error) {
+	var requestData requests.EUApplicationRequestData
+
+	issueYear, err := strconv.Atoi(applicationData.YearIssue)
+	if err != nil {
+		return requests.EUApplicationRequestData{}, err
+	}
+
+	if applicationData.Condition == false {
+		requestData.Car.Condition = "B2C"
+	} else {
+		requestData.Car.Condition = "NEW"
+	}
+	requestData.Car.Brand = applicationData.CarBrand
+	requestData.Car.Model = applicationData.CarModel
+	requestData.Car.Year = uint(issueYear)
+	requestData.Car.Insurance = false
+	requestData.Car.Price = uint(applicationData.CarPrice)
+	requestData.City = "Алматы"
+	requestData.Income = true
+	requestData.PartyID = "11201740"
+	requestData.DownPayment = uint(applicationData.InitFee)
+	requestData.Duration = uint(bankApplicationData.TrenchesNumber)
+	requestData.Iin = client.Document.IIN
+	requestData.Phone = client.Phone
+	requestData.JobPhone = client.WorkPlaceInfo.OrganizationPhone
+	requestData.IncomeMain = client.BonusInfo.AmountIncome
+	switch client.MaritalStatus.Status {
+	case "Холост/Не замужен":
+		requestData.MaritalStatus = "1"
+	case "Женат/Замужем":
+		requestData.MaritalStatus = "2"
+	case "Разведен/Разведена":
+		requestData.MaritalStatus = "0"
+	case "Гражданский брак":
+		requestData.MaritalStatus = "4"
+	case "Вдовец/вдова":
+		requestData.MaritalStatus = "3"
+	default:
+		requestData.MaritalStatus = "0"
+	}
+	for _, contact := range *client.Contacts {
+		requestData.ContactPersonContact = contact.Phone
+		requestData.ContactPersonName = contact.FullName
+	}
+	requestData.IncomeAddConfirmed = strconv.Itoa(0)
+	requestData.Gsvp.Base64Content, err = encodeFileToBase64("templates/resultMedia/outputPDF/autocredit.pdf")
+	if err != nil {
+		return requests.EUApplicationRequestData{}, err
+	}
+	requestData.Idcd.Base64Content, err = encodeFileToBase64("eu-bank.jpg")
+	if err != nil {
+		return requests.EUApplicationRequestData{}, err
+	}
+	requestData.Photo.Base64Content, err = encodeFileToBase64("eu-bank.jpg")
+	if err != nil {
+		return requests.EUApplicationRequestData{}, err
+	}
+	requestData.OrderID = helpers.RandBankApplicationID(16)
+	requestData.Gsvp.Name = "GSPV"
+	requestData.Gsvp.Extension = "pdf"
+	requestData.Idcd.Name = "IDCD"
+	requestData.Idcd.Extension = "jpg"
+	requestData.Photo.Name = "PHTO"
+	requestData.Photo.Extension = "jpg"
+
+	return requestData, nil
 }
 
 func CreateShinhanApplication(body []byte) (responses.ShinhanResponseData, error) {
@@ -304,8 +360,6 @@ func getBCCToken() (string, error) {
 	if err != nil {
 		return "error", err
 	}
-
-	fmt.Println(os.Getenv("BCC_CRED"))
 
 	req.Header.Add("authorization", "Basic "+os.Getenv("BCC_CRED"))
 	req.Header.Add("content-type", "application/x-www-form-urlencoded")
