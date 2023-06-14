@@ -147,3 +147,40 @@ func UploadFileToUser(db *gorm.DB, uid uint32, filePath string, title string) (*
 
 	return mediaCreated, nil
 }
+
+func GeneratePdfForBanks(db *gorm.DB, body []byte, id uint) (*storage.Media, error) {
+	r := NewRequestPdf("")
+	var result map[string]interface{}
+
+	err := json.Unmarshal(body, &result)
+	if err != nil {
+		return &storage.Media{}, err
+	}
+	fileName := fmt.Sprint(result["templateName"])
+	templateFileName := "templates/resultMedia/documentTemplates/" + fileName + ".html"
+	//data := result["data"]
+
+	client := storage.IndividualClient{}
+	clientGotten, err := client.Get(db, id)
+	if err != nil {
+		return nil, err
+	}
+
+	err = r.ParseTemplate(fmt.Sprint(templateFileName), clientGotten)
+	if err != nil {
+		return &storage.Media{}, err
+	}
+
+	docNumber := helpers.RandEmailCode()
+
+	outputPath := "storage/" + fileName + docNumber + ".pdf"
+	err = r.ConvertHTMLtoPdf(outputPath)
+	if err != nil {
+		return &storage.Media{}, err
+	}
+	//fileBytes, err := os.ReadFile("outputPdf/" + fileName + ".pdf")
+
+	//mediaCreated, err := UploadFileService(db, uid, fileName, "", fileBytes, fileBytes)
+	mediaCreated, err := UploadFileToUser(db, uint32(id), outputPath, fileName)
+	return mediaCreated, nil
+}
