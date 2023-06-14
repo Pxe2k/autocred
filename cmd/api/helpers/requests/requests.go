@@ -193,3 +193,8 @@ type BCCTemplateData struct {
 	CurrentDate string
 	Place       string // Место приема заявок
 }
+
+type ContactPerson struct {
+	FullName string `json:"fullName"`
+	PhoneNo  string `json:"phoneNo"`
+}
