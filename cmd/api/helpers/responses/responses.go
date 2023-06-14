@@ -38,7 +38,7 @@ type IndividualClientResponseData struct {
 	TypeOfClient        string                               `gorm:"size:100" json:"typeOfClient"` // Тип клиента
 	FirstName           string                               `gorm:"size:100" json:"firstName"`
 	MiddleName          string                               `gorm:"size:100" json:"middleName"`
-	LastName            *string                              `gorm:"size:100" json:"lastName,omitempty"`
+	LastName            string                               `gorm:"size:100" json:"lastName,omitempty"`
 	Sex                 string                               `gorm:"size:100" json:"sex"`       // Пол
 	BirthDate           string                               `gorm:"size:100" json:"birthDate"` // ДР
 	Country             string                               `gorm:"size:100" json:"country"`

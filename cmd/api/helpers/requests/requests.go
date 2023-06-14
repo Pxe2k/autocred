@@ -185,3 +185,11 @@ type OTPRequestData struct {
 	Phone string `json:"phone"`
 	Code  string `json:"code"`
 }
+
+type BCCTemplateData struct {
+	FIO         string
+	Phone       string
+	OTP         string
+	CurrentDate string
+	Place       string // Место приема заявок
+}
