@@ -35,28 +35,32 @@ func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (responses.App
 	}
 
 	for _, bankApplication := range application.BankApplications {
-		if bankApplication.Bank == "BCC" {
+		if bankApplication.Bank == "Банк Центр Кредит" {
 			bccResponseData, err := createBCCApplication(individualClientGotten, application, bankApplication)
 			if err != nil {
 				fmt.Println("error: ", err)
 			}
 			responseData.BCCResponseData = bccResponseData
 		}
-		if bankApplication.Bank == "EuBank" {
+		if bankApplication.Bank == "Евразийский Банк" {
 			euBankResponseData, err := createEUApplication(individualClientGotten, application, bankApplication)
 			if err != nil {
 				fmt.Println("error: ", err)
 			}
 			responseData.EUResponseData = euBankResponseData
 		}
-		if bankApplication.Bank == "Kaspi" {
-			fmt.Println("Kaspi")
+		if bankApplication.Bank == "Шинхан Банк" {
+			shinhanResponseData, err := createShinhanApplication(individualClientGotten, application, bankApplication)
+			if err != nil {
+				fmt.Println("error: ", err)
+			}
+			responseData.ShinhanResponseData = shinhanResponseData
 		}
 	}
 
 	application.UserID = uid
 
-	return responses.ApplicationResponseData{}, nil
+	return responseData, nil
 }
 
 func createBCCApplication(individualClient *storage.IndividualClient, application storage.Application, bankApplication storage.BankApplication) (responses.BCCResponseData, error) {
@@ -178,6 +182,9 @@ func fillingBCCRequestData(client *storage.IndividualClient, applicationData sto
 // TODO createApplication -> filling
 func createEUApplication(individualClient *storage.IndividualClient, application storage.Application, bankApplication storage.BankApplication) (responses.EUResponseData, error) {
 	requestData, err := fillingEUBankRequestData(individualClient, application, bankApplication)
+	if err != nil {
+		return responses.EUResponseData{}, err
+	}
 
 	requestBody, err := json.Marshal(requestData)
 	if err != nil {
@@ -296,28 +303,7 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 	return requestData, nil
 }
 
-func CreateShinhanApplication(body []byte) (responses.ShinhanResponseData, error) {
-	var requestData requests.ShinhanApplicationRequestData
-	err := json.Unmarshal(body, &requestData)
-	if err != nil {
-		return responses.ShinhanResponseData{}, err
-	}
-
-	requestData.Customer.Document.PhotoBack, err = encodeFileToBase64("templates/resultMedia/outputPDF/autocredit.pdf")
-	if err != nil {
-		return responses.ShinhanResponseData{}, err
-	}
-	requestData.Customer.Document.PhotoFront, err = encodeFileToBase64("templates/resultMedia/outputPDF/autocredit.pdf")
-	if err != nil {
-		return responses.ShinhanResponseData{}, err
-	}
-	requestData.Customer.Photo, err = encodeFileToBase64("eu-bank.jpg")
-	if err != nil {
-		return responses.ShinhanResponseData{}, err
-	}
-	requestData.CalculationType = "A"
-	requestData.Cas = false
-	requestData.Discount = false
+func createShinhanApplication(individualClient *storage.IndividualClient, application storage.Application, bankApplication storage.BankApplication) (responses.ShinhanResponseData, error) {
 
 	requestBody, err := json.Marshal(requestData)
 	if err != nil {
@@ -357,6 +343,36 @@ func CreateShinhanApplication(body []byte) (responses.ShinhanResponseData, error
 	}
 
 	return responseData, nil
+}
+
+func fillingShinhanBankRequestData(client *storage.IndividualClient, applicationData storage.Application, bankApplicationData storage.BankApplication) (requests.ShinhanApplicationRequestData, error) {
+	var requestData requests.ShinhanApplicationRequestData
+	var err error
+
+	requestData.CalculationType = "A"
+	requestData.Car.Brand = applicationData.CarBrand
+	requestData.Car.Model = applicationData.CarModel
+	requestData.Car.Year = applicationData.YearIssue
+	requestData.Car.Country = "KOREAN"
+	requestData.Car.Price = strconv.Itoa(applicationData.CarPrice)
+	requestData.Car.FuelType = "GAZOLINE"
+	requestData.Car.Colour = "белый"
+	requestData.Car.Type = "SALOON"
+
+	requestData.Customer.Document.PhotoBack, err = encodeFileToBase64("templates/resultMedia/outputPDF/autocredit.pdf")
+	if err != nil {
+		return requests.ShinhanApplicationRequestData{}, err
+	}
+	requestData.Customer.Document.PhotoFront, err = encodeFileToBase64("templates/resultMedia/outputPDF/autocredit.pdf")
+	if err != nil {
+		return requests.ShinhanApplicationRequestData{}, err
+	}
+	requestData.Customer.Photo, err = encodeFileToBase64("eu-bank.jpg")
+	if err != nil {
+		return requests.ShinhanApplicationRequestData{}, err
+	}
+	requestData.Cas = false
+	requestData.Discount = false
 }
 
 func getBCCToken() (string, error) {
