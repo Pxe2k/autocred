@@ -41,28 +41,6 @@ func (server *Server) createApplication(w http.ResponseWriter, r *http.Request) 
 	responses.JSON(w, http.StatusCreated, applicationCreated)
 }
 
-func (server *Server) createBCCApplication(w http.ResponseWriter, r *http.Request) {
-	tokenID, err := auth.ExtractTokenID(r)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnauthorized, err)
-		return
-	}
-	if tokenID == 0 {
-		responses.ERROR(w, http.StatusUnauthorized, err)
-		return
-	}
-
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	responseData, err := service.CreateBCCApplication(body)
-
-	responses.JSON(w, http.StatusCreated, responseData)
-}
-
 func (server *Server) allApplications(w http.ResponseWriter, r *http.Request) {
 	tokenID, err := auth.ExtractTokenID(r)
 	if tokenID == 0 {
@@ -82,54 +60,6 @@ func (server *Server) allApplications(w http.ResponseWriter, r *http.Request) {
 	}
 
 	responses.JSON(w, http.StatusOK, applications)
-}
-
-func (server *Server) createEUApplication(w http.ResponseWriter, r *http.Request) {
-	tokenID, err := auth.ExtractTokenID(r)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnauthorized, err)
-		return
-	}
-	if tokenID == 0 {
-		responses.ERROR(w, http.StatusUnauthorized, err)
-		return
-	}
-
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	responseData, err := service.CreateEUApplication(body)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	responses.JSON(w, http.StatusCreated, responseData)
-}
-
-func (server *Server) createShinhanApplication(w http.ResponseWriter, r *http.Request) {
-	tokenID, err := auth.ExtractTokenID(r)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnauthorized, err)
-		return
-	}
-	if tokenID == 0 {
-		responses.ERROR(w, http.StatusUnauthorized, err)
-		return
-	}
-
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	responseData, err := service.CreateShinhanApplication(body)
-
-	responses.JSON(w, http.StatusCreated, responseData)
 }
 
 func (server *Server) getApplication(w http.ResponseWriter, r *http.Request) {

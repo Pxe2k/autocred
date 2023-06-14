@@ -1,6 +1,7 @@
 package transport
 
 import (
+	"autocredit/cmd/api/auth"
 	"autocredit/cmd/api/helpers/responses"
 	"autocredit/cmd/api/internal/service"
 	"github.com/gorilla/mux"
@@ -10,6 +11,16 @@ import (
 )
 
 func (server *Server) generateTemplate(w http.ResponseWriter, r *http.Request) {
+	tokenID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, err)
+		return
+	}
+	if tokenID == 0 {
+		responses.ERROR(w, http.StatusUnauthorized, err)
+		return
+	}
+
 	vars := mux.Vars(r)
 	id, err := strconv.ParseUint(vars["id"], 10, 32)
 	if err != nil {

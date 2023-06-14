@@ -39,9 +39,6 @@ func (server *Server) InitializeRoutes() {
 	applicationApi := server.Router.PathPrefix("/api/application").Subrouter()
 
 	applicationApi.HandleFunc("/create", middlewares.SetMiddlewareJSON(server.createApplication)).Methods("POST")
-	applicationApi.HandleFunc("/create-bcc", middlewares.SetMiddlewareJSON(server.createBCCApplication)).Methods("POST")
-	applicationApi.HandleFunc("/create-eu", middlewares.SetMiddlewareJSON(server.createEUApplication)).Methods("POST")
-	applicationApi.HandleFunc("/create-shinhan", middlewares.SetMiddlewareJSON(server.createShinhanApplication)).Methods("POST")
 	applicationApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allApplications)).Methods("GET")
 	applicationApi.HandleFunc("/get/{id}", middlewares.SetMiddlewareJSON(server.getApplication)).Methods("GET")
 	applicationApi.HandleFunc("/token", middlewares.SetMiddlewareJSON(server.getBankToken)).Methods("GET")
