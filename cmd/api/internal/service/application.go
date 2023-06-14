@@ -27,7 +27,8 @@ func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (*storage.Appl
 	}
 
 	individualClient := storage.IndividualClient{}
-	individualClientGotten, err := individualClient.Get(db, *application.IndividualClientID)
+
+	individualClientGotten, err := individualClient.Get(db, 10)
 	if err != nil {
 		return nil, err
 	}
