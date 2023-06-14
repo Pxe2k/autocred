@@ -15,7 +15,7 @@ func SendMessage(OTP, phone string) error {
 	url := os.Getenv("SMS_LINK")
 
 	phoneNumber := strings.TrimPrefix(phone, "+")
-	requestData := "recipient=" + phoneNumber[1:] + "&text=Your SMS Code = " + OTP
+	requestData := "recipient=" + phoneNumber[1:] + "&text=Your SMS Code - " + OTP
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer([]byte(requestData)))
 	if err != nil {
