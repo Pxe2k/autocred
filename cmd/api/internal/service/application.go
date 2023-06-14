@@ -29,7 +29,7 @@ func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (responses.App
 
 	individualClient := storage.IndividualClient{}
 
-	individualClientGotten, err := individualClient.Get(db, 10)
+	individualClientGotten, err := individualClient.Get(db, application.IndividualClientID)
 	if err != nil {
 		return responses.ApplicationResponseData{}, err
 	}
@@ -65,8 +65,6 @@ func createBCCApplication(individualClient *storage.IndividualClient, applicatio
 		return responses.BCCResponseData{}, err
 	}
 
-	fmt.Println("test22")
-
 	requestData, err := fillingBCCRequestData(individualClient, application, bankApplication)
 	if err != nil {
 		return responses.BCCResponseData{}, err
@@ -97,17 +95,23 @@ func createBCCApplication(individualClient *storage.IndividualClient, applicatio
 
 	defer resp.Body.Close()
 
+	fmt.Println("status code", resp.StatusCode)
+
 	serverResponse, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return responses.BCCResponseData{}, err
 	}
 
 	var responseData responses.BCCResponseData
+	var result map[string]interface{}
 
 	err = json.Unmarshal(serverResponse, &responseData)
 	if err != nil {
 		return responses.BCCResponseData{}, err
 	}
+	err = json.Unmarshal(serverResponse, &result)
+
+	fmt.Println("result", result)
 
 	return responseData, nil
 }
@@ -155,7 +159,6 @@ func fillingBCCRequestData(client *storage.IndividualClient, applicationData sto
 		requestData.WorkStatus = "Обычный клиент"
 	}
 	requestData.OrganizationPhoneNo = client.WorkPlaceInfo.OrganizationPhone
-	fmt.Println("зп", client.BonusInfo.AmountIncome)
 	requestData.BasicIncome = client.BonusInfo.AmountIncome
 	requestData.AdditionalIncome = 0
 	requestData.UserCode = client.MiddleName + " " + client.FirstName + " " + client.LastName
