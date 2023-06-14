@@ -98,6 +98,14 @@ type BCCTokenResponseData struct {
 	Scope       string `json:"bcc.application.private"`
 }
 
+type ApplicationResponseData struct {
+	Status              bool                `json:"status"`
+	Error               error               `json:"error"`
+	BCCResponseData     BCCResponseData     `json:"BCCResponseData"`
+	EUResponseData      EUResponseData      `json:"EUResponseData"`
+	ShinhanResponseData ShinhanResponseData `json:"shinhanResponseData"`
+}
+
 type BCCResponseData struct {
 	Status    string `json:"status"`
 	Message   string `json:"message"`
