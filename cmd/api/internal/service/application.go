@@ -53,8 +53,7 @@ func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (responses.App
 		if bankApplication.Bank == "Шинхан Банк" {
 			shinhanResponseData, err3 := createShinhanApplication(individualClientGotten, application, bankApplication)
 			if err3 != nil {
-				fmt.Println("error1: ", err3, "test")
-				return responseData, err3
+				fmt.Println("error: ", err3)
 			}
 			responseData.ShinhanResponseData = shinhanResponseData
 		}
@@ -341,20 +340,20 @@ func createShinhanApplication(individualClient *storage.IndividualClient, applic
 		return responses.ShinhanResponseData{}, err
 	}
 
-	var responseData responses.ShinhanResponseData
+	var result map[string]interface{}
+	err = json.Unmarshal(serverResponse, &result)
+	if err != nil {
+		fmt.Println(string(serverResponse))
+		return responses.ShinhanResponseData{}, err
+	}
+	fmt.Println("result", result)
 
+	var responseData responses.ShinhanResponseData
 	err = json.Unmarshal(serverResponse, &responseData)
 	if err != nil {
 		fmt.Println(string(serverResponse))
 		return responses.ShinhanResponseData{}, err
 	}
-
-	var result map[string]interface{}
-	err = json.Unmarshal(serverResponse, &result)
-	if err != nil {
-		return responses.ShinhanResponseData{}, err
-	}
-	fmt.Println("result", result)
 
 	return responseData, nil
 }
