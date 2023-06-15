@@ -6,11 +6,6 @@ type Pledge struct {
 	gorm.Model
 	Type                    string            `gorm:"size:100;" json:"type"`
 	Title                   string            `gorm:"size:100;" json:"title"`
-	CarBrandID              uint              `json:"carBrandID"`
-	CarModelID              uint              `json:"carModelID"`
-	OriginCountry           string            `gorm:"size:100;" json:"originCountry"`
-	YearIssue               string            `gorm:"size:100;" json:"yearIssue"`
-	Condition               string            `gorm:"size:100;" json:"condition"`
 	Mileage                 string            `gorm:"size:100;" json:"mileage"`
 	VINCode                 string            `gorm:"size:100;" json:"vinCode"`
 	RegistrationNumber      string            `gorm:"size:100;" json:"registrationNumber"`
@@ -19,8 +14,6 @@ type Pledge struct {
 	CustomsNumber           string            `gorm:"size:100;" json:"customsNumber"`
 	CustomsDate             string            `gorm:"size:100;" json:"customsDate"`
 	CustomsIssuingAuthority string            `gorm:"size:100;" json:"customsIssuingAuthority"`
-	CarBrand                *CarBrand         `json:"carBrand,omitempty"`
-	CarModel                *CarModel         `json:"carModel,omitempty"`
 	IndividualClientID      *uint             `json:"individualClientID,omitempty"`
 	IndividualClient        *IndividualClient `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"individualClient,omitempty"`
 	BusinessClientID        *uint             `json:"businessClientID,omitempty"`

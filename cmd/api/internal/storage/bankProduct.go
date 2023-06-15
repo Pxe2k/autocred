@@ -7,8 +7,13 @@ import (
 
 type BankProduct struct {
 	gorm.Model
-	Title  string `gorm:"size:100;" json:"title"`
-	BankID uint   `json:"bankID"`
+	Title                          string  `gorm:"size:100;" json:"title"`
+	WithPercentage                 bool    `json:"withPercentage"`
+	PercentageWithProvenIncome     float64 `json:"percentageWithProvenIncome"`
+	PercentageWithoutProvenIncome  float64 `json:"percentageWithoutProvenIncome"`
+	MaxAmountWithVerifiedIncome    uint    `json:"maxAmountWithVerifiedIncome"`
+	MaxAmountWithoutVerifiedIncome uint    `json:"maxAmountWithoutVerifiedIncome"`
+	BankID                         uint    `json:"bankID"`
 }
 
 func (b *BankProduct) Save(db *gorm.DB) (*BankProduct, error) {
