@@ -19,7 +19,7 @@ type Application struct {
 	LoanPercentage     int               `json:"loanPercentage"`               // Процент кредита
 	BankApplications   []BankApplication `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bankApplications"`
 	UserID             uint              `json:"userID"`
-	IndividualClientID *uint             `json:"individualClientID,omitempty"`
+	IndividualClientID uint              `json:"individualClientID,omitempty"`
 	BusinessClientID   *uint             `json:"businessClientID,omitempty"`
 	IndividualClient   *IndividualClient `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"individualClient,omitempty"`
 	BusinessClient     *BusinessClient   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"businessClient,omitempty"`

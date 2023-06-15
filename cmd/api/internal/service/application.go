@@ -15,6 +15,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -29,34 +30,39 @@ func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (responses.App
 
 	individualClient := storage.IndividualClient{}
 
-	individualClientGotten, err := individualClient.Get(db, 10)
+	individualClientGotten, err := individualClient.Get(db, application.IndividualClientID)
 	if err != nil {
 		return responses.ApplicationResponseData{}, err
 	}
 
 	for _, bankApplication := range application.BankApplications {
-		if bankApplication.Bank == "BCC" {
-			bccResponseData, err := createBCCApplication(individualClientGotten, application, bankApplication)
-			if err != nil {
-				fmt.Println("error: ", err)
+		if bankApplication.Bank == "Банк Центр Кредит" {
+			bccResponseData, err1 := createBCCApplication(individualClientGotten, application, bankApplication)
+			if err1 != nil {
+				fmt.Println("error: ", err1)
 			}
 			responseData.BCCResponseData = bccResponseData
 		}
-		if bankApplication.Bank == "EuBank" {
-			euBankResponseData, err := createEUApplication(individualClientGotten, application, bankApplication)
-			if err != nil {
-				fmt.Println("error: ", err)
+		if bankApplication.Bank == "Евразийский Банк" {
+			euBankResponseData, err2 := createEUApplication(individualClientGotten, application, bankApplication)
+			if err2 != nil {
+				fmt.Println("error: ", err2)
 			}
 			responseData.EUResponseData = euBankResponseData
 		}
-		if bankApplication.Bank == "Kaspi" {
-			fmt.Println("Kaspi")
+		if bankApplication.Bank == "Шинхан Банк" {
+			shinhanResponseData, err3 := createShinhanApplication(individualClientGotten, application, bankApplication)
+			if err3 != nil {
+				fmt.Println("error1: ", err3, "test")
+				return responseData, err3
+			}
+			responseData.ShinhanResponseData = shinhanResponseData
 		}
 	}
 
 	application.UserID = uid
 
-	return responses.ApplicationResponseData{}, nil
+	return responseData, nil
 }
 
 func createBCCApplication(individualClient *storage.IndividualClient, application storage.Application, bankApplication storage.BankApplication) (responses.BCCResponseData, error) {
@@ -64,8 +70,6 @@ func createBCCApplication(individualClient *storage.IndividualClient, applicatio
 	if err != nil {
 		return responses.BCCResponseData{}, err
 	}
-
-	fmt.Println("test22")
 
 	requestData, err := fillingBCCRequestData(individualClient, application, bankApplication)
 	if err != nil {
@@ -97,6 +101,8 @@ func createBCCApplication(individualClient *storage.IndividualClient, applicatio
 
 	defer resp.Body.Close()
 
+	fmt.Println("status code", resp.StatusCode)
+
 	serverResponse, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return responses.BCCResponseData{}, err
@@ -108,6 +114,10 @@ func createBCCApplication(individualClient *storage.IndividualClient, applicatio
 	if err != nil {
 		return responses.BCCResponseData{}, err
 	}
+	var result map[string]interface{}
+	err = json.Unmarshal(serverResponse, &result)
+
+	fmt.Println("result", result)
 
 	return responseData, nil
 }
@@ -155,7 +165,6 @@ func fillingBCCRequestData(client *storage.IndividualClient, applicationData sto
 		requestData.WorkStatus = "Обычный клиент"
 	}
 	requestData.OrganizationPhoneNo = client.WorkPlaceInfo.OrganizationPhone
-	fmt.Println("зп", client.BonusInfo.AmountIncome)
 	requestData.BasicIncome = client.BonusInfo.AmountIncome
 	requestData.AdditionalIncome = 0
 	requestData.UserCode = client.MiddleName + " " + client.FirstName + " " + client.LastName
@@ -175,6 +184,9 @@ func fillingBCCRequestData(client *storage.IndividualClient, applicationData sto
 // TODO createApplication -> filling
 func createEUApplication(individualClient *storage.IndividualClient, application storage.Application, bankApplication storage.BankApplication) (responses.EUResponseData, error) {
 	requestData, err := fillingEUBankRequestData(individualClient, application, bankApplication)
+	if err != nil {
+		return responses.EUResponseData{}, err
+	}
 
 	requestBody, err := json.Marshal(requestData)
 	if err != nil {
@@ -214,6 +226,13 @@ func createEUApplication(individualClient *storage.IndividualClient, application
 		return responses.EUResponseData{}, err
 	}
 
+	var result map[string]interface{}
+	err = json.Unmarshal(serverResponse, &result)
+	if err != nil {
+		return responses.EUResponseData{}, err
+	}
+	fmt.Println("result", result)
+
 	return responseData, nil
 }
 
@@ -241,8 +260,8 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 	requestData.DownPayment = uint(applicationData.InitFee)
 	requestData.Duration = uint(bankApplicationData.TrenchesNumber)
 	requestData.Iin = client.Document.IIN
-	requestData.Phone = client.Phone
-	requestData.JobPhone = client.WorkPlaceInfo.OrganizationPhone
+	requestData.Phone = client.Phone[1:]
+	requestData.JobPhone = client.WorkPlaceInfo.OrganizationPhone[1:]
 	requestData.IncomeMain = client.BonusInfo.AmountIncome
 	switch client.MaritalStatus.Status {
 	case "Холост/Не замужен":
@@ -259,7 +278,7 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 		requestData.MaritalStatus = "0"
 	}
 	for _, contact := range *client.Contacts {
-		requestData.ContactPersonContact = contact.Phone
+		requestData.ContactPersonContact = contact.Phone[1:]
 		requestData.ContactPersonName = contact.FullName
 	}
 	requestData.IncomeAddConfirmed = strconv.Itoa(0)
@@ -286,28 +305,11 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 	return requestData, nil
 }
 
-func CreateShinhanApplication(body []byte) (responses.ShinhanResponseData, error) {
-	var requestData requests.ShinhanApplicationRequestData
-	err := json.Unmarshal(body, &requestData)
+func createShinhanApplication(individualClient *storage.IndividualClient, application storage.Application, bankApplication storage.BankApplication) (responses.ShinhanResponseData, error) {
+	requestData, err := fillingShinhanBankRequestData(individualClient, application, bankApplication)
 	if err != nil {
 		return responses.ShinhanResponseData{}, err
 	}
-
-	requestData.Customer.Document.PhotoBack, err = encodeFileToBase64("templates/resultMedia/outputPDF/autocredit.pdf")
-	if err != nil {
-		return responses.ShinhanResponseData{}, err
-	}
-	requestData.Customer.Document.PhotoFront, err = encodeFileToBase64("templates/resultMedia/outputPDF/autocredit.pdf")
-	if err != nil {
-		return responses.ShinhanResponseData{}, err
-	}
-	requestData.Customer.Photo, err = encodeFileToBase64("eu-bank.jpg")
-	if err != nil {
-		return responses.ShinhanResponseData{}, err
-	}
-	requestData.CalculationType = "A"
-	requestData.Cas = false
-	requestData.Discount = false
 
 	requestBody, err := json.Marshal(requestData)
 	if err != nil {
@@ -343,10 +345,105 @@ func CreateShinhanApplication(body []byte) (responses.ShinhanResponseData, error
 
 	err = json.Unmarshal(serverResponse, &responseData)
 	if err != nil {
+		fmt.Println(string(serverResponse))
 		return responses.ShinhanResponseData{}, err
 	}
 
+	var result map[string]interface{}
+	err = json.Unmarshal(serverResponse, &result)
+	if err != nil {
+		return responses.ShinhanResponseData{}, err
+	}
+	fmt.Println("result", result)
+
 	return responseData, nil
+}
+
+func fillingShinhanBankRequestData(client *storage.IndividualClient, applicationData storage.Application, bankApplicationData storage.BankApplication) (requests.ShinhanApplicationRequestData, error) {
+	var requestData requests.ShinhanApplicationRequestData
+	var err error
+
+	requestData.CalculationType = "A"
+	requestData.Car.Brand = applicationData.CarBrand
+	requestData.Car.Model = applicationData.CarModel
+	requestData.Car.Year = applicationData.YearIssue
+	requestData.Car.Country = "KOREAN"
+	requestData.Car.Price = strconv.Itoa(applicationData.CarPrice)
+	requestData.Car.FuelType = "GAZOLINE"
+	requestData.Car.Colour = "белый"
+	requestData.Car.Type = "SALOON"
+	requestData.Car.Condition = "USED"
+	requestData.Cas = false
+	requestData.City = "Алматы " + client.User.AutoDealer.Address
+	requestData.Customer.ActualAddress.District = client.ResidentialAddress.Address
+	requestData.Customer.ActualAddress.Flat = client.ResidentialAddress.Address
+	requestData.Customer.ActualAddress.House = client.ResidentialAddress.Address
+	requestData.Customer.ActualAddress.Region = client.ResidentialAddress.Address
+	requestData.Customer.ActualAddress.Settlement = client.ResidentialAddress.Address
+	requestData.Customer.ActualAddress.Street = client.ResidentialAddress.Address
+	requestData.Customer.BirthDate = "1991-03-22"
+	requestData.Customer.BirthPlace = client.Document.PlaceOfBirth
+	for _, contact := range *client.Contacts {
+		requestData.Customer.ContactPersonPhone = contact.Phone[1:]
+		requestData.Customer.ContactPersonFullName = contact.FullName
+	}
+	requestData.Customer.Document.CountryOfResidence = "KZ"
+	requestData.Customer.Document.IssuedDate = "1991-03-22"
+	requestData.Customer.Document.ExpirationDate = "1991-03-22"
+	requestData.Customer.Document.Issuer = client.Document.IssuingAuthority
+	requestData.Customer.Document.Number = client.Document.Number
+	requestData.Customer.Document.PhotoBack, err = encodeFileToBase64("templates/resultMedia/outputPDF/autocredit.pdf")
+	if err != nil {
+		fmt.Println(1)
+		return requests.ShinhanApplicationRequestData{}, err
+	}
+	requestData.Customer.Document.PhotoFront, err = encodeFileToBase64("templates/resultMedia/outputPDF/autocredit.pdf")
+	if err != nil {
+		return requests.ShinhanApplicationRequestData{}, err
+	}
+	requestData.Customer.Document.Type = "ID_CARD"
+	requestData.Customer.EmployerAddress.District = client.WorkPlaceInfo.Address
+	requestData.Customer.EmployerAddress.Flat = client.WorkPlaceInfo.Address
+	requestData.Customer.EmployerAddress.House = client.WorkPlaceInfo.Address
+	requestData.Customer.EmployerAddress.Region = client.WorkPlaceInfo.Address
+	requestData.Customer.EmployerAddress.Settlement = client.WorkPlaceInfo.Address
+	requestData.Customer.EmployerAddress.Street = client.WorkPlaceInfo.Address
+	requestData.Customer.EmployerName = client.WorkPlaceInfo.OrganizationName
+	requestData.Customer.EmployerPhone = client.WorkPlaceInfo.OrganizationPhone
+	requestData.Customer.EmploymentType = "PRIVATE_COMPANY"
+	requestData.Customer.Firstname = client.FirstName
+	requestData.Customer.Lastname = client.LastName
+	requestData.Customer.Patronymic = client.MiddleName
+	requestData.Customer.Gender = client.Sex
+	requestData.Customer.Iin = client.Document.IIN
+	requestData.Customer.Income = true
+	requestData.Customer.MaritalStatus = "SINGLE"
+	requestData.Customer.MobilePhone = "7751022255"
+	requestData.Customer.NumberOfDependents = client.MaritalStatus.MinorChildren
+	requestData.Customer.OfficialIncome = strconv.Itoa(client.BonusInfo.AmountIncome)
+	requestData.Customer.Photo, err = encodeFileToBase64("eu-bank.jpg")
+	if err != nil {
+		return requests.ShinhanApplicationRequestData{}, err
+	}
+	requestData.Customer.RegistrationAddress.District = client.RegistrationAddress.Address
+	requestData.Customer.RegistrationAddress.Flat = client.RegistrationAddress.Address
+	requestData.Customer.RegistrationAddress.House = client.RegistrationAddress.Address
+	requestData.Customer.RegistrationAddress.Region = client.RegistrationAddress.Address
+	requestData.Customer.RegistrationAddress.Settlement = client.RegistrationAddress.Address
+	requestData.Customer.RegistrationAddress.Street = client.RegistrationAddress.Address
+	requestData.Customer.ResidencyStatus = "RESIDENT"
+	requestData.Discount = false
+	requestData.Downpayment = strconv.Itoa(applicationData.InitFee)
+	requestData.Duration = strconv.Itoa(bankApplicationData.TrenchesNumber)
+	requestData.GosProgram = false
+	requestData.Grace = false
+	requestData.InstalmentDate = "1991-03-22"
+	requestData.Insurance = false
+	requestData.PartnerId = "1778"
+	requestData.Verification.Code = "1111"
+	requestData.Verification.Date = time.Now().Format("2006-01-02 15:04:05")
+
+	return requestData, nil
 }
 
 func getBCCToken() (string, error) {
