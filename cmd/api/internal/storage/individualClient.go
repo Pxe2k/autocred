@@ -84,6 +84,7 @@ func (ic *IndividualClient) Get(db *gorm.DB, id uint) (*IndividualClient, error)
 		Preload("ResidentialAddress").
 		Preload("Contacts").
 		Preload("BeneficialOwners").
+		Preload("BonusInfo").
 		Preload("Documents").
 		Preload("Pledges").
 		Preload("Pledges.CarModel").
