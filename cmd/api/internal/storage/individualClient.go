@@ -87,8 +87,6 @@ func (ic *IndividualClient) Get(db *gorm.DB, id uint) (*IndividualClient, error)
 		Preload("BonusInfo").
 		Preload("Documents").
 		Preload("Pledges").
-		Preload("Pledges.CarModel").
-		Preload("Pledges.CarBrand").
 		Take(&ic).Error
 	if err != nil {
 		return nil, err

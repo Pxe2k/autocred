@@ -37,6 +37,10 @@ func (server *Server) createApplication(w http.ResponseWriter, r *http.Request) 
 	}
 
 	applicationCreated, err := service.CreateApplicationService(server.DB, body, uint(tokenID))
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
 
 	responses.JSON(w, http.StatusCreated, applicationCreated)
 }

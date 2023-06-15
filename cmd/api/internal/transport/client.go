@@ -80,6 +80,12 @@ func (server *Server) allIndividualClient(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	for _, clientGotten := range *clients {
+		if clientGotten.UserID != uint(tokenID) {
+			clientGotten.Phone = ""
+		}
+	}
+
 	responses.JSON(w, http.StatusOK, clients)
 }
 
