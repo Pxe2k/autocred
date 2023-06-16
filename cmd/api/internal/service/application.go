@@ -32,33 +32,38 @@ func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (responses.App
 		return responses.ApplicationResponseData{}, err
 	}
 
-	for _, bankApplication := range application.BankApplications {
-		if bankApplication.Bank == "Банк Центр Кредит" {
-			bccResponseData, err1 := createBCCApplication(individualClientGotten, application, bankApplication)
+	for i := range application.BankApplications {
+		if application.BankApplications[i].Bank == "Банк Центр Кредит" {
+			bccResponseData, err1 := createBCCApplication(individualClientGotten, application, application.BankApplications[i])
 			if err1 != nil {
-				fmt.Println("error: ", err1)
+				fmt.Println("error:", err1)
 			}
+			application.BankApplications[i].BankResponse.Status = "В ожидании"
+			application.BankApplications[i].BankResponse.ApplicationID = bccResponseData.RequestId
 			responseData.BCCResponseData = bccResponseData
-		}
-		if bankApplication.Bank == "Евразийский Банк" {
-			euBankResponseData, err2 := createEUApplication(individualClientGotten, application, bankApplication)
+		} else if application.BankApplications[i].Bank == "Евразийский Банк" {
+			euBankResponseData, err2 := createEUApplication(individualClientGotten, application, application.BankApplications[i])
 			if err2 != nil {
-				fmt.Println("error: ", err2)
+				fmt.Println("error:", err2)
 			}
+			application.BankApplications[i].BankResponse.Status = "В ожидании"
+			application.BankApplications[i].BankResponse.ApplicationID = euBankResponseData.OrderID
 			responseData.EUResponseData = euBankResponseData
-		}
-		if bankApplication.Bank == "Шинхан Банк" {
-			shinhanResponseData, err3 := createShinhanApplication(individualClientGotten, application, bankApplication)
+		} else if application.BankApplications[i].Bank == "Шинхан Банк" {
+			shinhanResponseData, err3 := createShinhanApplication(individualClientGotten, application, application.BankApplications[i])
 			if err3 != nil {
-				fmt.Println("error: ", err3)
+				fmt.Println("error:", err3)
 			}
+			application.BankApplications[i].BankResponse.Status = "В ожидании"
+			stringShinhanRequestID := strconv.Itoa(shinhanResponseData.ApplicationID)
+			application.BankApplications[i].BankResponse.ApplicationID = stringShinhanRequestID
 			responseData.ShinhanResponseData = shinhanResponseData
 		}
 	}
 
 	application.UserID = uid
 
-	_, err = application.Save(db)
+	err = application.Save(db)
 	if err != nil {
 		return responses.ApplicationResponseData{}, err
 	}
@@ -180,6 +185,8 @@ func fillingBCCRequestData(client *storage.IndividualClient, applicationData sto
 	requestData.Document.File, err = helpers.EncodeFileToBase64("storage/bcc-data-processing_" + helpers.CurrentDateString() + ".pdf")
 	requestData.Document.Extension = "pdf"
 	requestData.Document.Code = "SOG"
+
+	fmt.Println(requestData)
 
 	return requestData, nil
 }
@@ -492,4 +499,107 @@ func GetApplication(db *gorm.DB, id uint) (storage.Application, error) {
 	}
 
 	return *applicationGotten, nil
+}
+
+func AllApplication(db *gorm.DB, uid uint) (*[]storage.Application, error) {
+	application := storage.Application{}
+	applications, err := application.All(db, uid)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, applicationGotten := range *applications {
+		for _, bankApplication := range applicationGotten.BankApplications {
+			if bankApplication.Bank == "Евразийский Банк" {
+				statusResponse, err := getEUStatus(bankApplication.BankResponse.ApplicationID)
+				if err != nil {
+					fmt.Println("error: ", err)
+				} else {
+					bankApplication.BankResponse.Status = statusResponse.Status
+					bankApplication.BankResponse.Description = statusResponse.Description
+				}
+			} else if bankApplication.Bank == "Шинхан Банк" {
+				status, err := getShinhanStatus(bankApplication.BankResponse.ApplicationID)
+				if err != nil {
+					fmt.Println("error: ", err)
+				} else {
+					bankApplication.BankResponse.Status = status
+				}
+			}
+		}
+	}
+
+	return applications, nil
+}
+
+func getShinhanStatus(shinhanApplicationID string) (string, error) {
+	url := os.Getenv("https://is.shinhanfinance.kz/api/v1/orbis/application_status/" + shinhanApplicationID + "/")
+
+	client := &http.Client{}
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		fmt.Println("Error creating request:", err)
+		return "error: ", err
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Error sending request:", err)
+		return "error: ", err
+	}
+	defer resp.Body.Close()
+
+	if err != nil {
+		return "error: ", err
+	}
+
+	serverResponse, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "error: ", err
+	}
+
+	responseData := responses.ShinhanStatusResponseData{}
+	err = json.Unmarshal(serverResponse, &responseData)
+	if err != nil {
+		return "error: ", err
+	}
+
+	return responseData.Status, nil
+}
+
+func getEUStatus(euApplicationID string) (*responses.EUBankStatusResponseData, error) {
+	url := os.Getenv("https://test-auto.eubank.kz/orbis/partner/" + euApplicationID)
+
+	client := &http.Client{}
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		fmt.Println("Error creating request:", err)
+		return nil, err
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Error sending request:", err)
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if err != nil {
+		return nil, err
+	}
+
+	serverResponse, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	responseData := responses.EUBankStatusResponseData{}
+	err = json.Unmarshal(serverResponse, &responseData)
+	if err != nil {
+		return nil, err
+	}
+
+	return &responseData, nil
 }
