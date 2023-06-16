@@ -25,18 +25,18 @@ type Application struct {
 	BusinessClient     *BusinessClient   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"businessClient,omitempty"`
 }
 
-func (a *Application) Save(db *gorm.DB) (*Application, error) {
+func (a *Application) Save(db *gorm.DB) error {
 	err := db.Debug().Create(&a).Error
 	if err != nil {
-		return &Application{}, err
+		return err
 	}
 
-	return a, nil
+	return nil
 }
 
 func (a *Application) All(db *gorm.DB, uid uint) (*[]Application, error) {
 	var applications []Application
-	err := db.Debug().Model(&Application{}).Where("user_id = ?", uid).Limit(100).Find(&applications).Error
+	err := db.Debug().Model(&Application{}).Where("user_id = ?", uid).Preload("BankApplications").Preload("BankApplications.BankResponse").Limit(100).Find(&applications).Error
 	if err != nil {
 		return nil, err
 	}

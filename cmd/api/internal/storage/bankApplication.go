@@ -16,5 +16,5 @@ type BankApplication struct {
 	Kasko           *Kasko         `json:"kasko,omitempty"`
 	RoadHelp        *RoadHelp      `json:"roadHelp,omitempty"`
 	LifeInsurance   *LifeInsurance `json:"lifeInsurance,omitempty"`
-	BankResponses   []BankResponse `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bankResponses"`
+	BankResponse    BankResponse   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bankResponse"`
 }

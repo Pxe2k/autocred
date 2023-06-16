@@ -5,7 +5,6 @@ import (
 	"autocredit/cmd/api/helpers"
 	"autocredit/cmd/api/helpers/responses"
 	"autocredit/cmd/api/internal/service"
-	"autocredit/cmd/api/internal/storage"
 	"encoding/base64"
 	"errors"
 	"fmt"
@@ -56,8 +55,7 @@ func (server *Server) allApplications(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	application := storage.Application{}
-	applications, err := application.All(server.DB, uint(tokenID))
+	applications, err := service.AllApplication(server.DB, uint(tokenID))
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
