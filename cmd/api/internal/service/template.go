@@ -50,18 +50,23 @@ func GeneratePdf(db *gorm.DB, body []byte, id uint) (*storage.Media, error) {
 	documentData.CurrentDate = helpers.CurrentDateString()
 	documentData.Place = clientGotten.User.AutoDealer.Address
 
+	var fileName string
+
 	for _, bankTitle := range requestData.Banks {
 		if bankTitle.Title == "BCC" {
 			err = r.ParseTemplate(fmt.Sprint(BCCTemplateFile), documentData)
+			fileName = "bcc-data-processing" + strconv.Itoa(int(clientGotten.ID)) + "_" + documentData.CurrentDate
 			if err != nil {
 				return &storage.Media{}, err
 			}
 		} else if bankTitle.Title == "EU" {
 			err = r.ParseTemplate(fmt.Sprint(BCCTemplateFile), documentData)
+			fileName = "bcc-data-processing" + strconv.Itoa(int(clientGotten.ID)) + "_" + documentData.CurrentDate
 			if err != nil {
 				return &storage.Media{}, err
 			}
 		} else if bankTitle.Title == "Shinhan" {
+			fileName = "bcc-data-processing" + strconv.Itoa(int(clientGotten.ID)) + "_" + documentData.CurrentDate
 			err = r.ParseTemplate(fmt.Sprint(BCCTemplateFile), documentData)
 			if err != nil {
 				return &storage.Media{}, err
@@ -69,13 +74,13 @@ func GeneratePdf(db *gorm.DB, body []byte, id uint) (*storage.Media, error) {
 		}
 	}
 
-	fileName := "bcc-data-processing" + "_" + documentData.CurrentDate
-
 	outputPath := "storage/" + fileName + ".pdf"
 	err = r.ConvertHTMLtoPdf(outputPath)
 	if err != nil {
 		return &storage.Media{}, err
 	}
+
+	//var mediaDataSeeded = []storage.Media{}
 
 	mediaCreated, err := UploadFileToUser(db, uint32(id), outputPath, fileName)
 	return mediaCreated, nil
