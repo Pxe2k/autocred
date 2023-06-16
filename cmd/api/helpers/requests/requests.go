@@ -198,3 +198,9 @@ type ContactPerson struct {
 	FullName string `json:"fullName"`
 	PhoneNo  string `json:"phoneNo"`
 }
+
+type GenerateDocumentRequestData struct {
+	Banks []struct {
+		Title string `json:"title"`
+	} `json:"banks"`
+}

@@ -29,6 +29,60 @@ func NewRequestPdf(body string) *RequestPdf {
 
 func GeneratePdf(db *gorm.DB, body []byte, id uint) (*storage.Media, error) {
 	r := NewRequestPdf("")
+
+	requestData := requests.GenerateDocumentRequestData{}
+	err := json.Unmarshal(body, &requestData)
+	if err != nil {
+		return &storage.Media{}, err
+	}
+
+	BCCTemplateFile := "templates/resultMedia/documentTemplates/BCCDataProcessing.html"
+
+	client := storage.IndividualClient{}
+	documentData := requests.BCCTemplateData{}
+	clientGotten, err := client.Get(db, id)
+	if err != nil {
+		return nil, err
+	}
+
+	documentData.FIO = clientGotten.MiddleName + " " + clientGotten.FirstName + " " + clientGotten.LastName
+	documentData.Phone = clientGotten.Phone
+	documentData.CurrentDate = helpers.CurrentDateString()
+	documentData.Place = clientGotten.User.AutoDealer.Address
+
+	for _, bankTitle := range requestData.Banks {
+		if bankTitle.Title == "BCC" {
+			err = r.ParseTemplate(fmt.Sprint(BCCTemplateFile), documentData)
+			if err != nil {
+				return &storage.Media{}, err
+			}
+		} else if bankTitle.Title == "EU" {
+			err = r.ParseTemplate(fmt.Sprint(BCCTemplateFile), documentData)
+			if err != nil {
+				return &storage.Media{}, err
+			}
+		} else if bankTitle.Title == "Shinhan" {
+			err = r.ParseTemplate(fmt.Sprint(BCCTemplateFile), documentData)
+			if err != nil {
+				return &storage.Media{}, err
+			}
+		}
+	}
+
+	fileName := "bcc-data-processing" + "_" + documentData.CurrentDate
+
+	outputPath := "storage/" + fileName + ".pdf"
+	err = r.ConvertHTMLtoPdf(outputPath)
+	if err != nil {
+		return &storage.Media{}, err
+	}
+
+	mediaCreated, err := UploadFileToUser(db, uint32(id), outputPath, fileName)
+	return mediaCreated, nil
+}
+
+func ConfirmPdf(db *gorm.DB, body []byte, id uint) (*storage.Media, error) {
+	r := NewRequestPdf("")
 	var result map[string]interface{}
 
 	err := json.Unmarshal(body, &result)
