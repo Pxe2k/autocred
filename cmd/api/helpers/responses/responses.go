@@ -141,6 +141,24 @@ type SMSResponse struct {
 	Message string `json:"message"`
 }
 
+type ShinhanStatusResponseData struct {
+	Status string `json:"status"`
+}
+
+type EUBankStatusResponseData struct {
+	IIN         string `json:"IIN"`
+	ClientType  string `json:"ClientType"`
+	LastName    string `json:"LastName"`
+	FirstName   string `json:"FirstName"`
+	MiddleName  string `json:"MiddleName"`
+	FIO         string `json:"FIO"`
+	Status      string `json:"status"`
+	Description string `json:"Description"`
+	LoanNumber  string `json:"loanNumber"`
+	Product     string `json:"product"`
+	Term        int    `json:"term"`
+}
+
 func JSON(w http.ResponseWriter, statusCode int, data interface{}) {
 	w.WriteHeader(statusCode)
 	err := json.NewEncoder(w).Encode(data)
