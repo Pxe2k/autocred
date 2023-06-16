@@ -13,6 +13,14 @@ type BankProduct struct {
 	PercentageWithoutProvenIncome  float64 `json:"percentageWithoutProvenIncome"`
 	MaxAmountWithVerifiedIncome    uint    `json:"maxAmountWithVerifiedIncome"`
 	MaxAmountWithoutVerifiedIncome uint    `json:"maxAmountWithoutVerifiedIncome"`
+	MaxAmount                      uint    `json:"maxAmount"`
+	Rate12                         float64 `json:"rate12"`
+	Rate24                         float64 `json:"rate24"`
+	Rate36                         float64 `json:"rate36"`
+	Rate48                         float64 `json:"rate48"`
+	Rate60                         float64 `json:"rate60"`
+	Rate72                         float64 `json:"rate72"`
+	Rate84                         float64 `json:"rate84"`
 	BankID                         uint    `json:"bankID"`
 }
 
