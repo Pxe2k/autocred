@@ -5,9 +5,7 @@ import (
 	"autocredit/cmd/api/helpers/requests"
 	"autocredit/cmd/api/helpers/responses"
 	"autocredit/cmd/api/internal/storage"
-	"bufio"
 	"bytes"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -29,7 +27,6 @@ func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (responses.App
 	}
 
 	individualClient := storage.IndividualClient{}
-
 	individualClientGotten, err := individualClient.Get(db, application.IndividualClientID)
 	if err != nil {
 		return responses.ApplicationResponseData{}, err
@@ -60,6 +57,13 @@ func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (responses.App
 	}
 
 	application.UserID = uid
+
+	_, err = application.Save(db)
+	if err != nil {
+		return responses.ApplicationResponseData{}, err
+	}
+
+	responseData.Status = true
 
 	return responseData, nil
 }
@@ -173,7 +177,7 @@ func fillingBCCRequestData(client *storage.IndividualClient, applicationData sto
 			PhoneNo:  contact.Phone,
 		})
 	}
-	requestData.Document.File, err = encodeFileToBase64("storage/bcc-data-processing_" + helpers.CurrentDateString() + ".pdf")
+	requestData.Document.File, err = helpers.EncodeFileToBase64("storage/bcc-data-processing_" + helpers.CurrentDateString() + ".pdf")
 	requestData.Document.Extension = "pdf"
 	requestData.Document.Code = "SOG"
 
@@ -281,15 +285,15 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 		requestData.ContactPersonName = contact.FullName
 	}
 	requestData.IncomeAddConfirmed = strconv.Itoa(0)
-	requestData.Gsvp.Base64Content, err = encodeFileToBase64("templates/resultMedia/outputPDF/autocredit.pdf")
+	requestData.Gsvp.Base64Content, err = helpers.EncodeFileToBase64("templates/resultMedia/outputPDF/autocredit.pdf")
 	if err != nil {
 		return requests.EUApplicationRequestData{}, err
 	}
-	requestData.Idcd.Base64Content, err = encodeFileToBase64("eu-bank.jpg")
+	requestData.Idcd.Base64Content, err = helpers.EncodeFileToBase64("eu-bank.jpg")
 	if err != nil {
 		return requests.EUApplicationRequestData{}, err
 	}
-	requestData.Photo.Base64Content, err = encodeFileToBase64("eu-bank.jpg")
+	requestData.Photo.Base64Content, err = helpers.EncodeFileToBase64("eu-bank.jpg")
 	if err != nil {
 		return requests.EUApplicationRequestData{}, err
 	}
@@ -391,12 +395,12 @@ func fillingShinhanBankRequestData(client *storage.IndividualClient, application
 	requestData.Customer.Document.ExpirationDate = "1991-03-22"
 	requestData.Customer.Document.Issuer = client.Document.IssuingAuthority
 	requestData.Customer.Document.Number = client.Document.Number
-	requestData.Customer.Document.PhotoBack, err = encodeFileToBase64("templates/resultMedia/outputPDF/autocredit.pdf")
+	requestData.Customer.Document.PhotoBack, err = helpers.EncodeFileToBase64("templates/resultMedia/outputPDF/autocredit.pdf")
 	if err != nil {
 		fmt.Println(1)
 		return requests.ShinhanApplicationRequestData{}, err
 	}
-	requestData.Customer.Document.PhotoFront, err = encodeFileToBase64("templates/resultMedia/outputPDF/autocredit.pdf")
+	requestData.Customer.Document.PhotoFront, err = helpers.EncodeFileToBase64("templates/resultMedia/outputPDF/autocredit.pdf")
 	if err != nil {
 		return requests.ShinhanApplicationRequestData{}, err
 	}
@@ -420,7 +424,7 @@ func fillingShinhanBankRequestData(client *storage.IndividualClient, application
 	requestData.Customer.MobilePhone = "7751022255"
 	requestData.Customer.NumberOfDependents = client.MaritalStatus.MinorChildren
 	requestData.Customer.OfficialIncome = strconv.Itoa(client.BonusInfo.AmountIncome)
-	requestData.Customer.Photo, err = encodeFileToBase64("eu-bank.jpg")
+	requestData.Customer.Photo, err = helpers.EncodeFileToBase64("eu-bank.jpg")
 	if err != nil {
 		return requests.ShinhanApplicationRequestData{}, err
 	}
@@ -478,24 +482,6 @@ func getBCCToken() (string, error) {
 	}
 
 	return respData.AccessToken, nil
-}
-
-// TODO Перенести в Helpers
-func encodeFileToBase64(filePath string) (string, error) {
-	f, err := os.Open(filePath)
-	if err != nil {
-		return "error", err
-	}
-
-	reader := bufio.NewReader(f)
-	content, err := io.ReadAll(reader)
-	if err != nil {
-		return "error", err
-	}
-
-	encoded := base64.StdEncoding.EncodeToString(content)
-
-	return encoded, nil
 }
 
 func GetApplication(db *gorm.DB, id uint) (storage.Application, error) {
