@@ -32,6 +32,7 @@ func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (responses.App
 		return responses.ApplicationResponseData{}, err
 	}
 
+	// TODO if status ok create bankResponse
 	for i := range application.BankApplications {
 		if application.BankApplications[i].Bank == "Банк Центр Кредит" {
 			bccResponseData, err1 := createBCCApplication(individualClientGotten, application, application.BankApplications[i])
@@ -273,7 +274,7 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 	if len(client.Phone) > 1 {
 		// Remove any leading "+" symbol
 		if strings.HasPrefix(client.Phone, "+") {
-			client.Phone = client.Phone[1:]
+			client.Phone = client.Phone[2:]
 		}
 		// Remove leading "8" if present
 		if strings.HasPrefix(client.Phone, "8") {
@@ -284,7 +285,7 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 	if len(client.WorkPlaceInfo.OrganizationPhone) > 1 {
 		// Remove any leading "+" symbol
 		if strings.HasPrefix(client.WorkPlaceInfo.OrganizationPhone, "+") {
-			client.WorkPlaceInfo.OrganizationPhone = client.WorkPlaceInfo.OrganizationPhone[1:]
+			client.WorkPlaceInfo.OrganizationPhone = client.WorkPlaceInfo.OrganizationPhone[2:]
 		}
 		// Remove leading "8" if present
 		if strings.HasPrefix(client.WorkPlaceInfo.OrganizationPhone, "8") {
@@ -295,14 +296,13 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 	for _, contact := range *client.Contacts {
 		if len(contact.Phone) > 1 {
 			// Remove any leading "+" symbol
-			if strings.HasPrefix(contact.Phone, "+7") {
-				contact.Phone = contact.Phone[1:]
+			if strings.HasPrefix(contact.Phone, "+") {
+				contact.Phone = contact.Phone[2:]
 			}
 			// Remove leading "8" if present
 			if strings.HasPrefix(contact.Phone, "8") {
 				contact.Phone = contact.Phone[1:]
 			}
-			fmt.Println(contact.Phone)
 			requestData.ContactPersonContact = contact.Phone
 		}
 		requestData.ContactPersonName = contact.FullName
