@@ -18,6 +18,14 @@ func (m *Media) Save(db *gorm.DB) (*Media, error) {
 	return m, nil
 }
 
+func (m *Media) MultipleSave(db *gorm.DB, media []Media) ([]Media, error) {
+	err := db.Debug().Create(media).Error
+	if err != nil {
+		return []Media{}, err
+	}
+	return media, nil
+}
+
 func (m *Media) SoftDelete(db *gorm.DB, id uint) (int64, error) {
 	err := db.Debug().Model(&Media{}).Where("id = ?", id).Take(&Media{}).Delete(&Media{})
 	if err != nil {

@@ -3,6 +3,7 @@ package service
 import (
 	"autocredit/cmd/api/helpers"
 	"autocredit/cmd/api/helpers/requests"
+	"autocredit/cmd/api/helpers/responses"
 	"autocredit/cmd/api/internal/storage"
 	"bytes"
 	"encoding/json"
@@ -27,19 +28,20 @@ func NewRequestPdf(body string) *RequestPdf {
 	}
 }
 
-func GeneratePdf(db *gorm.DB, body []byte, id uint) (*storage.Media, error) {
+func GeneratePdf(db *gorm.DB, body []byte, id uint) ([]responses.BankDocumentsCreated, error) {
 	r := NewRequestPdf("")
-	var result map[string]interface{}
 
-	err := json.Unmarshal(body, &result)
+	requestData := requests.GenerateDocumentRequestData{}
+	err := json.Unmarshal(body, &requestData)
 	if err != nil {
-		return &storage.Media{}, err
+		return nil, err
 	}
 
 	BCCTemplateFile := "templates/resultMedia/documentTemplates/BCCDataProcessing.html"
+	EUTemplateFile := "templates/resultMedia/documentTemplates/EUDataProcessing.html"
 
 	client := storage.IndividualClient{}
-	documentData := requests.BCCTemplateData{}
+	documentData := requests.ProcessingTemplateData{}
 	clientGotten, err := client.Get(db, id)
 	if err != nil {
 		return nil, err
@@ -48,9 +50,94 @@ func GeneratePdf(db *gorm.DB, body []byte, id uint) (*storage.Media, error) {
 	documentData.FIO = clientGotten.MiddleName + " " + clientGotten.FirstName + " " + clientGotten.LastName
 	documentData.Phone = clientGotten.Phone
 	documentData.CurrentDate = helpers.CurrentDateString()
-	documentData.OTP = fmt.Sprint(result["OTP"])
 	documentData.Place = clientGotten.User.AutoDealer.Address
-	fmt.Println(documentData.Place)
+	documentData.BirthPlace = clientGotten.Document.PlaceOfBirth
+	documentData.BirthDate = clientGotten.BirthDate
+	documentData.Address = clientGotten.ResidentialAddress.Address
+	documentData.DocumentNumber = clientGotten.Document.Number
+	documentData.DocumentIssuingAuthority = clientGotten.Document.IssuingAuthority
+	documentData.DocumentIssueDate = clientGotten.Document.DocumentIssueDate
+	documentData.OTP = " "
+
+	var fileName string
+	responseData := []responses.BankDocumentsCreated{}
+
+	for _, bankTitle := range requestData.Banks {
+		if bankTitle.Title == "BCC" {
+			err = r.ParseTemplate(fmt.Sprint(BCCTemplateFile), documentData)
+			if err != nil {
+				return nil, err
+			}
+
+			fileName = "bcc-data-processing" + strconv.Itoa(int(clientGotten.ID)) + "_" + helpers.CurrentDateString()
+			responseData = append(responseData, responses.BankDocumentsCreated{Title: "BCC", File: fileName})
+
+			err = r.ConvertHTMLtoPdf("storage/" + fileName + ".pdf")
+			if err != nil {
+				return nil, err
+			}
+		} else if bankTitle.Title == "EU" {
+			err = r.ParseTemplate(fmt.Sprint(EUTemplateFile), documentData)
+			if err != nil {
+				return nil, err
+			}
+
+			fileName = "eu-data-processing" + strconv.Itoa(int(clientGotten.ID)) + "_" + helpers.CurrentDateString()
+			responseData = append(responseData, responses.BankDocumentsCreated{Title: "EU", File: fileName})
+
+			err = r.ConvertHTMLtoPdf("storage/" + fileName + ".pdf")
+			if err != nil {
+				return nil, err
+			}
+		} else if bankTitle.Title == "Shinhan" {
+			err = r.ParseTemplate(fmt.Sprint(BCCTemplateFile), documentData)
+			if err != nil {
+				return nil, err
+			}
+
+			fileName = "shinhan-data-processing" + strconv.Itoa(int(clientGotten.ID)) + "_" + helpers.CurrentDateString()
+			responseData = append(responseData, responses.BankDocumentsCreated{Title: "Shinhan", File: fileName})
+
+			err = r.ConvertHTMLtoPdf("storage/" + fileName + ".pdf")
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	return responseData, nil
+}
+
+func ConfirmPdf(db *gorm.DB, body []byte, id uint) ([]storage.Media, error) {
+	r := NewRequestPdf("")
+
+	requestData := requests.GenerateDocumentRequestData{}
+	err := json.Unmarshal(body, &requestData)
+	if err != nil {
+		return nil, err
+	}
+
+	BCCTemplateFile := "templates/resultMedia/documentTemplates/BCCDataProcessing.html"
+	EUTemplateFile := "templates/resultMedia/documentTemplates/EUDataProcessing.html"
+
+	client := storage.IndividualClient{}
+	documentData := requests.ProcessingTemplateData{}
+	clientGotten, err := client.Get(db, id)
+	if err != nil {
+		return nil, err
+	}
+
+	documentData.FIO = clientGotten.MiddleName + " " + clientGotten.FirstName + " " + clientGotten.LastName
+	documentData.Phone = clientGotten.Phone
+	documentData.CurrentDate = helpers.CurrentDateString()
+	documentData.Place = clientGotten.User.AutoDealer.Address
+	documentData.BirthPlace = clientGotten.Document.PlaceOfBirth
+	documentData.BirthDate = clientGotten.BirthDate
+	documentData.Address = clientGotten.ResidentialAddress.Address
+	documentData.DocumentNumber = clientGotten.Document.Number
+	documentData.DocumentIssuingAuthority = clientGotten.Document.IssuingAuthority
+	documentData.DocumentIssueDate = clientGotten.Document.DocumentIssueDate
+	documentData.OTP = requestData.OTP
 
 	// TODO вынести Redis отдельно
 	val, err := helpers.Redis.Get(helpers.Ctx, clientGotten.Phone).Result()
@@ -66,20 +153,53 @@ func GeneratePdf(db *gorm.DB, body []byte, id uint) (*storage.Media, error) {
 		return nil, errors.New("code != value")
 	}
 
-	err = r.ParseTemplate(fmt.Sprint(BCCTemplateFile), documentData)
-	if err != nil {
-		return &storage.Media{}, err
+	var fileName string
+	mediaSeeded := []storage.Media{}
+
+	for _, bankTitle := range requestData.Banks {
+		if bankTitle.Title == "BCC" {
+			err = r.ParseTemplate(fmt.Sprint(BCCTemplateFile), documentData)
+			if err != nil {
+				return nil, err
+			}
+
+			fileName = "bcc-data-processing" + strconv.Itoa(int(clientGotten.ID)) + "_" + helpers.CurrentDateString()
+			mediaSeeded = append(mediaSeeded, storage.Media{Title: fileName, File: "storage/" + fileName + ".pdf", IndividualClientID: id})
+
+			err = r.ConvertHTMLtoPdf("storage/" + fileName + ".pdf")
+			if err != nil {
+				return nil, err
+			}
+		} else if bankTitle.Title == "EU" {
+			err = r.ParseTemplate(fmt.Sprint(EUTemplateFile), documentData)
+			if err != nil {
+				return nil, err
+			}
+
+			fileName = "eu-data-processing" + strconv.Itoa(int(clientGotten.ID)) + "_" + helpers.CurrentDateString()
+			mediaSeeded = append(mediaSeeded, storage.Media{Title: fileName, File: "storage/" + fileName + ".pdf", IndividualClientID: id})
+
+			err = r.ConvertHTMLtoPdf("storage/" + fileName + ".pdf")
+			if err != nil {
+				return nil, err
+			}
+		} else if bankTitle.Title == "Shinhan" {
+			err = r.ParseTemplate(fmt.Sprint(BCCTemplateFile), documentData)
+			if err != nil {
+				return nil, err
+			}
+
+			fileName = "shinhan-data-processing" + strconv.Itoa(int(clientGotten.ID)) + "_" + helpers.CurrentDateString()
+			mediaSeeded = append(mediaSeeded, storage.Media{Title: fileName, File: "storage/" + fileName + ".pdf", IndividualClientID: id})
+
+			err = r.ConvertHTMLtoPdf("storage/" + fileName + ".pdf")
+			if err != nil {
+				return nil, err
+			}
+		}
 	}
 
-	fileName := "bcc-data-processing" + "_" + documentData.CurrentDate
-
-	outputPath := "storage/" + fileName + ".pdf"
-	err = r.ConvertHTMLtoPdf(outputPath)
-	if err != nil {
-		return &storage.Media{}, err
-	}
-
-	mediaCreated, err := UploadFileToUser(db, uint32(id), outputPath, fileName)
+	mediaCreated, err := UploadFilesToUser(db, mediaSeeded)
 	return mediaCreated, nil
 }
 
@@ -157,14 +277,12 @@ func (r *RequestPdf) ConvertHTMLtoPdf(pdfPath string) error {
 	return nil
 }
 
-func UploadFileToUser(db *gorm.DB, uid uint32, filePath string, title string) (*storage.Media, error) {
+func UploadFilesToUser(db *gorm.DB, mediaSeeded []storage.Media) ([]storage.Media, error) {
 	media := storage.Media{}
-	media.File = filePath
-	media.Title = title
-	media.IndividualClientID = uint(uid)
-	mediaCreated, err := media.Save(db)
+
+	mediaCreated, err := media.MultipleSave(db, mediaSeeded)
 	if err != nil {
-		return &storage.Media{}, err
+		return []storage.Media{}, err
 	}
 
 	return mediaCreated, nil
