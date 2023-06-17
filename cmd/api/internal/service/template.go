@@ -57,6 +57,7 @@ func GeneratePdf(db *gorm.DB, body []byte, id uint) ([]responses.BankDocumentsCr
 	documentData.DocumentNumber = clientGotten.Document.Number
 	documentData.DocumentIssuingAuthority = clientGotten.Document.IssuingAuthority
 	documentData.DocumentIssueDate = clientGotten.Document.DocumentIssueDate
+	documentData.IIN = clientGotten.Document.IIN
 	documentData.OTP = " "
 
 	var fileName string
