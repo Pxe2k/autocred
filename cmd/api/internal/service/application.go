@@ -270,8 +270,18 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 	requestData.DownPayment = uint(applicationData.InitFee)
 	requestData.Duration = uint(bankApplicationData.TrenchesNumber)
 	requestData.Iin = client.Document.IIN
-	requestData.Phone = client.Phone[1:]
-	requestData.JobPhone = client.WorkPlaceInfo.OrganizationPhone[1:]
+	if len(client.Phone) > 1 {
+		requestData.Phone = client.Phone[1:]
+	}
+	if len(client.WorkPlaceInfo.OrganizationPhone) > 1 {
+		requestData.JobPhone = client.WorkPlaceInfo.OrganizationPhone[1:]
+	}
+	for _, contact := range *client.Contacts {
+		if len(contact.Phone) > 1 {
+			requestData.ContactPersonContact = contact.Phone[1:]
+		}
+		requestData.ContactPersonName = contact.FullName
+	}
 	requestData.IncomeMain = client.BonusInfo.AmountIncome
 	switch client.MaritalStatus.Status {
 	case "Холост/Не замужен":
@@ -286,10 +296,6 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 		requestData.MaritalStatus = "3"
 	default:
 		requestData.MaritalStatus = "0"
-	}
-	for _, contact := range *client.Contacts {
-		requestData.ContactPersonContact = contact.Phone[1:]
-		requestData.ContactPersonName = contact.FullName
 	}
 	requestData.IncomeAddConfirmed = strconv.Itoa(0)
 	requestData.Gsvp.Base64Content, err = helpers.EncodeFileToBase64("templates/resultMedia/outputPDF/autocredit.pdf")
@@ -327,6 +333,7 @@ func createShinhanApplication(individualClient *storage.IndividualClient, applic
 	}
 
 	url := os.Getenv("SHINHAN_APPLICATION")
+	fmt.Println("url: ", url)
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
 	if err != nil {
 		return responses.ShinhanResponseData{}, err
