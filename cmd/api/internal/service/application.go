@@ -302,6 +302,7 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 			if strings.HasPrefix(contact.Phone, "8") {
 				contact.Phone = contact.Phone[1:]
 			}
+			fmt.Println(contact.Phone)
 			requestData.ContactPersonContact = contact.Phone
 		}
 		requestData.ContactPersonName = contact.FullName
