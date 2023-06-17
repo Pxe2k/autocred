@@ -71,7 +71,7 @@ func GeneratePdf(db *gorm.DB, body []byte, id uint) ([]responses.BankDocumentsCr
 			}
 
 			fileName = "bcc-data-processing" + strconv.Itoa(int(clientGotten.ID)) + "_" + helpers.CurrentDateString()
-			responseData = append(responseData, responses.BankDocumentsCreated{Title: "BCC", File: fileName})
+			responseData = append(responseData, responses.BankDocumentsCreated{Title: "BCC", File: "storage/" + fileName + ".pdf"})
 
 			err = r.ConvertHTMLtoPdf("storage/" + fileName + ".pdf")
 			if err != nil {
@@ -84,7 +84,7 @@ func GeneratePdf(db *gorm.DB, body []byte, id uint) ([]responses.BankDocumentsCr
 			}
 
 			fileName = "eu-data-processing" + strconv.Itoa(int(clientGotten.ID)) + "_" + helpers.CurrentDateString()
-			responseData = append(responseData, responses.BankDocumentsCreated{Title: "EU", File: fileName})
+			responseData = append(responseData, responses.BankDocumentsCreated{Title: "EU", File: "storage/" + fileName + ".pdf"})
 
 			err = r.ConvertHTMLtoPdf("storage/" + fileName + ".pdf")
 			if err != nil {
@@ -97,7 +97,7 @@ func GeneratePdf(db *gorm.DB, body []byte, id uint) ([]responses.BankDocumentsCr
 			}
 
 			fileName = "shinhan-data-processing" + strconv.Itoa(int(clientGotten.ID)) + "_" + helpers.CurrentDateString()
-			responseData = append(responseData, responses.BankDocumentsCreated{Title: "Shinhan", File: fileName})
+			responseData = append(responseData, responses.BankDocumentsCreated{Title: "Shinhan", File: "storage/" + fileName + ".pdf"})
 
 			err = r.ConvertHTMLtoPdf("storage/" + fileName + ".pdf")
 			if err != nil {
