@@ -271,14 +271,38 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 	requestData.Duration = uint(bankApplicationData.TrenchesNumber)
 	requestData.Iin = client.Document.IIN
 	if len(client.Phone) > 1 {
-		requestData.Phone = client.Phone[1:]
+		// Remove any leading "+" symbol
+		if strings.HasPrefix(client.Phone, "+") {
+			client.Phone = client.Phone[1:]
+		}
+		// Remove leading "8" if present
+		if strings.HasPrefix(client.Phone, "8") {
+			client.Phone = client.Phone[1:]
+		}
+		requestData.Phone = client.Phone
 	}
 	if len(client.WorkPlaceInfo.OrganizationPhone) > 1 {
-		requestData.JobPhone = client.WorkPlaceInfo.OrganizationPhone[1:]
+		// Remove any leading "+" symbol
+		if strings.HasPrefix(client.WorkPlaceInfo.OrganizationPhone, "+") {
+			client.WorkPlaceInfo.OrganizationPhone = client.WorkPlaceInfo.OrganizationPhone[1:]
+		}
+		// Remove leading "8" if present
+		if strings.HasPrefix(client.WorkPlaceInfo.OrganizationPhone, "8") {
+			client.WorkPlaceInfo.OrganizationPhone = client.WorkPlaceInfo.OrganizationPhone[1:]
+		}
+		requestData.JobPhone = client.WorkPlaceInfo.OrganizationPhone
 	}
 	for _, contact := range *client.Contacts {
 		if len(contact.Phone) > 1 {
-			requestData.ContactPersonContact = contact.Phone[1:]
+			// Remove any leading "+" symbol
+			if strings.HasPrefix(contact.Phone, "+") {
+				contact.Phone = contact.Phone[1:]
+			}
+			// Remove leading "8" if present
+			if strings.HasPrefix(contact.Phone, "8") {
+				contact.Phone = contact.Phone[1:]
+			}
+			requestData.ContactPersonContact = contact.Phone
 		}
 		requestData.ContactPersonName = contact.FullName
 	}
