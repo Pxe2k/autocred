@@ -295,7 +295,7 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 	for _, contact := range *client.Contacts {
 		if len(contact.Phone) > 1 {
 			// Remove any leading "+" symbol
-			if strings.HasPrefix(contact.Phone, "+") {
+			if strings.HasPrefix(contact.Phone, "+7") {
 				contact.Phone = contact.Phone[1:]
 			}
 			// Remove leading "8" if present
