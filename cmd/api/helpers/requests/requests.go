@@ -188,6 +188,7 @@ type OTPRequestData struct {
 
 type ProcessingTemplateData struct {
 	FIO                      string
+	IIN                      string
 	Phone                    string
 	OTP                      string
 	CurrentDate              string
