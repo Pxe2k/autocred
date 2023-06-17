@@ -186,15 +186,28 @@ type OTPRequestData struct {
 	Code  string `json:"code"`
 }
 
-type BCCTemplateData struct {
-	FIO         string
-	Phone       string
-	OTP         string
-	CurrentDate string
-	Place       string // Место приема заявок
+type ProcessingTemplateData struct {
+	FIO                      string
+	Phone                    string
+	OTP                      string
+	CurrentDate              string
+	Place                    string // Место приема заявок
+	BirthPlace               string
+	BirthDate                string
+	Address                  string // Место проживания
+	DocumentNumber           string
+	DocumentIssuingAuthority string
+	DocumentIssueDate        string
 }
 
 type ContactPerson struct {
 	FullName string `json:"fullName"`
 	PhoneNo  string `json:"phoneNo"`
+}
+
+type GenerateDocumentRequestData struct {
+	Banks []struct {
+		Title string `json:"title"`
+	} `json:"banks"`
+	OTP string `json:"OTP"`
 }

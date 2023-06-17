@@ -43,3 +43,37 @@ func (server *Server) generateTemplate(w http.ResponseWriter, r *http.Request) {
 
 	responses.JSON(w, http.StatusCreated, generatedPDF)
 }
+
+func (server *Server) confirmTemplate(w http.ResponseWriter, r *http.Request) {
+	tokenID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, err)
+		return
+	}
+	if tokenID == 0 {
+		responses.ERROR(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	vars := mux.Vars(r)
+	id, err := strconv.ParseUint(vars["id"], 10, 32)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	generatedPDF, err := service.ConfirmPdf(server.DB, body, uint(id))
+
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusCreated, generatedPDF)
+}

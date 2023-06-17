@@ -159,6 +159,11 @@ type EUBankStatusResponseData struct {
 	Term        int    `json:"term"`
 }
 
+type BankDocumentsCreated struct {
+	Title string `json:"title"`
+	File  string `json:"file"`
+}
+
 func JSON(w http.ResponseWriter, statusCode int, data interface{}) {
 	w.WriteHeader(statusCode)
 	err := json.NewEncoder(w).Encode(data)
