@@ -3,7 +3,6 @@ package service
 import (
 	"autocredit/cmd/api/helpers"
 	"autocredit/cmd/api/helpers/requests"
-	"autocredit/cmd/api/helpers/responses"
 	"autocredit/cmd/api/internal/storage"
 	"bytes"
 	"encoding/json"
@@ -28,7 +27,7 @@ func NewRequestPdf(body string) *RequestPdf {
 	}
 }
 
-func GeneratePdf(db *gorm.DB, body []byte, id uint) ([]responses.BankDocumentsCreated, error) {
+func GeneratePdf(db *gorm.DB, body []byte, id uint) ([]storage.Media, error) {
 	r := NewRequestPdf("")
 
 	requestData := requests.GenerateDocumentRequestData{}
@@ -61,43 +60,43 @@ func GeneratePdf(db *gorm.DB, body []byte, id uint) ([]responses.BankDocumentsCr
 	documentData.OTP = " "
 
 	var fileName string
-	responseData := []responses.BankDocumentsCreated{}
+	mediaSeeded := []storage.Media{}
 
 	for _, bankTitle := range requestData.Banks {
-		if bankTitle.Title == "BCC" {
+		if bankTitle.ID == 1 {
 			err = r.ParseTemplate(fmt.Sprint(BCCTemplateFile), documentData)
 			if err != nil {
 				return nil, err
 			}
 
 			fileName = "bcc-data-processing" + strconv.Itoa(int(clientGotten.ID)) + "_" + helpers.CurrentDateString()
-			responseData = append(responseData, responses.BankDocumentsCreated{Title: "BCC", File: "storage/" + fileName + ".pdf"})
+			mediaSeeded = append(mediaSeeded, storage.Media{Title: fileName, File: "storage/" + fileName + ".pdf", IndividualClientID: id})
 
 			err = r.ConvertHTMLtoPdf("storage/" + fileName + ".pdf")
 			if err != nil {
 				return nil, err
 			}
-		} else if bankTitle.Title == "EU" {
+		} else if bankTitle.ID == 2 {
 			err = r.ParseTemplate(fmt.Sprint(EUTemplateFile), documentData)
 			if err != nil {
 				return nil, err
 			}
 
 			fileName = "eu-data-processing" + strconv.Itoa(int(clientGotten.ID)) + "_" + helpers.CurrentDateString()
-			responseData = append(responseData, responses.BankDocumentsCreated{Title: "EU", File: "storage/" + fileName + ".pdf"})
+			mediaSeeded = append(mediaSeeded, storage.Media{Title: fileName, File: "storage/" + fileName + ".pdf", IndividualClientID: id})
 
 			err = r.ConvertHTMLtoPdf("storage/" + fileName + ".pdf")
 			if err != nil {
 				return nil, err
 			}
-		} else if bankTitle.Title == "Shinhan" {
+		} else if bankTitle.ID == 3 {
 			err = r.ParseTemplate(fmt.Sprint(BCCTemplateFile), documentData)
 			if err != nil {
 				return nil, err
 			}
 
 			fileName = "shinhan-data-processing" + strconv.Itoa(int(clientGotten.ID)) + "_" + helpers.CurrentDateString()
-			responseData = append(responseData, responses.BankDocumentsCreated{Title: "Shinhan", File: "storage/" + fileName + ".pdf"})
+			mediaSeeded = append(mediaSeeded, storage.Media{Title: fileName, File: "storage/" + fileName + ".pdf", IndividualClientID: id})
 
 			err = r.ConvertHTMLtoPdf("storage/" + fileName + ".pdf")
 			if err != nil {
@@ -106,7 +105,11 @@ func GeneratePdf(db *gorm.DB, body []byte, id uint) ([]responses.BankDocumentsCr
 		}
 	}
 
-	return responseData, nil
+	mediaCreated, err := UploadFilesToUser(db, mediaSeeded)
+	if err != nil {
+		return nil, err
+	}
+	return mediaCreated, nil
 }
 
 func ConfirmPdf(db *gorm.DB, body []byte, id uint) ([]storage.Media, error) {
@@ -158,7 +161,7 @@ func ConfirmPdf(db *gorm.DB, body []byte, id uint) ([]storage.Media, error) {
 	mediaSeeded := []storage.Media{}
 
 	for _, bankTitle := range requestData.Banks {
-		if bankTitle.Title == "BCC" {
+		if bankTitle.ID == 1 {
 			err = r.ParseTemplate(fmt.Sprint(BCCTemplateFile), documentData)
 			if err != nil {
 				return nil, err
@@ -171,7 +174,7 @@ func ConfirmPdf(db *gorm.DB, body []byte, id uint) ([]storage.Media, error) {
 			if err != nil {
 				return nil, err
 			}
-		} else if bankTitle.Title == "EU" {
+		} else if bankTitle.ID == 2 {
 			err = r.ParseTemplate(fmt.Sprint(EUTemplateFile), documentData)
 			if err != nil {
 				return nil, err
@@ -184,7 +187,7 @@ func ConfirmPdf(db *gorm.DB, body []byte, id uint) ([]storage.Media, error) {
 			if err != nil {
 				return nil, err
 			}
-		} else if bankTitle.Title == "Shinhan" {
+		} else if bankTitle.ID == 3 {
 			err = r.ParseTemplate(fmt.Sprint(BCCTemplateFile), documentData)
 			if err != nil {
 				return nil, err
@@ -200,8 +203,7 @@ func ConfirmPdf(db *gorm.DB, body []byte, id uint) ([]storage.Media, error) {
 		}
 	}
 
-	mediaCreated, err := UploadFilesToUser(db, mediaSeeded)
-	return mediaCreated, nil
+	return mediaSeeded, nil
 }
 
 func (r *RequestPdf) ParseTemplate(templateFileName string, client interface{}) error {
