@@ -76,6 +76,7 @@ func (ic *IndividualClient) All(db *gorm.DB, fullName, sex, birthDate, sortUser 
 
 func (ic *IndividualClient) Get(db *gorm.DB, id uint) (*IndividualClient, error) {
 	err := db.Debug().Model(&IndividualClient{}).Where("id = ?", id).
+		Preload("Applications").
 		Preload("User").
 		Preload("User.AutoDealer").
 		Preload("Document").
@@ -88,7 +89,6 @@ func (ic *IndividualClient) Get(db *gorm.DB, id uint) (*IndividualClient, error)
 		Preload("BonusInfo").
 		Preload("Documents").
 		Preload("Pledges").
-		Preload("Applications").
 		Take(&ic).Error
 	if err != nil {
 		return nil, err
