@@ -1,8 +1,8 @@
 INSERT INTO banks (title, id) VALUES ('МФО Orbis Finance', 1);
-INSERT INTO banks (title) VALUES ('Евразийский Банк');
-INSERT INTO banks (title) VALUES ('Банк Центр Кредит');
+INSERT INTO banks (title, id) VALUES ('Банк Центр Кредит', 1);
+INSERT INTO banks (title, id) VALUES ('Евразийский Банк', 2);
+INSERT INTO banks (title, id) VALUES ('Шинхан Банк', 3);
 INSERT INTO banks (title) VALUES ('Береке Банк');
-INSERT INTO banks (title) VALUES ('Шинхан Банк');
 
 INSERT INTO bank_products (title, bank_id) VALUES ('С пробегом_Аннуитет', 1);
 INSERT INTO bank_products (title, bank_id) VALUES ('С пробегом_Дифф_6М', 1);
