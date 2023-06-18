@@ -160,6 +160,7 @@ type EUBankStatusResponseData struct {
 }
 
 type BankDocumentsCreated struct {
+	ID uint `json:"ID"`
 	Title string `json:"title"`
 	File  string `json:"file"`
 }

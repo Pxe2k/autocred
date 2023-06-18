@@ -3,6 +3,7 @@ package service
 import (
 	"autocredit/cmd/api/helpers"
 	"autocredit/cmd/api/helpers/requests"
+	"autocredit/cmd/api/helpers/responses"
 	"autocredit/cmd/api/internal/storage"
 	"bytes"
 	"encoding/json"
@@ -27,7 +28,7 @@ func NewRequestPdf(body string) *RequestPdf {
 	}
 }
 
-func GeneratePdf(db *gorm.DB, body []byte, id uint) ([]storage.Media, error) {
+func GeneratePdf(db *gorm.DB, body []byte, id uint) ([]responses.BankDocumentsCreated, error) {
 	r := NewRequestPdf("")
 
 	requestData := requests.GenerateDocumentRequestData{}
@@ -61,6 +62,7 @@ func GeneratePdf(db *gorm.DB, body []byte, id uint) ([]storage.Media, error) {
 
 	var fileName string
 	mediaSeeded := []storage.Media{}
+	var mediaData []responses.BankDocumentsCreated
 
 	for _, bankTitle := range requestData.Banks {
 		if bankTitle.ID == 1 {
@@ -71,6 +73,7 @@ func GeneratePdf(db *gorm.DB, body []byte, id uint) ([]storage.Media, error) {
 
 			fileName = "bcc-data-processing" + strconv.Itoa(int(clientGotten.ID)) + "_" + helpers.CurrentDateString()
 			mediaSeeded = append(mediaSeeded, storage.Media{Title: fileName, File: "storage/" + fileName + ".pdf", IndividualClientID: id})
+			mediaData = append(mediaData, responses.BankDocumentsCreated{ID: 1, Title: "Банк Центр Кредит", File: "storage/" + fileName + ".pdf"})
 
 			err = r.ConvertHTMLtoPdf("storage/" + fileName + ".pdf")
 			if err != nil {
@@ -84,6 +87,7 @@ func GeneratePdf(db *gorm.DB, body []byte, id uint) ([]storage.Media, error) {
 
 			fileName = "eu-data-processing" + strconv.Itoa(int(clientGotten.ID)) + "_" + helpers.CurrentDateString()
 			mediaSeeded = append(mediaSeeded, storage.Media{Title: fileName, File: "storage/" + fileName + ".pdf", IndividualClientID: id})
+			mediaData = append(mediaData, responses.BankDocumentsCreated{ID: 2, Title: "Евразийский Банк", File: "storage/" + fileName + ".pdf"})
 
 			err = r.ConvertHTMLtoPdf("storage/" + fileName + ".pdf")
 			if err != nil {
@@ -97,6 +101,7 @@ func GeneratePdf(db *gorm.DB, body []byte, id uint) ([]storage.Media, error) {
 
 			fileName = "shinhan-data-processing" + strconv.Itoa(int(clientGotten.ID)) + "_" + helpers.CurrentDateString()
 			mediaSeeded = append(mediaSeeded, storage.Media{Title: fileName, File: "storage/" + fileName + ".pdf", IndividualClientID: id})
+			mediaData = append(mediaData, responses.BankDocumentsCreated{ID: 3, Title: "Шинхан Банк", File: "storage/" + fileName + ".pdf"})
 
 			err = r.ConvertHTMLtoPdf("storage/" + fileName + ".pdf")
 			if err != nil {
@@ -105,11 +110,11 @@ func GeneratePdf(db *gorm.DB, body []byte, id uint) ([]storage.Media, error) {
 		}
 	}
 
-	mediaCreated, err := UploadFilesToUser(db, mediaSeeded)
+	_, err = UploadFilesToUser(db, mediaSeeded)
 	if err != nil {
 		return nil, err
 	}
-	return mediaCreated, nil
+	return mediaData, nil
 }
 
 func ConfirmPdf(db *gorm.DB, body []byte, id uint) ([]storage.Media, error) {
@@ -291,12 +296,14 @@ func UploadFilesToUser(db *gorm.DB, mediaSeeded []storage.Media) ([]storage.Medi
 	return mediaCreated, nil
 }
 
-func GetUserMedia(db *gorm.DB, uid uint) ([]storage.Media, error) {
-	media := storage.Media{}
-	mediaGotten, err := media.All(db, uid)
-	if err != nil {
-		return nil, err
-	}
+func GetUserMedia(db *gorm.DB, uid uint) ([]responses.BankDocumentsCreated, error) {
+	var mediaData []responses.BankDocumentsCreated
 
-	return mediaGotten, nil
+
+
+	mediaData = append(mediaData, responses.BankDocumentsCreated{ID: 1, Title: "Банк Центр Кредит", File: "storage/bcc-data-processing" + strconv.Itoa(int(uid)) + "_" + helpers.CurrentDateString() + ".pdf"})
+	mediaData = append(mediaData, responses.BankDocumentsCreated{ID: 2, Title: "Евразийский Банк", File: "storage/eu-data-processing" + strconv.Itoa(int(uid)) + "_" + helpers.CurrentDateString() + ".pdf"})
+	mediaData = append(mediaData, responses.BankDocumentsCreated{ID: 3, Title: "Шинхан Банк", File: "storage/shinhan-data-processing" + strconv.Itoa(int(uid)) + "_" + helpers.CurrentDateString() + ".pdf"})
+
+	return mediaData, nil
 }
