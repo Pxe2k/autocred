@@ -27,6 +27,7 @@ drop table business_clients cascade;
 
 drop table pledges cascade;
 
+drop table bank_responses cascade;
 drop table bank_applications cascade;
 drop table applications cascade;
 
