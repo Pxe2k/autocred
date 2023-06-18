@@ -77,3 +77,20 @@ func (server *Server) confirmTemplate(w http.ResponseWriter, r *http.Request) {
 
 	responses.JSON(w, http.StatusCreated, generatedPDF)
 }
+
+func (server *Server) getUserMedia(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.ParseUint(vars["id"], 10, 32)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	mediaGotten, err := service.GetUserMedia(server.DB, uint(id))
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusCreated, mediaGotten)
+}
