@@ -38,3 +38,13 @@ func (m *Media) SoftDelete(db *gorm.DB, id uint) (int64, error) {
 
 	return err.RowsAffected, nil
 }
+
+func (m *Media) All(db *gorm.DB, uid uint) ([]Media, error) {
+	var media []Media
+	err := db.Debug().Model(&Media{}).Where("individual_client_id - ?", uid).Limit(100).Find(&media).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return media, nil
+}
