@@ -6,7 +6,7 @@ type BankApplication struct {
 	gorm.Model
 	BankID          uint  `gorm:"size:100;" json:"bankID"`
 	TrenchesNumber  int   `json:"trenchesNumber"`            // Кол-во траншей
-	CreditProductID *uint `json:"creditProductID,omitempty"` // Кредитный продукт
+	BankProductID   *uint `json:"creditProductID,omitempty"` // Кредитный продукт
 	KaskoID         *uint `json:"kaskoID,omitempty"`
 	RoadHelpID      *uint `json:"roadHelpID,omitempty"`
 	LifeInsuranceID *uint `json:"lifeInsuranceID,omitempty"`

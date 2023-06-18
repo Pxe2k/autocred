@@ -290,3 +290,13 @@ func UploadFilesToUser(db *gorm.DB, mediaSeeded []storage.Media) ([]storage.Medi
 
 	return mediaCreated, nil
 }
+
+func GetUserMedia(db *gorm.DB, uid uint) ([]storage.Media, error) {
+	media := storage.Media{}
+	mediaGotten, err := media.All(db, uid)
+	if err != nil {
+		return nil, err
+	}
+
+	return mediaGotten, nil
+}
