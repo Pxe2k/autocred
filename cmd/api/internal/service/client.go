@@ -79,6 +79,7 @@ func GetIndividualClientService(db *gorm.DB, id, tokenID uint) (responses.Indivi
 	responseData.BeneficialOwners = clientGotten.BeneficialOwners
 	responseData.Pledges = clientGotten.Pledges
 	responseData.Documents = clientGotten.Documents
+	responseData.Applications = clientGotten.Applications
 
 	return responseData, nil
 }

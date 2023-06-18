@@ -62,6 +62,7 @@ type IndividualClientResponseData struct {
 	BeneficialOwners    *[]storage.BeneficialOwnerIndividual `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"beneficialOwners,omitempty"`    // Бенефициарные владельцы
 	Pledges             *[]storage.Pledge                    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"pledges,omitempty"`             // Залоги
 	Documents           *[]storage.Media                     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"documents"`
+	Applications        *[]storage.Application               `json:"applications"`
 	CreatedAt           time.Time                            `json:"createdAt"`
 }
 
@@ -160,7 +161,7 @@ type EUBankStatusResponseData struct {
 }
 
 type BankDocumentsCreated struct {
-	ID uint `json:"ID"`
+	ID    uint   `json:"ID"`
 	Title string `json:"title"`
 	File  string `json:"file"`
 }
