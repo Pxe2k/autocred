@@ -12,7 +12,6 @@ type BankApplication struct {
 	LifeInsuranceID *uint `json:"lifeInsuranceID,omitempty"`
 	LoanAmount      int   `json:"loanAmount"` // Сумма займа
 	ApplicationID   uint
-	CreditProduct   *BankProduct   `json:"creditProduct,omitempty"`
 	Kasko           *Kasko         `json:"kasko,omitempty"`
 	RoadHelp        *RoadHelp      `json:"roadHelp,omitempty"`
 	LifeInsurance   *LifeInsurance `json:"lifeInsurance,omitempty"`
