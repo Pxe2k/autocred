@@ -208,7 +208,7 @@ type ContactPerson struct {
 
 type GenerateDocumentRequestData struct {
 	Banks []struct {
-		Title string `json:"title"`
+		ID uint `json:"ID"`
 	} `json:"banks"`
 	OTP string `json:"OTP"`
 }

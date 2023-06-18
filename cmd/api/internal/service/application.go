@@ -34,7 +34,7 @@ func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (responses.App
 
 	// TODO if status ok create bankResponse
 	for i := range application.BankApplications {
-		if application.BankApplications[i].Bank == "Банк Центр Кредит" {
+		if application.BankApplications[i].BankID == 1 {
 			bccResponseData, err1 := createBCCApplication(individualClientGotten, application, application.BankApplications[i])
 			if err1 != nil {
 				fmt.Println("error:", err1)
@@ -42,7 +42,7 @@ func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (responses.App
 			application.BankApplications[i].BankResponse.Status = "В ожидании"
 			application.BankApplications[i].BankResponse.ApplicationID = bccResponseData.RequestId
 			responseData.BCCResponseData = bccResponseData
-		} else if application.BankApplications[i].Bank == "Евразийский Банк" {
+		} else if application.BankApplications[i].BankID == 2 {
 			euBankResponseData, err2 := createEUApplication(individualClientGotten, application, application.BankApplications[i])
 			if err2 != nil {
 				fmt.Println("error:", err2)
@@ -50,7 +50,7 @@ func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (responses.App
 			application.BankApplications[i].BankResponse.Status = "В ожидании"
 			application.BankApplications[i].BankResponse.ApplicationID = euBankResponseData.OrderID
 			responseData.EUResponseData = euBankResponseData
-		} else if application.BankApplications[i].Bank == "Шинхан Банк" {
+		} else if application.BankApplications[i].BankID == 3 {
 			shinhanResponseData, err3 := createShinhanApplication(individualClientGotten, application, application.BankApplications[i])
 			if err3 != nil {
 				fmt.Println("error:", err3)
@@ -542,7 +542,7 @@ func AllApplication(db *gorm.DB, uid uint) (*[]storage.Application, error) {
 
 	for _, applicationGotten := range *applications {
 		for _, bankApplication := range applicationGotten.BankApplications {
-			if bankApplication.Bank == "Евразийский Банк" {
+			if bankApplication.BankID == 2 {
 				statusResponse, err := getEUStatus(bankApplication.BankResponse.ApplicationID)
 				if err != nil {
 					fmt.Println("error: ", err)
@@ -550,7 +550,7 @@ func AllApplication(db *gorm.DB, uid uint) (*[]storage.Application, error) {
 					bankApplication.BankResponse.Status = statusResponse.Status
 					bankApplication.BankResponse.Description = statusResponse.Description
 				}
-			} else if bankApplication.Bank == "Шинхан Банк" {
+			} else if bankApplication.BankID == 3 {
 				status, err := getShinhanStatus(bankApplication.BankResponse.ApplicationID)
 				if err != nil {
 					fmt.Println("error: ", err)
