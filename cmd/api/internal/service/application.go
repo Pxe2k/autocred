@@ -47,8 +47,10 @@ func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (responses.App
 			if err2 != nil {
 				fmt.Println("error:", err2)
 			}
-			application.BankApplications[i].BankResponse.Status = "В ожидании"
-			application.BankApplications[i].BankResponse.ApplicationID = euBankResponseData.OrderID
+			if euBankResponseData.Success == true{
+				application.BankApplications[i].BankResponse.Status = "В ожидании"
+				application.BankApplications[i].BankResponse.ApplicationID = euBankResponseData.OrderID
+			}
 			responseData.EUResponseData = euBankResponseData
 		} else if application.BankApplications[i].BankID == 3 {
 			shinhanResponseData, err3 := createShinhanApplication(individualClientGotten, application, application.BankApplications[i])

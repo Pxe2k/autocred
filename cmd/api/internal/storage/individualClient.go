@@ -32,6 +32,7 @@ type IndividualClient struct {
 	BonusInfo           *BonusInfo                   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bonusInfo"`                     // Дополнительная информация
 	BeneficialOwners    *[]BeneficialOwnerIndividual `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"beneficialOwners,omitempty"`    // Бенефициарные владельцы
 	Pledges             *[]Pledge                    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"pledges,omitempty"`             // Залоги
+	Applications        *[]Application               `json:"applications"`
 	Documents           *[]Media                     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"documents"`
 }
 
@@ -87,6 +88,7 @@ func (ic *IndividualClient) Get(db *gorm.DB, id uint) (*IndividualClient, error)
 		Preload("BonusInfo").
 		Preload("Documents").
 		Preload("Pledges").
+		Preload("Applications").
 		Take(&ic).Error
 	if err != nil {
 		return nil, err
