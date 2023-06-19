@@ -39,10 +39,16 @@ func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (responses.App
 			if err1 != nil {
 				fmt.Println("error:", err1)
 			}
-			application.BankApplications[i].BankResponse.Status = "В ожидании"
-			application.BankApplications[i].BankResponse.ApplicationID = bccResponseData.RequestId
+			if bccResponseData.Status == "OK" {
+				application.BankApplications[i].BankResponse.Status = "В ожидании"
+				application.BankApplications[i].BankResponse.ApplicationID = bccResponseData.RequestId
+			} else {
+				application.BankApplications[i].BankResponse.Status = "Отказано"
+				application.BankApplications[i].BankResponse.Description = bccResponseData.Message
+			}
 			responseData.BCCResponseData = bccResponseData
-		} else if application.BankApplications[i].BankID == 2 {
+		}
+		if application.BankApplications[i].BankID == 2 {
 			euBankResponseData, err2 := createEUApplication(individualClientGotten, application, application.BankApplications[i])
 			if err2 != nil {
 				fmt.Println("error:", err2)
@@ -50,12 +56,13 @@ func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (responses.App
 			if euBankResponseData.Success == true {
 				application.BankApplications[i].BankResponse.Status = "В ожидании"
 				application.BankApplications[i].BankResponse.ApplicationID = euBankResponseData.OrderID
-			} else if euBankResponseData.Success == false {
+			} else {
 				application.BankApplications[i].BankResponse.Status = "Отказано"
 				application.BankApplications[i].BankResponse.Description = euBankResponseData.Msg
 			}
 			responseData.EUResponseData = euBankResponseData
-		} else if application.BankApplications[i].BankID == 3 {
+		}
+		if application.BankApplications[i].BankID == 3 {
 			shinhanResponseData, err3 := createShinhanApplication(individualClientGotten, application, application.BankApplications[i])
 			if err3 != nil {
 				fmt.Println("error:", err3)
