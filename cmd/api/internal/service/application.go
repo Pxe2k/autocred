@@ -309,7 +309,7 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 	if client != nil && client.Contacts != nil && len(*client.Contacts) > 0 {
 		for i := range *client.Contacts {
 			contact := &(*client.Contacts)[i] // Get a pointer to the original element
-			if contact.Phone != "" {
+			if contact != nil && contact.Phone != "" {
 				// Remove any leading "+" symbol
 				if strings.HasPrefix(contact.Phone, "+") {
 					contact.Phone = contact.Phone[2:]
