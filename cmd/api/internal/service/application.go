@@ -281,7 +281,8 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 	requestData.DownPayment = uint(applicationData.InitFee)
 	requestData.Duration = uint(bankApplicationData.TrenchesNumber)
 	requestData.Iin = client.Document.IIN
-	if len(client.Phone) > 1 {
+
+	if client != nil && client.Phone != "" {
 		// Remove any leading "+" symbol
 		if strings.HasPrefix(client.Phone, "+") {
 			client.Phone = client.Phone[2:]
@@ -292,7 +293,8 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 		}
 		requestData.Phone = client.Phone
 	}
-	if len(client.WorkPlaceInfo.OrganizationPhone) > 1 {
+
+	if client != nil && client.WorkPlaceInfo != nil && client.WorkPlaceInfo.OrganizationPhone != "" {
 		// Remove any leading "+" symbol
 		if strings.HasPrefix(client.WorkPlaceInfo.OrganizationPhone, "+") {
 			client.WorkPlaceInfo.OrganizationPhone = client.WorkPlaceInfo.OrganizationPhone[2:]
@@ -303,21 +305,26 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 		}
 		requestData.JobPhone = client.WorkPlaceInfo.OrganizationPhone
 	}
-	for _, contact := range *client.Contacts {
-		if len(contact.Phone) > 1 {
-			// Remove any leading "+" symbol
-			if strings.HasPrefix(contact.Phone, "+") {
-				contact.Phone = contact.Phone[2:]
+
+	if client != nil && client.Contacts != nil && len(*client.Contacts) > 0 {
+		for _, contact := range *client.Contacts {
+			if contact.Phone != "" {
+				// Remove any leading "+" symbol
+				if strings.HasPrefix(contact.Phone, "+") {
+					contact.Phone = contact.Phone[2:]
+				}
+				// Remove leading "8" if present
+				if strings.HasPrefix(contact.Phone, "8") {
+					contact.Phone = contact.Phone[1:]
+				}
+				requestData.ContactPersonContact = contact.Phone
 			}
-			// Remove leading "8" if present
-			if strings.HasPrefix(contact.Phone, "8") {
-				contact.Phone = contact.Phone[1:]
-			}
-			requestData.ContactPersonContact = contact.Phone
+			requestData.ContactPersonName = contact.FullName
 		}
-		requestData.ContactPersonName = contact.FullName
 	}
+
 	requestData.IncomeMain = client.BonusInfo.AmountIncome
+
 	switch client.MaritalStatus.Status {
 	case "Холост/Не замужен":
 		requestData.MaritalStatus = "1"
@@ -333,6 +340,7 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 		requestData.MaritalStatus = "0"
 	}
 	requestData.IncomeAddConfirmed = strconv.Itoa(0)
+
 	requestData.Gsvp.Base64Content, err = helpers.EncodeFileToBase64("templates/resultMedia/outputPDF/autocredit.pdf")
 	if err != nil {
 		return requests.EUApplicationRequestData{}, err
@@ -345,6 +353,7 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 	if err != nil {
 		return requests.EUApplicationRequestData{}, err
 	}
+
 	requestData.OrderID = helpers.RandBankApplicationID(16)
 	requestData.Gsvp.Name = "GSPV"
 	requestData.Gsvp.Extension = "pdf"
