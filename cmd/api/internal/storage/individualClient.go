@@ -7,33 +7,34 @@ import (
 
 type IndividualClient struct {
 	gorm.Model
-	TypeOfClient        string                       `gorm:"size:100" json:"typeOfClient"` // Тип клиента
-	FirstName           string                       `gorm:"size:100" json:"firstName"`
-	MiddleName          string                       `gorm:"size:100" json:"middleName"`
-	LastName            string                       `gorm:"size:100" json:"lastName"`
-	Sex                 string                       `gorm:"size:100" json:"sex"`       // Пол
-	BirthDate           string                       `gorm:"size:100" json:"birthDate"` // ДР
-	Country             string                       `gorm:"size:100" json:"country"`
-	Phone               string                       `gorm:"size:100;unique" json:"phone"` // Телефон
-	SecondPhone         string                       `gorm:"size:100" json:"secondPhone"`
-	Email               string                       `gorm:"size:100" json:"email"`     // Email
-	Education           string                       `gorm:"size:100" json:"education"` // Образование
-	Image               string                       `gorm:"size:100" json:"image"`     // Аватарка
-	Comment             string                       `gorm:"size:100" json:"comment"`
-	UserID              uint                         `json:"userId"`
-	User                *User                        `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"user,omitempty"`
-	Document            *Document                    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"document,omitempty"`            // Документы
-	MaritalStatus       *MaritalStatus               `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"maritalStatus,omitempty"`       // Семейное положение
-	WorkPlaceInfo       *WorkPlaceInfo               `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"workPlaceInfo,omitempty"`       // Информация о месте работы   // Отношения с банками
-	CurrentLoans        *[]CurrentLoans              `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"currentLoans,omitempty"`        // Действующие кредиты и займы
-	RegistrationAddress *RegistrationAddress         `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"registrationAddress,omitempty"` // Адрес прописки
-	ResidentialAddress  *ResidentialAddress          `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"residentialAddress,omitempty"`  // Адрес проживания
-	Contacts            *[]ClientContact             `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"contacts,omitempty"`            // Доп. контакты
-	BonusInfo           *BonusInfo                   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bonusInfo"`                     // Дополнительная информация
-	BeneficialOwners    *[]BeneficialOwnerIndividual `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"beneficialOwners,omitempty"`    // Бенефициарные владельцы
-	Pledges             *[]Pledge                    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"pledges,omitempty"`             // Залоги
-	Applications        *[]Application               `json:"applications"`
-	Documents           *[]Media                     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"documents"`
+	TypeOfClient            string                       `gorm:"size:100" json:"typeOfClient"` // Тип клиента
+	FirstName               string                       `gorm:"size:100" json:"firstName"`
+	MiddleName              string                       `gorm:"size:100" json:"middleName"`
+	LastName                string                       `gorm:"size:100" json:"lastName"`
+	Sex                     string                       `gorm:"size:100" json:"sex"`       // Пол
+	BirthDate               string                       `gorm:"size:100" json:"birthDate"` // ДР
+	Country                 string                       `gorm:"size:100" json:"country"`
+	Phone                   string                       `gorm:"size:100;unique" json:"phone"` // Телефон
+	SecondPhone             string                       `gorm:"size:100" json:"secondPhone"`
+	Email                   string                       `gorm:"size:100" json:"email"`     // Email
+	Education               string                       `gorm:"size:100" json:"education"` // Образование
+	Image                   string                       `gorm:"size:100" json:"image"`     // Аватарка
+	Comment                 string                       `gorm:"size:100" json:"comment"`
+	UserID                  uint                         `json:"userId"`
+	User                    *User                        `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"user,omitempty"`
+	Document                *Document                    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"document,omitempty"`            // Документы
+	MaritalStatus           *MaritalStatus               `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"maritalStatus,omitempty"`       // Семейное положение
+	WorkPlaceInfo           *WorkPlaceInfo               `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"workPlaceInfo,omitempty"`       // Информация о месте работы   // Отношения с банками
+	CurrentLoans            *[]CurrentLoans              `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"currentLoans,omitempty"`        // Действующие кредиты и займы
+	RegistrationAddress     *RegistrationAddress         `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"registrationAddress,omitempty"` // Адрес прописки
+	ResidentialAddress      *ResidentialAddress          `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"residentialAddress,omitempty"`  // Адрес проживания
+	Contacts                *[]ClientContact             `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"contacts,omitempty"`            // Доп. контакты
+	BonusInfo               *BonusInfo                   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bonusInfo"`                     // Дополнительная информация
+	BeneficialOwners        *[]BeneficialOwnerIndividual `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"beneficialOwners,omitempty"`    // Бенефициарные владельцы
+	Pledges                 *[]Pledge                    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"pledges,omitempty"`             // Залоги
+	Applications            *[]Application               `json:"applications"`
+	Documents               *[]Media                     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"documents"`
+	BankProcessingDocuments *[]BankProcessingDocument    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bankProcessingDocuments"`
 }
 
 func (ic *IndividualClient) Save(db *gorm.DB) (*IndividualClient, error) {
