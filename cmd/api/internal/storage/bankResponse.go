@@ -1,6 +1,9 @@
 package storage
 
-import "gorm.io/gorm"
+import (
+	"autocredit/cmd/api/helpers/requests"
+	"gorm.io/gorm"
+)
 
 type BankResponse struct {
 	gorm.Model
@@ -17,4 +20,13 @@ func (b *BankResponse) Save(db *gorm.DB) (*BankResponse, error) {
 	}
 
 	return b, nil
+}
+
+func (b *BankResponse) UpdateStatus(db *gorm.DB, data requests.UpdateBCCStatus) error {
+	err := db.Debug().Model(BankResponse{}).Where("application_id = ?", data.ApplicationID).Updates(map[string]interface{}{"description": data.Description, "status": data.Status}).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

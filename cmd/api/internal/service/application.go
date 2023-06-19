@@ -303,6 +303,7 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 		if strings.HasPrefix(client.WorkPlaceInfo.OrganizationPhone, "8") {
 			client.WorkPlaceInfo.OrganizationPhone = client.WorkPlaceInfo.OrganizationPhone[1:]
 		}
+		fmt.Println("phone number", client.WorkPlaceInfo.OrganizationPhone[2:])
 		requestData.JobPhone = client.WorkPlaceInfo.OrganizationPhone
 	}
 
@@ -577,11 +578,13 @@ func AllApplication(db *gorm.DB, uid uint) (*[]storage.Application, error) {
 					bankApplication.BankResponse.Description = statusResponse.Description
 				}
 			} else if bankApplication.BankID == 3 {
-				status, err := getShinhanStatus(bankApplication.BankResponse.ApplicationID)
-				if err != nil {
-					fmt.Println("error: ", err)
-				} else {
-					bankApplication.BankResponse.Status = status
+				if bankApplication.BankResponse.ApplicationID != "" {
+					status, err := getShinhanStatus(bankApplication.BankResponse.ApplicationID)
+					if err != nil {
+						fmt.Println("error: ", err)
+					} else {
+						bankApplication.BankResponse.Status = status
+					}
 				}
 			}
 		}

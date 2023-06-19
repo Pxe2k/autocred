@@ -3,9 +3,12 @@ package transport
 import (
 	"autocredit/cmd/api/auth"
 	"autocredit/cmd/api/helpers"
+	"autocredit/cmd/api/helpers/requests"
 	"autocredit/cmd/api/helpers/responses"
 	"autocredit/cmd/api/internal/service"
+	"autocredit/cmd/api/internal/storage"
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -116,10 +119,35 @@ func (server *Server) getBCCResponse(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	m := make(map[string]string)
-	m["message"] = "Accepted"
+	requestData := requests.UpdateBCCStatus{}
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	err = json.Unmarshal(body, &requestData)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	bankResponse := storage.BankResponse{}
+	if requestData.Status == "true" {
+		requestData.Status = "Одобрено"
+	} else if requestData.Status == "false" {
+		requestData.Status = "Отказано"
+	} else {
+		requestData.Status = "В ожидании"
+	}
+	err = bankResponse.UpdateStatus(server.DB, requestData)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
 
-	responses.JSON(w, http.StatusAccepted, m)
+	BCCUpdateResponse := responses.BCCUpdateResponse{}
+	BCCUpdateResponse.Status = "Success"
+
+	responses.JSON(w, http.StatusAccepted, BCCUpdateResponse)
 }
 
 func (server *Server) getBankToken(w http.ResponseWriter, r *http.Request) {
