@@ -303,6 +303,7 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 		if strings.HasPrefix(client.WorkPlaceInfo.OrganizationPhone, "8") {
 			client.WorkPlaceInfo.OrganizationPhone = client.WorkPlaceInfo.OrganizationPhone[1:]
 		}
+		fmt.Println("phone number", client.WorkPlaceInfo.OrganizationPhone[2:])
 		requestData.JobPhone = client.WorkPlaceInfo.OrganizationPhone
 	}
 
