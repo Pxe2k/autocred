@@ -47,9 +47,12 @@ func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (responses.App
 			if err2 != nil {
 				fmt.Println("error:", err2)
 			}
-			if euBankResponseData.Success == true{
+			if euBankResponseData.Success == true {
 				application.BankApplications[i].BankResponse.Status = "В ожидании"
 				application.BankApplications[i].BankResponse.ApplicationID = euBankResponseData.OrderID
+			} else if euBankResponseData.Success == false {
+				application.BankApplications[i].BankResponse.Status = "Отказано"
+				application.BankApplications[i].BankResponse.Description = euBankResponseData.Msg
 			}
 			responseData.EUResponseData = euBankResponseData
 		} else if application.BankApplications[i].BankID == 3 {
@@ -425,25 +428,31 @@ func fillingShinhanBankRequestData(client *storage.IndividualClient, application
 	requestData.Customer.ActualAddress.Region = client.ResidentialAddress.Address
 	requestData.Customer.ActualAddress.Settlement = client.ResidentialAddress.Address
 	requestData.Customer.ActualAddress.Street = client.ResidentialAddress.Address
-	requestData.Customer.BirthDate = "1991-03-22"
+	requestData.Customer.BirthDate = "2002-03-22"
 	requestData.Customer.BirthPlace = client.Document.PlaceOfBirth
 	for _, contact := range *client.Contacts {
 		requestData.Customer.ContactPersonPhone = contact.Phone[1:]
 		requestData.Customer.ContactPersonFullName = contact.FullName
 	}
 	requestData.Customer.Document.CountryOfResidence = "KZ"
-	requestData.Customer.Document.IssuedDate = "1991-03-22"
-	requestData.Customer.Document.ExpirationDate = "1991-03-22"
+	requestData.Customer.Document.IssuedDate = "2018-03-22"
+	requestData.Customer.Document.ExpirationDate = "2028-03-22"
 	requestData.Customer.Document.Issuer = client.Document.IssuingAuthority
 	requestData.Customer.Document.Number = client.Document.Number
-	requestData.Customer.Document.PhotoBack, err = helpers.EncodeFileToBase64("templates/resultMedia/outputPDF/autocredit.pdf")
-	if err != nil {
-		fmt.Println(1)
-		return requests.ShinhanApplicationRequestData{}, err
-	}
-	requestData.Customer.Document.PhotoFront, err = helpers.EncodeFileToBase64("templates/resultMedia/outputPDF/autocredit.pdf")
-	if err != nil {
-		return requests.ShinhanApplicationRequestData{}, err
+	for _, media := range *client.Documents {
+		if media.Title == "idBack" {
+			requestData.Customer.Document.PhotoBack, err = helpers.EncodeFileToBase64(media.File)
+			if err != nil {
+				fmt.Println(1)
+				return requests.ShinhanApplicationRequestData{}, err
+			}
+		}
+		if media.Title == "idFront" {
+			requestData.Customer.Document.PhotoFront, err = helpers.EncodeFileToBase64("templates/resultMedia/outputPDF/autocredit.pdf")
+			if err != nil {
+				return requests.ShinhanApplicationRequestData{}, err
+			}
+		}
 	}
 	requestData.Customer.Document.Type = "ID_CARD"
 	requestData.Customer.EmployerAddress.District = client.WorkPlaceInfo.Address
@@ -484,7 +493,7 @@ func fillingShinhanBankRequestData(client *storage.IndividualClient, application
 	requestData.InstalmentDate = "1991-03-22"
 	requestData.Insurance = false
 	requestData.PartnerId = "1778"
-	requestData.Verification.Code = "1111"
+	requestData.Verification.Code = "1954"
 	requestData.Verification.Date = time.Now().Format("2006-01-02 15:04:05")
 
 	return requestData, nil

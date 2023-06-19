@@ -7,6 +7,7 @@ type BankProcessingDocument struct {
 	Title              string `json:"title"`
 	Image              string `json:"image"`
 	File               string `json:"file"`
+	BankID             uint   `json:"bankID"`
 	IndividualClientID uint   `json:"individualClientID"`
 }
 

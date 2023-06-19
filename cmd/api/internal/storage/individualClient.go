@@ -78,6 +78,13 @@ func (ic *IndividualClient) All(db *gorm.DB, fullName, sex, birthDate, sortUser 
 func (ic *IndividualClient) Get(db *gorm.DB, id uint) (*IndividualClient, error) {
 	err := db.Debug().Model(&IndividualClient{}).Where("id = ?", id).
 		Preload("Applications").
+		Preload("Applications.BankApplications").
+		Preload("Applications.BankApplications.Bank").
+		Preload("Applications.BankApplications.BankResponse").
+		Preload("Applications.BankApplications.BankProduct").
+		Preload("Applications.BankApplications.Kasko").
+		Preload("Applications.BankApplications.RoadHelp").
+		Preload("Applications.BankApplications.LifeInsurance").
 		Preload("User").
 		Preload("User.AutoDealer").
 		Preload("Document").
