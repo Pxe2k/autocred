@@ -578,11 +578,13 @@ func AllApplication(db *gorm.DB, uid uint) (*[]storage.Application, error) {
 					bankApplication.BankResponse.Description = statusResponse.Description
 				}
 			} else if bankApplication.BankID == 3 {
-				status, err := getShinhanStatus(bankApplication.BankResponse.ApplicationID)
-				if err != nil {
-					fmt.Println("error: ", err)
-				} else {
-					bankApplication.BankResponse.Status = status
+				if bankApplication.BankResponse.ApplicationID != "" {
+					status, err := getShinhanStatus(bankApplication.BankResponse.ApplicationID)
+					if err != nil {
+						fmt.Println("error: ", err)
+					} else {
+						bankApplication.BankResponse.Status = status
+					}
 				}
 			}
 		}

@@ -166,6 +166,11 @@ type BankDocumentsCreated struct {
 	File  string `json:"file"`
 }
 
+type BCCUpdateResponse struct {
+	Status string `json:"status"`
+	Error  string `json:"error"`
+}
+
 func JSON(w http.ResponseWriter, statusCode int, data interface{}) {
 	w.WriteHeader(statusCode)
 	err := json.NewEncoder(w).Encode(data)

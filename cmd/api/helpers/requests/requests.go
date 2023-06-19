@@ -206,6 +206,12 @@ type ContactPerson struct {
 	PhoneNo  string `json:"phoneNo"`
 }
 
+type UpdateBCCStatus struct {
+	Status        string `json:"status"`
+	Description   string `json:"description"`
+	ApplicationID string `json:"applicationID"`
+}
+
 type GenerateDocumentRequestData struct {
 	Banks []struct {
 		ID uint `json:"ID"`
