@@ -80,9 +80,9 @@ func (server *Server) allIndividualClient(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	for _, clientGotten := range *clients {
-		if clientGotten.UserID != uint(tokenID) {
-			clientGotten.Phone = ""
+	for i := range *clients {
+		if (*clients)[i].UserID != uint(tokenID) {
+			(*clients)[i].Phone = ""
 		}
 	}
 
