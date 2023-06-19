@@ -23,13 +23,13 @@ func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (responses.App
 	responseData := responses.ApplicationResponseData{}
 	err := json.Unmarshal(body, &application)
 	if err != nil {
-		return responses.ApplicationResponseData{}, err
+		return responseData, err
 	}
 
 	individualClient := storage.IndividualClient{}
 	individualClientGotten, err := individualClient.Get(db, application.IndividualClientID)
 	if err != nil {
-		return responses.ApplicationResponseData{}, err
+		return responseData, err
 	}
 
 	// TODO if status ok create bankResponse
@@ -47,8 +47,7 @@ func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (responses.App
 				application.BankApplications[i].BankResponse.Description = bccResponseData.Message
 			}
 			responseData.BCCResponseData = bccResponseData
-		}
-		if application.BankApplications[i].BankID == 2 {
+		} else if application.BankApplications[i].BankID == 2 {
 			euBankResponseData, err2 := createEUApplication(individualClientGotten, application, application.BankApplications[i])
 			if err2 != nil {
 				fmt.Println("error:", err2)
@@ -61,8 +60,7 @@ func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (responses.App
 				application.BankApplications[i].BankResponse.Description = euBankResponseData.Msg
 			}
 			responseData.EUResponseData = euBankResponseData
-		}
-		if application.BankApplications[i].BankID == 3 {
+		} else if application.BankApplications[i].BankID == 3 {
 			shinhanResponseData, err3 := createShinhanApplication(individualClientGotten, application, application.BankApplications[i])
 			if err3 != nil {
 				fmt.Println("error:", err3)
@@ -78,7 +76,7 @@ func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (responses.App
 
 	err = application.Save(db)
 	if err != nil {
-		return responses.ApplicationResponseData{}, err
+		return responseData, err
 	}
 
 	responseData.Status = true
