@@ -23,7 +23,7 @@ func (b *BankResponse) Save(db *gorm.DB) (*BankResponse, error) {
 }
 
 func (b *BankResponse) UpdateStatus(db *gorm.DB, data requests.UpdateBCCStatus) error {
-	err := db.Debug().Model(BankResponse{}).Where("application_id = ?", data.ApplicationID).Updates(map[string]interface{}{"description": data.Description, "status": data.Status}).Error
+	err := db.Debug().Model(BankResponse{}).Where("application_id = ?", data.ApplicationID).Updates(map[string]interface{}{"description": data.Description, "status": data.StatusCode}).Error
 	if err != nil {
 		return err
 	}

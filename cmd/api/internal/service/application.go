@@ -260,6 +260,8 @@ func createEUApplication(individualClient *storage.IndividualClient, application
 func fillingEUBankRequestData(client *storage.IndividualClient, applicationData storage.Application, bankApplicationData storage.BankApplication) (requests.EUApplicationRequestData, error) {
 	var requestData requests.EUApplicationRequestData
 
+	fmt.Println("at start phone number", client.WorkPlaceInfo.OrganizationPhone)
+
 	issueYear, err := strconv.Atoi(applicationData.YearIssue)
 	if err != nil {
 		return requests.EUApplicationRequestData{}, err
@@ -303,7 +305,6 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 		if strings.HasPrefix(client.WorkPlaceInfo.OrganizationPhone, "8") {
 			client.WorkPlaceInfo.OrganizationPhone = client.WorkPlaceInfo.OrganizationPhone[1:]
 		}
-		fmt.Println("phone number", client.WorkPlaceInfo.OrganizationPhone[2:])
 		requestData.JobPhone = client.WorkPlaceInfo.OrganizationPhone
 	}
 
