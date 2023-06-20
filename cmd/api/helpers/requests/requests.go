@@ -207,9 +207,11 @@ type ContactPerson struct {
 }
 
 type UpdateBCCStatus struct {
-	Status        string `json:"status"`
+	StatusCode    string `json:"status_code"`
 	Description   string `json:"description"`
-	ApplicationID string `json:"applicationID"`
+	MessageID     string `json:"message_id"`
+	ApplicationID string `json:"application_id"`
+	MsgID         string `json:"msg_id"`
 }
 
 type GenerateDocumentRequestData struct {

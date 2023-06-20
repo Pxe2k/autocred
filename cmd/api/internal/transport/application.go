@@ -130,14 +130,25 @@ func (server *Server) getBCCResponse(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
-	bankResponse := storage.BankResponse{}
-	if requestData.Status == "true" {
-		requestData.Status = "Одобрено"
-	} else if requestData.Status == "false" {
-		requestData.Status = "Отказано"
-	} else {
-		requestData.Status = "В ожидании"
+	switch requestData.StatusCode {
+	case "approved":
+		requestData.StatusCode = "Одобрено"
+	case "declined":
+		requestData.StatusCode = "Отказано"
+	case "on_verification":
+		requestData.StatusCode = "На верификацию"
+	case "error":
+		requestData.StatusCode = "Ошибка"
+	case "on_validation":
+		requestData.StatusCode = "На валидацию"
+	case "on_rework":
+		requestData.StatusCode = "На доработку"
+	case "funded":
+		requestData.StatusCode = "Профинансирован"
+	default:
+		requestData.StatusCode = "В ожидании"
 	}
+	bankResponse := storage.BankResponse{}
 	err = bankResponse.UpdateStatus(server.DB, requestData)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
