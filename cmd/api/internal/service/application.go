@@ -18,9 +18,41 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (responses.ApplicationResponseData, error) {
+func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (*storage.Application, error) {
 	application := storage.Application{}
 	responseData := responses.ApplicationResponseData{}
+	err := json.Unmarshal(body, &application)
+	if err != nil {
+		return nil, err
+	}
+
+	// TODO if status ok create bankResponse
+	for i := range application.BankApplications {
+		if application.BankApplications[i].BankID == 1 {
+			application.BankApplications[i].BankResponse.Status = "В ожидании"
+		} else if application.BankApplications[i].BankID == 2 {
+			application.BankApplications[i].BankResponse.Status = "В ожидании"
+		} else if application.BankApplications[i].BankID == 3 {
+			application.BankApplications[i].BankResponse.Status = "В ожидании"
+		}
+	}
+
+	application.UserID = uid
+
+	applicationCreated, err := application.Save(db)
+	if err != nil {
+		return nil, err
+	}
+
+	responseData.Status = true
+
+	return applicationCreated, nil
+}
+
+func SendApplications(db *gorm.DB, body []byte, id uint) (responses.ApplicationResponseData, error) {
+	responseData := responses.ApplicationResponseData{}
+
+	application := storage.Application{}
 	err := json.Unmarshal(body, &application)
 	if err != nil {
 		return responseData, err
@@ -31,6 +63,8 @@ func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (responses.App
 	if err != nil {
 		return responseData, err
 	}
+
+	var bankResponses []storage.BankResponse
 
 	// TODO if status ok create bankResponse
 	for i := range application.BankApplications {
@@ -47,6 +81,7 @@ func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (responses.App
 				application.BankApplications[i].BankResponse.Description = bccResponseData.Message
 			}
 			responseData.BCCResponseData = bccResponseData
+			_ = append(bankResponses, storage.BankResponse{Status: "В ожидании", Description: bccResponseData.Message, ApplicationID: bccResponseData.RequestId, BankApplicationID: id})
 		} else if application.BankApplications[i].BankID == 2 {
 			euBankResponseData, err2 := createEUApplication(individualClientGotten, application, application.BankApplications[i])
 			if err2 != nil {
@@ -71,15 +106,6 @@ func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (responses.App
 			responseData.ShinhanResponseData = shinhanResponseData
 		}
 	}
-
-	application.UserID = uid
-
-	err = application.Save(db)
-	if err != nil {
-		return responseData, err
-	}
-
-	responseData.Status = true
 
 	return responseData, nil
 }
@@ -115,6 +141,7 @@ func createBCCApplication(individualClient *storage.IndividualClient, applicatio
 	client := http.DefaultClient
 	resp, err := client.Do(req)
 	if err != nil {
+		fmt.Println("status code", resp.StatusCode)
 		return responses.BCCResponseData{}, err
 	}
 
@@ -193,7 +220,10 @@ func fillingBCCRequestData(client *storage.IndividualClient, applicationData sto
 			PhoneNo:  contact.Phone,
 		})
 	}
-	requestData.Document.File, err = helpers.EncodeFileToBase64("storage/bcc-data-processing_" + helpers.CurrentDateString() + ".pdf")
+	requestData.Document.File, err = helpers.EncodeFileToBase64("storage/bcc-data-processing_" + strconv.Itoa(int(client.ID)) + helpers.CurrentDateString() + ".pdf")
+	if err != nil {
+		return requests.BCCApplicationRequestData{}, err
+	}
 	requestData.Document.Extension = "pdf"
 	requestData.Document.Code = "SOG"
 
@@ -383,6 +413,7 @@ func createShinhanApplication(individualClient *storage.IndividualClient, applic
 	fmt.Println("url: ", url)
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
 	if err != nil {
+		fmt.Println(req)
 		return responses.ShinhanResponseData{}, err
 	}
 
@@ -393,6 +424,7 @@ func createShinhanApplication(individualClient *storage.IndividualClient, applic
 	client := http.DefaultClient
 	resp, err := client.Do(req)
 	if err != nil {
+		fmt.Println("status code", resp.StatusCode)
 		return responses.ShinhanResponseData{}, err
 	}
 

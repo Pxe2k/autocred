@@ -25,13 +25,13 @@ type Application struct {
 	BusinessClient     *BusinessClient   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"businessClient,omitempty"`
 }
 
-func (a *Application) Save(db *gorm.DB) error {
+func (a *Application) Save(db *gorm.DB) (*Application, error) {
 	err := db.Debug().Create(&a).Error
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return a, nil
 }
 
 func (a *Application) All(db *gorm.DB, uid uint) (*[]Application, error) {

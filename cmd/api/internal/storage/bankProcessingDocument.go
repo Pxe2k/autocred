@@ -4,11 +4,11 @@ import "gorm.io/gorm"
 
 type BankProcessingDocument struct {
 	gorm.Model
-	Title              string `json:"title"`
-	Image              string `json:"image"`
-	File               string `json:"file"`
-	BankID             uint   `json:"bankID"`
-	IndividualClientID uint   `json:"individualClientID"`
+	Title         string `json:"title"`
+	Image         string `json:"image"`
+	File          string `json:"file"`
+	BankID        uint   `json:"bankID"`
+	ApplicationID uint   `json:"applicationID"`
 }
 
 func (b *BankProcessingDocument) Save(db *gorm.DB) (*BankProcessingDocument, error) {
@@ -42,7 +42,7 @@ func (b *BankProcessingDocument) SoftDelete(db *gorm.DB, id uint) (int64, error)
 
 func (b *BankProcessingDocument) All(db *gorm.DB, uid uint) ([]BankProcessingDocument, error) {
 	var media []BankProcessingDocument
-	err := db.Debug().Model(&BankProcessingDocument{}).Where("individual_client_id = ?", uid).Limit(100).Find(&media).Error
+	err := db.Debug().Model(&BankProcessingDocument{}).Where("application_id = ?", uid).Limit(100).Find(&media).Error
 	if err != nil {
 		return nil, err
 	}

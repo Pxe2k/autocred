@@ -16,7 +16,6 @@ type IndividualClient struct {
 	Country                 string                       `gorm:"size:100" json:"country"`
 	Phone                   string                       `gorm:"size:100;unique" json:"phone"` // Телефон
 	SecondPhone             string                       `gorm:"size:100" json:"secondPhone"`
-	Email                   string                       `gorm:"size:100" json:"email"`     // Email
 	Education               string                       `gorm:"size:100" json:"education"` // Образование
 	Image                   string                       `gorm:"size:100" json:"image"`     // Аватарка
 	Comment                 string                       `gorm:"size:100" json:"comment"`
