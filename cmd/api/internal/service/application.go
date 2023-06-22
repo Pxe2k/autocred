@@ -18,73 +18,84 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (responses.ApplicationResponseData, error) {
+func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (*storage.Application, error) {
 	application := storage.Application{}
 	responseData := responses.ApplicationResponseData{}
 	err := json.Unmarshal(body, &application)
 	if err != nil {
-		return responseData, err
-	}
-
-	individualClient := storage.IndividualClient{}
-	individualClientGotten, err := individualClient.Get(db, application.IndividualClientID)
-	if err != nil {
-		return responseData, err
-	}
-
-	// TODO if status ok create bankResponse
-	for i := range application.BankApplications {
-		if application.BankApplications[i].BankID == 1 {
-			bccResponseData, err1 := createBCCApplication(individualClientGotten, application, application.BankApplications[i])
-			if err1 != nil {
-				fmt.Println("error:", err1)
-			}
-			if bccResponseData.Status == "OK" {
-				application.BankApplications[i].BankResponse.Status = "В ожидании"
-				application.BankApplications[i].BankResponse.ApplicationID = bccResponseData.RequestId
-			} else {
-				application.BankApplications[i].BankResponse.Status = "Отказано"
-				application.BankApplications[i].BankResponse.Description = bccResponseData.Message
-			}
-			responseData.BCCResponseData = bccResponseData
-		} else if application.BankApplications[i].BankID == 2 {
-			euBankResponseData, err2 := createEUApplication(individualClientGotten, application, application.BankApplications[i])
-			if err2 != nil {
-				fmt.Println("error:", err2)
-			}
-			if euBankResponseData.Success == true {
-				application.BankApplications[i].BankResponse.Status = "В ожидании"
-				application.BankApplications[i].BankResponse.ApplicationID = euBankResponseData.OrderID
-			} else {
-				application.BankApplications[i].BankResponse.Status = "Отказано"
-				application.BankApplications[i].BankResponse.Description = euBankResponseData.Msg
-			}
-			responseData.EUResponseData = euBankResponseData
-		} else if application.BankApplications[i].BankID == 3 {
-			shinhanResponseData, err3 := createShinhanApplication(individualClientGotten, application, application.BankApplications[i])
-			if err3 != nil {
-				fmt.Println("error:", err3)
-			}
-			application.BankApplications[i].BankResponse.Status = "В ожидании"
-			stringShinhanRequestID := strconv.Itoa(shinhanResponseData.ApplicationID)
-			application.BankApplications[i].BankResponse.ApplicationID = stringShinhanRequestID
-			responseData.ShinhanResponseData = shinhanResponseData
-		}
+		return nil, err
 	}
 
 	application.UserID = uid
 
-	err = application.Save(db)
+	applicationCreated, err := application.Save(db)
 	if err != nil {
-		return responseData, err
+		return nil, err
 	}
 
 	responseData.Status = true
 
-	return responseData, nil
+	return applicationCreated, nil
 }
 
-func createBCCApplication(individualClient *storage.IndividualClient, application storage.Application, bankApplication storage.BankApplication) (responses.BCCResponseData, error) {
+func SendApplications(db *gorm.DB, id uint) (*storage.BankResponse, error) {
+	application := storage.Application{}
+	applicationGotten, err := application.Get(db, id)
+	if err != nil {
+		return nil, err
+	}
+
+	individualClient := storage.IndividualClient{}
+	individualClientGotten, err := individualClient.Get(db, applicationGotten.IndividualClientID)
+	if err != nil {
+		return nil, err
+	}
+
+	var bankResponses []storage.BankResponse
+
+	// TODO if status ok create bankResponse
+	for i := range applicationGotten.BankApplications {
+		if application.BankApplications[i].BankID == 1 {
+			bccResponseData, err1 := createBCCApplication(individualClientGotten, applicationGotten, application.BankApplications[i])
+			if err1 != nil {
+				fmt.Println("error:", err1)
+			}
+			if bccResponseData.Status == "OK" {
+				bankResponses = append(bankResponses, storage.BankResponse{Status: "В ожидании", Description: bccResponseData.Message, ApplicationID: bccResponseData.RequestId, BankApplicationID: application.BankApplications[i].ID})
+			} else {
+				bankResponses = append(bankResponses, storage.BankResponse{Status: "В ожидании", Description: bccResponseData.Message, ApplicationID: bccResponseData.RequestId, BankApplicationID: application.BankApplications[i].ID})
+			}
+		} else if application.BankApplications[i].BankID == 2 {
+			euBankResponseData, err2 := createEUApplication(individualClientGotten, applicationGotten, application.BankApplications[i])
+			if err2 != nil {
+				fmt.Println("error:", err2)
+			}
+			if euBankResponseData.Success == true {
+				bankResponses = append(bankResponses, storage.BankResponse{Status: "В ожидании", Description: euBankResponseData.Msg, ApplicationID: euBankResponseData.OrderID, BankApplicationID: application.BankApplications[i].ID})
+			} else {
+				bankResponses = append(bankResponses, storage.BankResponse{Status: "Отказано", Description: euBankResponseData.Msg, ApplicationID: euBankResponseData.OrderID, BankApplicationID: application.BankApplications[i].ID})
+			}
+		} else if application.BankApplications[i].BankID == 3 {
+			shinhanResponseData, err3 := createShinhanApplication(individualClientGotten, applicationGotten, application.BankApplications[i])
+			if err3 != nil {
+				fmt.Println("error:", err3)
+			}
+			stringShinhanRequestID := strconv.Itoa(shinhanResponseData.ApplicationID)
+			application.BankApplications[i].BankResponse.ApplicationID = stringShinhanRequestID
+			bankResponses = append(bankResponses, storage.BankResponse{Status: "В ожидании", Description: "", ApplicationID: stringShinhanRequestID, BankApplicationID: id})
+		}
+	}
+
+	bankResponse := storage.BankResponse{}
+	bankResponsesCreated, err := bankResponse.Save(db, bankResponses)
+	if err != nil {
+		return nil, err
+	}
+
+	return bankResponsesCreated, nil
+}
+
+func createBCCApplication(individualClient *storage.IndividualClient, application *storage.Application, bankApplication storage.BankApplication) (responses.BCCResponseData, error) {
 	authToken, err := getBCCToken()
 	if err != nil {
 		return responses.BCCResponseData{}, err
@@ -115,6 +126,7 @@ func createBCCApplication(individualClient *storage.IndividualClient, applicatio
 	client := http.DefaultClient
 	resp, err := client.Do(req)
 	if err != nil {
+		fmt.Println("status code", resp.StatusCode)
 		return responses.BCCResponseData{}, err
 	}
 
@@ -141,7 +153,7 @@ func createBCCApplication(individualClient *storage.IndividualClient, applicatio
 	return responseData, nil
 }
 
-func fillingBCCRequestData(client *storage.IndividualClient, applicationData storage.Application, bankApplicationData storage.BankApplication) (requests.BCCApplicationRequestData, error) {
+func fillingBCCRequestData(client *storage.IndividualClient, applicationData *storage.Application, bankApplicationData storage.BankApplication) (requests.BCCApplicationRequestData, error) {
 	var requestData requests.BCCApplicationRequestData
 
 	issueYear, err := strconv.Atoi(applicationData.YearIssue)
@@ -193,17 +205,22 @@ func fillingBCCRequestData(client *storage.IndividualClient, applicationData sto
 			PhoneNo:  contact.Phone,
 		})
 	}
-	requestData.Document.File, err = helpers.EncodeFileToBase64("storage/bcc-data-processing_" + helpers.CurrentDateString() + ".pdf")
+	for _, document := range applicationData.BankProcessingDocuments {
+		if document.BankID == 1 {
+			requestData.Document.File, err = helpers.EncodeFileToBase64(document.File)
+			if err != nil {
+				return requests.BCCApplicationRequestData{}, err
+			}
+		}
+	}
 	requestData.Document.Extension = "pdf"
 	requestData.Document.Code = "SOG"
-
-	fmt.Println(requestData)
 
 	return requestData, nil
 }
 
 // TODO createApplication -> filling
-func createEUApplication(individualClient *storage.IndividualClient, application storage.Application, bankApplication storage.BankApplication) (responses.EUResponseData, error) {
+func createEUApplication(individualClient *storage.IndividualClient, application *storage.Application, bankApplication storage.BankApplication) (responses.EUResponseData, error) {
 	requestData, err := fillingEUBankRequestData(individualClient, application, bankApplication)
 	if err != nil {
 		return responses.EUResponseData{}, err
@@ -257,7 +274,7 @@ func createEUApplication(individualClient *storage.IndividualClient, application
 	return responseData, nil
 }
 
-func fillingEUBankRequestData(client *storage.IndividualClient, applicationData storage.Application, bankApplicationData storage.BankApplication) (requests.EUApplicationRequestData, error) {
+func fillingEUBankRequestData(client *storage.IndividualClient, applicationData *storage.Application, bankApplicationData storage.BankApplication) (requests.EUApplicationRequestData, error) {
 	var requestData requests.EUApplicationRequestData
 
 	fmt.Println("at start phone number", client.WorkPlaceInfo.OrganizationPhone)
@@ -368,7 +385,7 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 	return requestData, nil
 }
 
-func createShinhanApplication(individualClient *storage.IndividualClient, application storage.Application, bankApplication storage.BankApplication) (responses.ShinhanResponseData, error) {
+func createShinhanApplication(individualClient *storage.IndividualClient, application *storage.Application, bankApplication storage.BankApplication) (responses.ShinhanResponseData, error) {
 	requestData, err := fillingShinhanBankRequestData(individualClient, application, bankApplication)
 	if err != nil {
 		return responses.ShinhanResponseData{}, err
@@ -383,6 +400,7 @@ func createShinhanApplication(individualClient *storage.IndividualClient, applic
 	fmt.Println("url: ", url)
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
 	if err != nil {
+		fmt.Println(req)
 		return responses.ShinhanResponseData{}, err
 	}
 
@@ -393,6 +411,7 @@ func createShinhanApplication(individualClient *storage.IndividualClient, applic
 	client := http.DefaultClient
 	resp, err := client.Do(req)
 	if err != nil {
+		fmt.Println("status code", resp.StatusCode)
 		return responses.ShinhanResponseData{}, err
 	}
 
@@ -423,7 +442,7 @@ func createShinhanApplication(individualClient *storage.IndividualClient, applic
 	return responseData, nil
 }
 
-func fillingShinhanBankRequestData(client *storage.IndividualClient, applicationData storage.Application, bankApplicationData storage.BankApplication) (requests.ShinhanApplicationRequestData, error) {
+func fillingShinhanBankRequestData(client *storage.IndividualClient, applicationData *storage.Application, bankApplicationData storage.BankApplication) (requests.ShinhanApplicationRequestData, error) {
 	var requestData requests.ShinhanApplicationRequestData
 	var err error
 

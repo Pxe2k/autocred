@@ -218,5 +218,6 @@ type GenerateDocumentRequestData struct {
 	Banks []struct {
 		ID uint `json:"ID"`
 	} `json:"banks"`
-	OTP string `json:"OTP"`
+	OTP           string `json:"OTP"`
+	ApplicationID uint   `json:"applicationID"`
 }

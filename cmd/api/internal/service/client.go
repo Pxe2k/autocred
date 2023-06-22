@@ -63,7 +63,6 @@ func GetIndividualClientService(db *gorm.DB, id, tokenID uint) (responses.Indivi
 	responseData.Sex = clientGotten.Sex
 	responseData.Country = clientGotten.Country
 	responseData.SecondPhone = clientGotten.SecondPhone
-	responseData.Email = clientGotten.Email
 	responseData.Education = clientGotten.Education
 	responseData.Comment = clientGotten.Comment
 	responseData.Image = clientGotten.Image
