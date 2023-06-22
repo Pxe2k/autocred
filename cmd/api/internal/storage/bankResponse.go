@@ -13,8 +13,8 @@ type BankResponse struct {
 	BankApplicationID uint   `json:"bankApplicationID"`
 }
 
-func (b *BankResponse) Save(db *gorm.DB) (*BankResponse, error) {
-	err := db.Debug().Create(&b).Error
+func (b *BankResponse) Save(db *gorm.DB, responses []BankResponse) (*BankResponse, error) {
+	err := db.Debug().Create(responses).Error
 	if err != nil {
 		return nil, err
 	}

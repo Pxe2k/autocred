@@ -39,6 +39,7 @@ func (server *Server) InitializeRoutes() {
 	applicationApi := server.Router.PathPrefix("/api/application").Subrouter()
 
 	applicationApi.HandleFunc("/create", middlewares.SetMiddlewareJSON(server.createApplication)).Methods("POST")
+	applicationApi.HandleFunc("/send/{id}", middlewares.SetMiddlewareJSON(server.sendApplications)).Methods("POST")
 	applicationApi.HandleFunc("/all", middlewares.SetMiddlewareJSON(server.allApplications)).Methods("GET")
 	applicationApi.HandleFunc("/get/{id}", middlewares.SetMiddlewareJSON(server.getApplication)).Methods("GET")
 	applicationApi.HandleFunc("/token", middlewares.SetMiddlewareJSON(server.getBankToken)).Methods("GET")
@@ -77,7 +78,7 @@ func (server *Server) InitializeRoutes() {
 
 	templateApi := server.Router.PathPrefix("/api/template").Subrouter()
 	templateApi.HandleFunc("/create/{id}", middlewares.SetMiddlewareJSON(server.generateTemplate)).Methods("POST")
-	templateApi.HandleFunc("/confirm/{id}", middlewares.SetMiddlewareJSON(server.generateTemplate)).Methods("POST")
+	templateApi.HandleFunc("/confirm/{id}", middlewares.SetMiddlewareJSON(server.confirmTemplate)).Methods("POST")
 	templateApi.HandleFunc("/get/{id}", middlewares.SetMiddlewareJSON(server.getUserMedia)).Methods("GET")
 
 	carApi := server.Router.PathPrefix("/api/cars").Subrouter()
