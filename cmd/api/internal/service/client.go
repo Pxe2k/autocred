@@ -228,8 +228,6 @@ func GetBusinessClientService(db *gorm.DB, id, tokenID uint) (responses.Business
 		return responseData, nil
 	}
 
-	fmt.Println(clientGotten.BeneficialOwner.ResidentialAddress)
-
 	responseData.Status = true
 	responseData.Image = clientGotten.Image
 	responseData.UserID = clientGotten.UserID

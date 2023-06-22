@@ -121,7 +121,8 @@ func createBCCApplication(individualClient *storage.IndividualClient, applicatio
 	// Add header parameters to the request
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+authToken)
-	// Add more headers as needed
+
+	//fmt.Println("token", authToken)
 
 	client := http.DefaultClient
 	resp, err := client.Do(req)
@@ -205,16 +206,18 @@ func fillingBCCRequestData(client *storage.IndividualClient, applicationData *st
 			PhoneNo:  contact.Phone,
 		})
 	}
-	for _, document := range applicationData.BankProcessingDocuments {
-		if document.BankID == 1 {
-			requestData.Document.File, err = helpers.EncodeFileToBase64(document.File)
-			if err != nil {
-				return requests.BCCApplicationRequestData{}, err
-			}
-		}
+	//for _, document := range applicationData.BankProcessingDocuments {
+	//	if document.BankID == 1 {
+	requestData.Document.File, err = helpers.EncodeFileToBase64("storage/bcc-data-processing" + strconv.Itoa(int(client.ID)) + "_" + helpers.CurrentDateString() + ".pdf")
+	if err != nil {
+		return requests.BCCApplicationRequestData{}, err
 	}
+	//	}
+	//}
 	requestData.Document.Extension = "pdf"
 	requestData.Document.Code = "SOG"
+
+	fmt.Println("processing data doc", requestData.Document.File)
 
 	return requestData, nil
 }
@@ -361,15 +364,19 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 	}
 	requestData.IncomeAddConfirmed = strconv.Itoa(0)
 
-	requestData.Gsvp.Base64Content, err = helpers.EncodeFileToBase64("templates/resultMedia/outputPDF/autocredit.pdf")
+	requestData.Gsvp.Base64Content, err = helpers.EncodeFileToBase64("storage/eu-data-processing" + strconv.Itoa(int(client.ID)) + "_" + helpers.CurrentDateString() + ".pdf")
 	if err != nil {
 		return requests.EUApplicationRequestData{}, err
 	}
-	requestData.Idcd.Base64Content, err = helpers.EncodeFileToBase64("eu-bank.jpg")
-	if err != nil {
-		return requests.EUApplicationRequestData{}, err
+	for _, document := range *client.Documents {
+		if document.Title == "idFront" {
+			requestData.Idcd.Base64Content, err = helpers.EncodeFileToBase64(document.File)
+			if err != nil {
+				return requests.EUApplicationRequestData{}, err
+			}
+		}
 	}
-	requestData.Photo.Base64Content, err = helpers.EncodeFileToBase64("eu-bank.jpg")
+	requestData.Photo.Base64Content, err = helpers.EncodeFileToBase64(client.Image)
 	if err != nil {
 		return requests.EUApplicationRequestData{}, err
 	}
@@ -590,12 +597,14 @@ func AllApplication(db *gorm.DB, uid uint) (*[]storage.Application, error) {
 	for _, applicationGotten := range *applications {
 		for _, bankApplication := range applicationGotten.BankApplications {
 			if bankApplication.BankID == 2 {
-				statusResponse, err := getEUStatus(bankApplication.BankResponse.ApplicationID)
-				if err != nil {
-					fmt.Println("error: ", err)
-				} else {
-					bankApplication.BankResponse.Status = statusResponse.Status
-					bankApplication.BankResponse.Description = statusResponse.Description
+				if bankApplication.BankResponse.ApplicationID != "" {
+					statusResponse, err := getEUStatus(bankApplication.BankResponse.ApplicationID)
+					if err != nil {
+						fmt.Println("error: ", err)
+					} else {
+						bankApplication.BankResponse.Status = statusResponse.Status
+						bankApplication.BankResponse.Description = statusResponse.Description
+					}
 				}
 			} else if bankApplication.BankID == 3 {
 				if bankApplication.BankResponse.ApplicationID != "" {
@@ -650,7 +659,9 @@ func getShinhanStatus(shinhanApplicationID string) (string, error) {
 }
 
 func getEUStatus(euApplicationID string) (*responses.EUBankStatusResponseData, error) {
-	url := os.Getenv("https://test-auto.eubank.kz/orbis/partner/" + euApplicationID)
+	url := "https://test-auto.eubank.kz/orbis/partner/" + euApplicationID
+
+	fmt.Println(url)
 
 	client := &http.Client{}
 

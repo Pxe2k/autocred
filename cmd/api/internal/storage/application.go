@@ -46,7 +46,7 @@ func (a *Application) All(db *gorm.DB, uid uint) (*[]Application, error) {
 }
 
 func (a *Application) Get(db *gorm.DB, id uint) (*Application, error) {
-	err := db.Debug().Model(&Application{}).Preload("IndividualClient").Where("id = ?", id).Preload(clause.Associations).Take(a).Error
+	err := db.Debug().Model(&Application{}).Preload("IndividualClient").Preload("BankApplications.Bank").Preload("BankApplications.BankResponse").Preload("BankApplications.BankProduct").Where("id = ?", id).Preload(clause.Associations).Take(a).Error
 	if err != nil {
 		return nil, err
 	}
