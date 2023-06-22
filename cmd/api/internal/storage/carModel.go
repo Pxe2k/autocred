@@ -8,7 +8,7 @@ import (
 type CarModel struct {
 	gorm.Model
 	Title      string `gorm:"size:100;" json:"title"`
-	CarBrandID uint
+	CarBrandID uint   `json:"carBrandID"`
 }
 
 func (c *CarModel) Save(db *gorm.DB) (*CarModel, error) {
