@@ -82,7 +82,7 @@ func SendApplications(db *gorm.DB, id uint) (*storage.BankResponse, error) {
 			}
 			stringShinhanRequestID := strconv.Itoa(shinhanResponseData.ApplicationID)
 			application.BankApplications[i].BankResponse.ApplicationID = stringShinhanRequestID
-			bankResponses = append(bankResponses, storage.BankResponse{Status: "В ожидании", Description: "", ApplicationID: stringShinhanRequestID, BankApplicationID: id})
+			bankResponses = append(bankResponses, storage.BankResponse{Status: "В ожидании", Description: "", ApplicationID: stringShinhanRequestID, BankApplicationID: application.BankApplications[i].ID})
 		}
 	}
 
