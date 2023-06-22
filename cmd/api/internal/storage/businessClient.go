@@ -6,22 +6,22 @@ import (
 
 type BusinessClient struct {
 	gorm.Model
-	TypeOfClient        string                       `gorm:"size:100" json:"typeOfClient"` // Тип клиента
-	Image               string                       `gorm:"size:100" json:"image"`
-	BIN                 string                       `gorm:"size:100;unique" json:"BIN"`  // БИН
-	CompanyName         string                       `gorm:"size:100" json:"companyName"` // Название организации
-	CompanyPhone        string                       `gorm:"size:100" json:"companyPhone"`
-	MonthlyIncome       uint                         `json:"monthlyIncome"`                    // Ежемесячный доход компании
-	CompanyLifespan     string                       `gorm:"size:100" json:"companyLifespan"`  // Срок существования компании
-	KindActivity        string                       `gorm:"size:100" json:"kindActivity"`     // Вид деятельности
-	ActivityType        string                       `gorm:"size:100" json:"activityType"`     // Тип деятельности
-	RegistrationDate    string                       `gorm:"size:100" json:"registrationDate"` // Тип деятельности
-	UserID              uint                         `json:"userID"`
-	User                User                         `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"user"`
-	RegistrationAddress *RegistrationAddressBusiness `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"registrationAddress,omitempty"` // Адрес регистрации юридического лица
-	BeneficialOwner     *BeneficialOwnerBusiness     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"beneficialOwner,omitempty"`
-	Pledges             *[]Pledge                    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"pledges,omitempty"` // Залоги
-	Documents           *[]Media                     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"documents"`
+	TypeOfClient        string                         `gorm:"size:100" json:"typeOfClient"` // Тип клиента
+	Image               string                         `gorm:"size:100" json:"image"`
+	BIN                 string                         `gorm:"size:100;unique" json:"BIN"`  // БИН
+	CompanyName         string                         `gorm:"size:100" json:"companyName"` // Название организации
+	CompanyPhone        string                         `gorm:"size:100" json:"companyPhone"`
+	MonthlyIncome       uint                           `json:"monthlyIncome"`                    // Ежемесячный доход компании
+	CompanyLifespan     string                         `gorm:"size:100" json:"companyLifespan"`  // Срок существования компании
+	KindActivity        string                         `gorm:"size:100" json:"kindActivity"`     // Вид деятельности
+	ActivityType        string                         `gorm:"size:100" json:"activityType"`     // Тип деятельности
+	RegistrationDate    string                         `gorm:"size:100" json:"registrationDate"` // Тип деятельности
+	UserID              uint                           `json:"userID"`
+	User                User                           `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"user"`
+	RegistrationAddress *[]RegistrationAddressBusiness `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"registrationAddresses,omitempty"` // Адрес регистрации юридического лица
+	BeneficialOwner     *[]BeneficialOwnerBusiness     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"beneficialOwners,omitempty"`
+	Pledges             *[]Pledge                      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"pledges,omitempty"` // Залоги
+	Documents           *[]Media                       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"documents"`
 }
 
 func (bc *BusinessClient) Save(db *gorm.DB) (*BusinessClient, error) {

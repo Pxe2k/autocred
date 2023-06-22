@@ -67,23 +67,23 @@ type IndividualClientResponseData struct {
 }
 
 type BusinessClientResponseData struct {
-	ID                  uint                                 `json:"ID"`
-	TypeOfClient        string                               `json:"typeOfClient"` // Тип клиента
-	Image               string                               `json:"image"`
-	BIN                 string                               `gorm:"size:100" json:"BIN"`         // БИН
-	CompanyName         string                               `gorm:"size:100" json:"companyName"` // Название организации
-	CompanyPhone        string                               `gorm:"size:100" json:"companyPhone"`
-	MonthlyIncome       uint                                 `json:"monthlyIncome"`                    // Ежемесячный доход компании
-	CompanyLifespan     string                               `gorm:"size:100" json:"companyLifespan"`  // Срок существования компании
-	KindActivity        string                               `gorm:"size:100" json:"kindActivity"`     // Вид деятельности
-	ActivityType        string                               `gorm:"size:100" json:"activityType"`     // Тип деятельности
-	RegistrationDate    string                               `gorm:"size:100" json:"registrationDate"` // Тип деятельности
-	Status              bool                                 `json:"status"`
-	UserID              uint                                 `json:"userID"`
-	User                storage.User                         `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"user"`
-	RegistrationAddress *storage.RegistrationAddressBusiness `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"registrationAddress,omitempty"` // Адрес регистрации юридического лица
-	BeneficialOwner     *storage.BeneficialOwnerBusiness     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"beneficialOwner,omitempty"`
-	CreatedAt           time.Time                            `json:"createdAt"`
+	ID                  uint                                   `json:"ID"`
+	TypeOfClient        string                                 `json:"typeOfClient"` // Тип клиента
+	Image               string                                 `json:"image"`
+	BIN                 string                                 `gorm:"size:100" json:"BIN"`         // БИН
+	CompanyName         string                                 `gorm:"size:100" json:"companyName"` // Название организации
+	CompanyPhone        string                                 `gorm:"size:100" json:"companyPhone"`
+	MonthlyIncome       uint                                   `json:"monthlyIncome"`                    // Ежемесячный доход компании
+	CompanyLifespan     string                                 `gorm:"size:100" json:"companyLifespan"`  // Срок существования компании
+	KindActivity        string                                 `gorm:"size:100" json:"kindActivity"`     // Вид деятельности
+	ActivityType        string                                 `gorm:"size:100" json:"activityType"`     // Тип деятельности
+	RegistrationDate    string                                 `gorm:"size:100" json:"registrationDate"` // Тип деятельности
+	Status              bool                                   `json:"status"`
+	UserID              uint                                   `json:"userID"`
+	User                storage.User                           `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"user"`
+	RegistrationAddress *[]storage.RegistrationAddressBusiness `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"registrationAddress,omitempty"` // Адрес регистрации юридического лица
+	BeneficialOwner     *[]storage.BeneficialOwnerBusiness     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"beneficialOwner,omitempty"`
+	CreatedAt           time.Time                              `json:"createdAt"`
 }
 
 type SubmitResponse struct {
