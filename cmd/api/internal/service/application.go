@@ -38,7 +38,7 @@ func CreateApplicationService(db *gorm.DB, body []byte, uid uint) (*storage.Appl
 	return applicationCreated, nil
 }
 
-func SendApplications(db *gorm.DB, id uint) (*storage.BankResponse, error) {
+func SendApplications(db *gorm.DB, id uint, body []byte) (*storage.BankResponse, error) {
 	application := storage.Application{}
 	applicationGotten, err := application.Get(db, id)
 	if err != nil {
@@ -52,6 +52,13 @@ func SendApplications(db *gorm.DB, id uint) (*storage.BankResponse, error) {
 	}
 
 	var bankResponses []storage.BankResponse
+
+	otpRequestData := requests.OTPShinhanRequestData{}
+
+	err = json.Unmarshal(body, otpRequestData)
+	if err != nil {
+		return nil, err
+	}
 
 	// TODO if status ok create bankResponse
 	for i := range applicationGotten.BankApplications {
@@ -76,7 +83,7 @@ func SendApplications(db *gorm.DB, id uint) (*storage.BankResponse, error) {
 				bankResponses = append(bankResponses, storage.BankResponse{Status: "Отказано", Description: euBankResponseData.Msg, ApplicationID: euBankResponseData.OrderID, BankApplicationID: application.BankApplications[i].ID})
 			}
 		} else if application.BankApplications[i].BankID == 3 {
-			shinhanResponseData, err3 := createShinhanApplication(individualClientGotten, applicationGotten, application.BankApplications[i])
+			shinhanResponseData, err3 := createShinhanApplication(individualClientGotten, applicationGotten, application.BankApplications[i], otpRequestData.OTP)
 			if err3 != nil {
 				fmt.Println("error:", err3)
 			}
@@ -392,8 +399,8 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 	return requestData, nil
 }
 
-func createShinhanApplication(individualClient *storage.IndividualClient, application *storage.Application, bankApplication storage.BankApplication) (responses.ShinhanResponseData, error) {
-	requestData, err := fillingShinhanBankRequestData(individualClient, application, bankApplication)
+func createShinhanApplication(individualClient *storage.IndividualClient, application *storage.Application, bankApplication storage.BankApplication, otp string) (responses.ShinhanResponseData, error) {
+	requestData, err := fillingShinhanBankRequestData(individualClient, application, bankApplication, otp)
 	if err != nil {
 		return responses.ShinhanResponseData{}, err
 	}
@@ -449,7 +456,7 @@ func createShinhanApplication(individualClient *storage.IndividualClient, applic
 	return responseData, nil
 }
 
-func fillingShinhanBankRequestData(client *storage.IndividualClient, applicationData *storage.Application, bankApplicationData storage.BankApplication) (requests.ShinhanApplicationRequestData, error) {
+func fillingShinhanBankRequestData(client *storage.IndividualClient, applicationData *storage.Application, bankApplicationData storage.BankApplication, otp string) (requests.ShinhanApplicationRequestData, error) {
 	var requestData requests.ShinhanApplicationRequestData
 	var err error
 
@@ -491,7 +498,7 @@ func fillingShinhanBankRequestData(client *storage.IndividualClient, application
 			}
 		}
 		if media.Title == "idFront" {
-			requestData.Customer.Document.PhotoFront, err = helpers.EncodeFileToBase64("templates/resultMedia/outputPDF/autocredit.pdf")
+			requestData.Customer.Document.PhotoFront, err = helpers.EncodeFileToBase64("storage/shinhan-data-processing" + strconv.Itoa(int(client.ID)) + "_" + helpers.CurrentDateString() + ".pdf")
 			if err != nil {
 				return requests.ShinhanApplicationRequestData{}, err
 			}
@@ -517,7 +524,7 @@ func fillingShinhanBankRequestData(client *storage.IndividualClient, application
 	requestData.Customer.MobilePhone = "7751022255"
 	requestData.Customer.NumberOfDependents = client.MaritalStatus.MinorChildren
 	requestData.Customer.OfficialIncome = strconv.Itoa(client.BonusInfo.AmountIncome)
-	requestData.Customer.Photo, err = helpers.EncodeFileToBase64("eu-bank.jpg")
+	requestData.Customer.Photo, err = helpers.EncodeFileToBase64("shinhan.png")
 	if err != nil {
 		return requests.ShinhanApplicationRequestData{}, err
 	}
@@ -536,7 +543,7 @@ func fillingShinhanBankRequestData(client *storage.IndividualClient, application
 	requestData.InstalmentDate = "1991-03-22"
 	requestData.Insurance = false
 	requestData.PartnerId = "1778"
-	requestData.Verification.Code = "1954"
+	requestData.Verification.Code = otp
 	requestData.Verification.Date = time.Now().Format("2006-01-02 15:04:05")
 
 	return requestData, nil

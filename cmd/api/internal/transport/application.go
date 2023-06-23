@@ -65,7 +65,13 @@ func (server *Server) sendApplications(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responseData, err := service.SendApplications(server.DB, uint(id))
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	responseData, err := service.SendApplications(server.DB, uint(id), body)
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return

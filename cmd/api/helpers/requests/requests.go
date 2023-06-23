@@ -221,3 +221,7 @@ type GenerateDocumentRequestData struct {
 	OTP           string `json:"OTP"`
 	ApplicationID uint   `json:"applicationID"`
 }
+
+type OTPShinhanRequestData struct {
+	OTP string `json:"OTP"`
+}
