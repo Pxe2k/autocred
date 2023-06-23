@@ -6,6 +6,7 @@ type BankProcessingDocument struct {
 	gorm.Model
 	Title         string `json:"title"`
 	Image         string `json:"image"`
+	IsSign        bool   `json:"isSign"`
 	File          string `json:"file"`
 	BankID        uint   `json:"bankID"`
 	ApplicationID uint   `json:"applicationID"`

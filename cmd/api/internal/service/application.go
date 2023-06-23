@@ -594,8 +594,9 @@ func AllApplication(db *gorm.DB, uid uint) (*[]storage.Application, error) {
 		return nil, err
 	}
 
-	for _, applicationGotten := range *applications {
-		for _, bankApplication := range applicationGotten.BankApplications {
+	for i := range *applications {
+		for j := range (*applications)[i].BankApplications {
+			bankApplication := &(*applications)[i].BankApplications[j]
 			if bankApplication.BankID == 2 {
 				if bankApplication.BankResponse.ApplicationID != "" {
 					statusResponse, err := getEUStatus(bankApplication.BankResponse.ApplicationID)
@@ -623,7 +624,7 @@ func AllApplication(db *gorm.DB, uid uint) (*[]storage.Application, error) {
 }
 
 func getShinhanStatus(shinhanApplicationID string) (string, error) {
-	url := os.Getenv("https://is.shinhanfinance.kz/api/v1/orbis/application_status/" + shinhanApplicationID + "/")
+	url := "https://is.shinhanfinance.kz/api/v1/orbis/application_status/" + shinhanApplicationID + "/"
 
 	client := &http.Client{}
 
@@ -632,6 +633,8 @@ func getShinhanStatus(shinhanApplicationID string) (string, error) {
 		fmt.Println("Error creating request:", err)
 		return "error: ", err
 	}
+
+	req.Header.Set("Authorization", "Basic "+os.Getenv("SHINHAN_TOKEN"))
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -648,6 +651,14 @@ func getShinhanStatus(shinhanApplicationID string) (string, error) {
 	if err != nil {
 		return "error: ", err
 	}
+
+	var result map[string]interface{}
+	err = json.Unmarshal(serverResponse, &result)
+	if err != nil {
+		fmt.Println(string(serverResponse))
+		return "error", err
+	}
+	fmt.Println("result", result)
 
 	responseData := responses.ShinhanStatusResponseData{}
 	err = json.Unmarshal(serverResponse, &responseData)
