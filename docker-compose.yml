@@ -9,8 +9,9 @@ services:
     restart: on-failure
     env_file:
       - .env
+    hostname: "${APP_HOST}"
     ports:
-      - "${APP_HOST}:${APP_PORT}"
+      - "${APP_PORT}:${APP_PORT}"
     volumes:
       - .:/usr/src/autoCred
     depends_on:
