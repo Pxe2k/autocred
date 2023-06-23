@@ -11,6 +11,8 @@ services:
       - .env
     ports:
       - "${APP_PORT}:${APP_PORT}"
+    networks:
+      - host
     volumes:
       - .:/usr/src/autoCred
     depends_on:
@@ -48,3 +50,8 @@ volumes:
     driver: local
   redis:
     driver: local
+
+networks:
+  host:
+    name: ${DB_HOST}
+    external: true
