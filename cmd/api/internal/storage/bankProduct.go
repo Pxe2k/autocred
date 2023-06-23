@@ -1,27 +1,30 @@
 package storage
 
 import (
+	"gorm.io/datatypes"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
 type BankProduct struct {
 	gorm.Model
-	Title                          string  `gorm:"size:100;" json:"title"`
-	WithPercentage                 bool    `json:"withPercentage"`
-	PercentageWithProvenIncome     float64 `json:"percentageWithProvenIncome"`
-	PercentageWithoutProvenIncome  float64 `json:"percentageWithoutProvenIncome"`
-	MaxAmountWithVerifiedIncome    uint    `json:"maxAmountWithVerifiedIncome"`
-	MaxAmountWithoutVerifiedIncome uint    `json:"maxAmountWithoutVerifiedIncome"`
-	MaxAmount                      uint    `json:"maxAmount"`
-	Rate12                         float64 `json:"rate12"`
-	Rate24                         float64 `json:"rate24"`
-	Rate36                         float64 `json:"rate36"`
-	Rate48                         float64 `json:"rate48"`
-	Rate60                         float64 `json:"rate60"`
-	Rate72                         float64 `json:"rate72"`
-	Rate84                         float64 `json:"rate84"`
-	BankID                         uint    `json:"bankID"`
+	Title                          string         `gorm:"size:100;" json:"title"`
+	WithPercentage                 bool           `json:"withPercentage"`
+	PercentageWithProvenIncome     float64        `json:"percentageWithProvenIncome"`
+	PercentageWithoutProvenIncome  float64        `json:"percentageWithoutProvenIncome"`
+	MaxAmountWithVerifiedIncome    uint           `json:"maxAmountWithVerifiedIncome"`
+	MaxAmountWithoutVerifiedIncome uint           `json:"maxAmountWithoutVerifiedIncome"`
+	MaxAmount                      uint           `json:"maxAmount"`
+	Rate12                         float64        `json:"rate12"`
+	Rate24                         float64        `json:"rate24"`
+	Rate36                         float64        `json:"rate36"`
+	Rate48                         float64        `json:"rate48"`
+	Rate60                         float64        `json:"rate60"`
+	Rate72                         float64        `json:"rate72"`
+	Rate84                         float64        `json:"rate84"`
+	BankID                         uint           `json:"bankID"`
+	Rate                           datatypes.JSON `json:"rate"`
+	Comment                        string         `json:"comment"`
 }
 
 func (b *BankProduct) Save(db *gorm.DB) (*BankProduct, error) {

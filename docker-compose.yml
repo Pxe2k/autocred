@@ -10,7 +10,7 @@ services:
     env_file:
       - .env
     ports:
-      - "${APP_PORT}:${APP_PORT}"
+      - "${APP_HOST}:${APP_PORT}"
     volumes:
       - .:/usr/src/autoCred
     depends_on:

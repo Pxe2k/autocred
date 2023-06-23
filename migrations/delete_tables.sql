@@ -30,6 +30,7 @@ drop table pledges cascade;
 drop table bank_responses cascade;
 drop table bank_applications cascade;
 drop table applications cascade;
+drop table bank_processing_documents cascade;
 
 drop table users cascade;
 drop table roles cascade;
