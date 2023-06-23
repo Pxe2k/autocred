@@ -38,6 +38,7 @@ func GeneratePdf(db *gorm.DB, body []byte, id uint) ([]storage.BankProcessingDoc
 
 	BCCTemplateFile := "templates/resultMedia/documentTemplates/BCCDataProcessing.html"
 	EUTemplateFile := "templates/resultMedia/documentTemplates/EUDataProcessing.html"
+	ShinhanTemplateFile := "templates/resultMedia/documentTemplates/ShinhanDataProcessing.html"
 
 	client := storage.IndividualClient{}
 	documentData := requests.ProcessingTemplateData{}
@@ -90,7 +91,7 @@ func GeneratePdf(db *gorm.DB, body []byte, id uint) ([]storage.BankProcessingDoc
 				return nil, err
 			}
 		} else if bankTitle.ID == 3 {
-			err = r.ParseTemplate(fmt.Sprint(BCCTemplateFile), documentData)
+			err = r.ParseTemplate(fmt.Sprint(ShinhanTemplateFile), documentData)
 			if err != nil {
 				return nil, err
 			}
