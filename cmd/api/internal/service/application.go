@@ -55,7 +55,7 @@ func SendApplications(db *gorm.DB, id uint, body []byte) (*storage.BankResponse,
 
 	otpRequestData := requests.OTPShinhanRequestData{}
 
-	err = json.Unmarshal(body, otpRequestData)
+	err = json.Unmarshal(body, &otpRequestData)
 	if err != nil {
 		return nil, err
 	}
