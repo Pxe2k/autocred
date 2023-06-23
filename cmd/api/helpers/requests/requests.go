@@ -225,3 +225,7 @@ type GenerateDocumentRequestData struct {
 type OTPShinhanRequestData struct {
 	OTP string `json:"OTP"`
 }
+
+type ResponseObject struct {
+	Data string `json:"data"`
+}
