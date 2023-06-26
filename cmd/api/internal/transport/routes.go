@@ -13,6 +13,7 @@ func (server *Server) InitializeRoutes() {
 
 	authApi.HandleFunc("/create", middlewares.SetMiddlewareJSON(server.createUser)).Methods("POST")
 	authApi.HandleFunc("/login", middlewares.SetMiddlewareJSON(server.login)).Methods("POST")
+	authApi.HandleFunc("/ecp", middlewares.SetMiddlewareJSON(server.ecp)).Methods("POST")
 	authApi.HandleFunc("/submit", middlewares.SetMiddlewareJSON(server.submit)).Methods("POST")
 	authApi.HandleFunc("/role", middlewares.SetMiddlewareJSON(server.getRoleID)).Methods("GET")
 
