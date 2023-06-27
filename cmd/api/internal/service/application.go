@@ -132,8 +132,6 @@ func createBCCApplication(individualClient *storage.IndividualClient, applicatio
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+authToken)
 
-	//fmt.Println("token", authToken)
-
 	client := http.DefaultClient
 	resp, err := client.Do(req)
 	if err != nil {
@@ -356,7 +354,7 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 		}
 	}
 
-	requestData.IncomeMain = client.BonusInfo.AmountIncome
+	requestData.IncomeMain = client.BonusInfo.NetIncome
 
 	switch client.MaritalStatus.Status {
 	case "Холост/Не замужен":
