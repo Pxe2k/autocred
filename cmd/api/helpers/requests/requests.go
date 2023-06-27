@@ -1,14 +1,5 @@
 package requests
 
-type UserRequestData struct {
-	Email    string `json:"email"`
-	Phone    string `json:"phone"`
-	Creditor bool   `json:"creditor"`
-	Bank     string `json:"bank"`
-	Password string `json:"password"`
-	BankID   *uint  `json:"bankID"`
-}
-
 type SubmitCode struct {
 	Phone string `json:"phone"`
 	Code  string `json:"code"`
@@ -229,3 +220,23 @@ type OTPShinhanRequestData struct {
 type ResponseObject struct {
 	Data string `json:"data"`
 }
+
+type UserRequestData struct {
+	Email          string  `json:"email"`
+	FirstName      string  `json:"firstName"`
+	MiddleName     string  `json:"middleName"`
+	LastName       *string `json:"lastName,omitempty"`
+	IIN            string  `json:"iin"`
+	Document       string  `json:"document"`
+	DocumentNumber string  `json:"documentNumber"`
+	JobTitle       string  `json:"jobTitle"`
+	OrderNumber    string  `json:"orderNumber"`
+	Phone          string  `json:"phone"`
+	WorkPhone      string  `json:"workPhone"`
+	Password       string  `json:"password"`
+	AutoDealerID   uint    `json:"autoDealerID,omitempty"`
+	RoleID         *uint   `json:"roleID,omitempty"`
+	ResponseObject string  `json:"responseObject"`
+}
+
+// TODO много лишних реквестов

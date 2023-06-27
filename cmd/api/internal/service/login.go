@@ -6,10 +6,12 @@ import (
 	"autocredit/cmd/api/helpers/requests"
 	"autocredit/cmd/api/internal/storage"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/redis/go-redis/v9"
 	"golang.org/x/crypto/bcrypt"
@@ -20,10 +22,30 @@ var ctx = context.Background()
 
 func CreateUserService(db *gorm.DB, body []byte, autoDealerID uint) (*storage.User, error) {
 	user := storage.User{}
-	err := json.Unmarshal(body, &user)
+	requestData := requests.UserRequestData{}
+	err := json.Unmarshal(body, &requestData)
 	if err != nil {
 		return &storage.User{}, err
 	}
+
+	iin, err := takeDataFromResponseObject(requestData.ResponseObject)
+	if err != nil {
+		return nil, err
+	}
+
+	user.Email = requestData.Email
+	user.FirstName = requestData.FirstName
+	user.MiddleName = requestData.MiddleName
+	user.LastName = requestData.LastName
+	user.IIN = iin
+	user.Document = requestData.Document
+	user.DocumentNumber = requestData.DocumentNumber
+	user.JobTitle = requestData.JobTitle
+	user.OrderNumber = requestData.OrderNumber
+	user.Phone = requestData.Phone
+	user.WorkPhone = requestData.WorkPhone
+	user.Password = requestData.Password
+	user.RoleID = requestData.RoleID
 
 	if autoDealerID != 0 {
 		user.AutoDealerID = autoDealerID
@@ -108,4 +130,38 @@ func CreateToken(db *gorm.DB, body []byte) (string, error) {
 	}
 
 	return auth.CreateToken(uint32(user.ID), user.RoleID, user.AutoDealerID)
+}
+
+func ECPDecode(db *gorm.DB, body []byte) (string, error) {
+	responseObject := requests.ResponseObject{}
+
+	err := json.Unmarshal(body, &responseObject)
+	if err != nil {
+		return "error", err
+	}
+
+	iin, err := takeDataFromResponseObject(responseObject.Data)
+	if err != nil {
+		return "error", err
+	}
+
+	user := storage.User{}
+	err = db.Debug().Model(storage.User{}).Where("iin = ?", iin).Take(&user).Error
+	if err != nil {
+		return "error", err
+	}
+
+	return auth.CreateToken(uint32(user.ID), user.RoleID, user.AutoDealerID)
+}
+
+func takeDataFromResponseObject(data string) (string, error) {
+	base64ResponseObject, err := base64.StdEncoding.DecodeString(data)
+	if err != nil {
+		return "error", err
+	}
+
+	position := strings.Index(string(base64ResponseObject), "IIN")
+	iin := strings.TrimSpace(string(base64ResponseObject[position+3 : position+15]))
+
+	return iin, err
 }

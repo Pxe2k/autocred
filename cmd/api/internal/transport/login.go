@@ -6,7 +6,6 @@ import (
 	"autocredit/cmd/api/helpers/responses"
 	"autocredit/cmd/api/internal/service"
 	"autocredit/cmd/api/internal/storage"
-	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -32,6 +31,7 @@ func (server *Server) createUser(w http.ResponseWriter, r *http.Request) {
 
 	var autoDealerID uint
 
+	// TODO доставать autoDealerID из токена
 	if roleID == 2 {
 		user := storage.User{}
 		userGotten, err1 := user.Get(server.DB, uint(tokenID))
@@ -90,41 +90,13 @@ func (server *Server) ecp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responseObject := requests.ResponseObject{}
-
-	err = json.Unmarshal(body, &responseObject)
+	token, err := service.ECPDecode(server.DB, body)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	base64ResponseObject, err := base64.StdEncoding.DecodeString(responseObject.Data)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-	stringBase64ResponseObject := string(base64ResponseObject)
-	index := -1
-	for i := 0; i < len(stringBase64ResponseObject)-2; i++ {
-		if stringBase64ResponseObject[i:i+3] == "IIN" {
-			index = i
-			break
-		}
-	}
-
-	if index != -1 && index+15 <= len(stringBase64ResponseObject) {
-		substring := stringBase64ResponseObject[index+3 : index+15]
-		decodedBytes, err := base64.StdEncoding.DecodeString(substring)
-		if err != nil {
-			fmt.Println("Error decoding base64:", err)
-			return
-		}
-		fmt.Println(string(decodedBytes))
-	} else {
-		fmt.Println("Substring not found or out of range.")
-	}
-
-	responses.JSON(w, http.StatusOK, responseObject)
+	responses.JSON(w, http.StatusOK, responses.SubmitResponse{Token: &token})
 }
 
 func (server *Server) submit(w http.ResponseWriter, r *http.Request) {

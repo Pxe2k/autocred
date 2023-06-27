@@ -72,7 +72,7 @@ func SendApplications(db *gorm.DB, id uint, body []byte) (*storage.BankResponse,
 			if bccResponseData.Status == "OK" {
 				bankResponses = append(bankResponses, storage.BankResponse{Status: "В ожидании", Description: bccResponseData.Message, ApplicationID: bccResponseData.RequestId, BankApplicationID: application.BankApplications[i].ID})
 			} else {
-				bankResponses = append(bankResponses, storage.BankResponse{Status: "В ожидании", Description: bccResponseData.Message, ApplicationID: bccResponseData.RequestId, BankApplicationID: application.BankApplications[i].ID})
+				bankResponses = append(bankResponses, storage.BankResponse{Status: "Ошибка отправки", Description: bccResponseData.Message, ApplicationID: bccResponseData.RequestId, BankApplicationID: application.BankApplications[i].ID})
 			}
 		} else if application.BankApplications[i].BankID == 2 {
 			euBankResponseData, err2 := createEUApplication(individualClientGotten, applicationGotten, application.BankApplications[i])
@@ -82,7 +82,7 @@ func SendApplications(db *gorm.DB, id uint, body []byte) (*storage.BankResponse,
 			if euBankResponseData.Success == true {
 				bankResponses = append(bankResponses, storage.BankResponse{Status: "В ожидании", Description: euBankResponseData.Msg, ApplicationID: euBankResponseData.OrderID, BankApplicationID: application.BankApplications[i].ID})
 			} else {
-				bankResponses = append(bankResponses, storage.BankResponse{Status: "Отказано", Description: euBankResponseData.Msg, ApplicationID: euBankResponseData.OrderID, BankApplicationID: application.BankApplications[i].ID})
+				bankResponses = append(bankResponses, storage.BankResponse{Status: "Ошибка отправки", Description: euBankResponseData.Msg, ApplicationID: euBankResponseData.OrderID, BankApplicationID: application.BankApplications[i].ID})
 			}
 		} else if application.BankApplications[i].BankID == 3 {
 			shinhanResponseData, err3 := createShinhanApplication(individualClientGotten, applicationGotten, application.BankApplications[i], otpRequestData.OTP)
@@ -616,7 +616,8 @@ func AllApplication(db *gorm.DB, uid uint) (*[]storage.Application, error) {
 						bankApplication.BankResponse.Description = statusResponse.Description
 					}
 				}
-			} else if bankApplication.BankID == 3 {
+			}
+			if bankApplication.BankID == 3 {
 				if bankApplication.BankResponse.ApplicationID != "" {
 					status, err := getShinhanStatus(bankApplication.BankResponse.ApplicationID)
 					if err != nil {
@@ -690,6 +691,10 @@ func getEUStatus(euApplicationID string) (*responses.EUBankStatusResponseData, e
 		fmt.Println("Error creating request:", err)
 		return nil, err
 	}
+
+	// Add header parameters to the request
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("x-eub-token", os.Getenv("EU_TOKEN"))
 
 	resp, err := client.Do(req)
 	if err != nil {
