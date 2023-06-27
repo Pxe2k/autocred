@@ -354,7 +354,7 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 		}
 	}
 
-	requestData.IncomeMain = client.WorkPlaceInfo.MonthlyIncome
+	requestData.IncomeMain = client.BonusInfo.NetIncome
 
 	switch client.MaritalStatus.Status {
 	case "Холост/Не замужен":
