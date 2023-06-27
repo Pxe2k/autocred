@@ -5,7 +5,6 @@ import (
 	"autocredit/cmd/api/helpers"
 	"autocredit/cmd/api/helpers/requests"
 	"autocredit/cmd/api/internal/storage"
-	"context"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -17,8 +16,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
-
-var ctx = context.Background()
 
 func CreateUserService(db *gorm.DB, body []byte, autoDealerID uint) (*storage.User, error) {
 	user := storage.User{}
