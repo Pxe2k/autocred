@@ -602,6 +602,10 @@ func AllApplication(db *gorm.DB, uid uint) (*[]storage.Application, error) {
 		return nil, err
 	}
 
+	var allApplications uint
+	var successApplications uint
+	var declinedApplications uint
+
 	for i := range *applications {
 		for j := range (*applications)[i].BankApplications {
 			bankApplication := &(*applications)[i].BankApplications[j]
@@ -617,7 +621,8 @@ func AllApplication(db *gorm.DB, uid uint) (*[]storage.Application, error) {
 				}
 			}
 			if bankApplication.BankID == 3 {
-				if bankApplication.BankResponse.ApplicationID != "" {
+				if bankApplication.BankResponse.ApplicationID != "0" && bankApplication.BankResponse.ApplicationID != "" {
+					allApplications += 1
 					status, err := getShinhanStatus(bankApplication.BankResponse.ApplicationID)
 					if err != nil {
 						fmt.Println("error: ", err)
