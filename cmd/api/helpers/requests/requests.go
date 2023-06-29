@@ -161,6 +161,7 @@ type ShinhanApplicationRequestData struct {
 	InstalmentDate string `json:"instalmentDate"`
 	Insurance      bool   `json:"insurance"`
 	PartnerId      string `json:"partnerId"`
+	ProductName    string `json:"productName"`
 	Verification   struct {
 		Code string `json:"code"`
 		Date string `json:"date"`

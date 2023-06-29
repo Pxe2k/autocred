@@ -543,6 +543,7 @@ func fillingShinhanBankRequestData(client *storage.IndividualClient, application
 	requestData.Grace = false
 	requestData.InstalmentDate = "1991-03-22"
 	requestData.Insurance = false
+	requestData.ProductName = bankApplicationData.BankProduct.Title
 	requestData.PartnerId = "1778"
 	requestData.Verification.Code = otp
 	requestData.Verification.Date = time.Now().Format("2006-01-02 15:04:05")
@@ -595,14 +596,22 @@ func GetApplication(db *gorm.DB, id uint) (storage.Application, error) {
 	return *applicationGotten, nil
 }
 
-func AllApplication(db *gorm.DB, uid uint) (*[]storage.Application, error) {
+func AllApplication(db *gorm.DB, uid uint) (responses.ApplicationsResponseData, error) {
 	application := storage.Application{}
 	applications, err := application.All(db, uid)
 	if err != nil {
-		return nil, err
+		return responses.ApplicationsResponseData{}, err
 	}
 
+	AllApplicationCount := 0
+	successApplication := 0
+	declinedApplication := 0
+	currentDate := time.Now().Format("2006-01-02") // Get the current date in the format "YYYY-MM-DD"
+
 	for i := range *applications {
+		if (*applications)[i].CreatedAt.Format("2006-01-02") == currentDate {
+			AllApplicationCount++
+		}
 		for j := range (*applications)[i].BankApplications {
 			bankApplication := &(*applications)[i].BankApplications[j]
 			if bankApplication.BankID == 2 {
@@ -611,13 +620,20 @@ func AllApplication(db *gorm.DB, uid uint) (*[]storage.Application, error) {
 					if err != nil {
 						fmt.Println("error: ", err)
 					} else {
-						bankApplication.BankResponse.Status = statusResponse.Status
 						bankApplication.BankResponse.Description = statusResponse.Description
+						bankApplication.BankResponse.Status = statusResponse.Status
+						if bankApplication.CreatedAt.Format("2006-01-02") == currentDate {
+							if bankApplication.BankResponse.Status == "Одобрено" {
+								successApplication++
+							} else if bankApplication.BankResponse.Status == "Отказано" {
+								declinedApplication++
+							}
+						}
 					}
 				}
 			}
 			if bankApplication.BankID == 3 {
-				if bankApplication.BankResponse.ApplicationID != "" {
+				if bankApplication.BankResponse.ApplicationID != "0" && bankApplication.BankResponse.ApplicationID != "" {
 					status, err := getShinhanStatus(bankApplication.BankResponse.ApplicationID)
 					if err != nil {
 						fmt.Println("error: ", err)
@@ -629,7 +645,14 @@ func AllApplication(db *gorm.DB, uid uint) (*[]storage.Application, error) {
 		}
 	}
 
-	return applications, nil
+	responseData := responses.ApplicationsResponseData{}
+
+	responseData.AllApplications = AllApplicationCount
+	responseData.SuccessApplications = successApplication
+	responseData.DeclinedApplications = declinedApplication
+	responseData.Applications = *applications
+
+	return responseData, nil
 }
 
 func getShinhanStatus(shinhanApplicationID string) (string, error) {
@@ -678,7 +701,7 @@ func getShinhanStatus(shinhanApplicationID string) (string, error) {
 	return responseData.Status, nil
 }
 
-func getEUStatus(euApplicationID string) (*responses.EUBankStatusResponseData, error) {
+func getEUStatus(euApplicationID string) (responses.EUBankStatusResponseData, error) {
 	url := "https://test-auto.eubank.kz/orbis/partner/" + euApplicationID
 
 	fmt.Println(url)
@@ -688,7 +711,7 @@ func getEUStatus(euApplicationID string) (*responses.EUBankStatusResponseData, e
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		fmt.Println("Error creating request:", err)
-		return nil, err
+		return responses.EUBankStatusResponseData{}, err
 	}
 
 	// Add header parameters to the request
@@ -698,24 +721,41 @@ func getEUStatus(euApplicationID string) (*responses.EUBankStatusResponseData, e
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Println("Error sending request:", err)
-		return nil, err
+		return responses.EUBankStatusResponseData{}, err
 	}
 	defer resp.Body.Close()
 
 	if err != nil {
-		return nil, err
+		return responses.EUBankStatusResponseData{}, err
 	}
 
 	serverResponse, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return responses.EUBankStatusResponseData{}, err
 	}
 
 	responseData := responses.EUBankStatusResponseData{}
 	err = json.Unmarshal(serverResponse, &responseData)
 	if err != nil {
-		return nil, err
+		return responses.EUBankStatusResponseData{}, err
 	}
 
-	return &responseData, nil
+	switch responseData.Status {
+	case "CREATION_PENDING":
+		responseData.Status = "Ожидание создания"
+	case "DECISION":
+		responseData.Status = "Ожидает одобрения"
+	case "APPROVED":
+		responseData.Status = "Одобрено"
+	case "REJECTED":
+		responseData.Status = "Отказано"
+	case "MODIFICATION":
+		responseData.Status = "Заявка в обработке"
+	case "CREATION_FAILED":
+		responseData.Status = "Ожидание при создании заявки"
+	case "CANCELLED":
+		responseData.Status = "Отмена заявки"
+	}
+
+	return responseData, nil
 }

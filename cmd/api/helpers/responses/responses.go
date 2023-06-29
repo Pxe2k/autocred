@@ -171,6 +171,13 @@ type BCCUpdateResponse struct {
 	Error  string `json:"error"`
 }
 
+type ApplicationsResponseData struct {
+	AllApplications      int                   `json:"allApplications"`
+	SuccessApplications  int                   `json:"successApplications"`
+	DeclinedApplications int                   `json:"declinedApplications"`
+	Applications         []storage.Application `json:"applications"`
+}
+
 func JSON(w http.ResponseWriter, statusCode int, data interface{}) {
 	w.WriteHeader(statusCode)
 	err := json.NewEncoder(w).Encode(data)
