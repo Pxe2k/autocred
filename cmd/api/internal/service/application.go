@@ -698,6 +698,25 @@ func getShinhanStatus(shinhanApplicationID string) (string, error) {
 		return "error: ", err
 	}
 
+	switch responseData.Status {
+	case "Ожидает":
+		responseData.Status = "Ожидание создания"
+	case "Отказано":
+		responseData.Status = "Отказано"
+	case "Выдан":
+		responseData.Status = "Одобрено"
+	case "К выдаче":
+		responseData.Status = "Одобрено"
+	case "Ожидает рассмотрения":
+		responseData.Status = "Ожидает рассмотрения"
+	case "В рассмотрении":
+		responseData.Status = "Ожидает рассмотрения"
+	case "Автоматическая проверка":
+		responseData.Status = "Ожидает рассмотрения"
+	case "Отказ клиента":
+		responseData.Status = "Отмена заявки"
+	}
+
 	return responseData.Status, nil
 }
 
@@ -744,7 +763,7 @@ func getEUStatus(euApplicationID string) (responses.EUBankStatusResponseData, er
 	case "CREATION_PENDING":
 		responseData.Status = "Ожидание создания"
 	case "DECISION":
-		responseData.Status = "Ожидает одобрения"
+		responseData.Status = "Ожидает рассмотрения"
 	case "APPROVED":
 		responseData.Status = "Одобрено"
 	case "REJECTED":
