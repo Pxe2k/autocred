@@ -4,7 +4,6 @@ import "gorm.io/gorm"
 
 type BonusInfo struct {
 	gorm.Model
-	AmountIncome                       int     `json:"amountIncome"`                         // Сумма доходов
 	AmountBonus                        int     `json:"amountBonus"`                          // Доп доход
 	AmountExpenses                     int     `json:"amountExpenses"`                       // Сумма расходов
 	Alimony                            int     `json:"alimony"`                              // Алименты
