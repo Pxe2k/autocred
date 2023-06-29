@@ -177,9 +177,9 @@ func (server *Server) getBCCResponse(w http.ResponseWriter, r *http.Request) {
 	case "on_rework":
 		requestData.StatusCode = "На доработку"
 	case "funded":
-		requestData.StatusCode = "Профинансирован"
+		requestData.StatusCode = "Одобрено"
 	default:
-		requestData.StatusCode = "В ожидании"
+		requestData.StatusCode = "Ожидает рассмотрения"
 	}
 	bankResponse := storage.BankResponse{}
 	err = bankResponse.UpdateStatus(server.DB, requestData)

@@ -205,7 +205,7 @@ func fillingBCCRequestData(client *storage.IndividualClient, applicationData *st
 		requestData.WorkStatus = "Обычный клиент"
 	}
 	requestData.OrganizationPhoneNo = client.WorkPlaceInfo.OrganizationPhone
-	requestData.BasicIncome = client.BonusInfo.AmountIncome
+	requestData.BasicIncome = client.BonusInfo.NetIncome
 	requestData.AdditionalIncome = 0
 	requestData.UserCode = client.MiddleName + " " + client.FirstName + " " + client.LastName
 	for _, contact := range *client.Contacts {
@@ -524,7 +524,7 @@ func fillingShinhanBankRequestData(client *storage.IndividualClient, application
 	requestData.Customer.MaritalStatus = "SINGLE"
 	requestData.Customer.MobilePhone = "7751022255"
 	requestData.Customer.NumberOfDependents = client.MaritalStatus.MinorChildren
-	requestData.Customer.OfficialIncome = strconv.Itoa(client.BonusInfo.AmountIncome)
+	requestData.Customer.OfficialIncome = strconv.Itoa(client.BonusInfo.NetIncome)
 	requestData.Customer.Photo, err = helpers.EncodeFileToBase64("shinhan.png")
 	if err != nil {
 		return requests.ShinhanApplicationRequestData{}, err
