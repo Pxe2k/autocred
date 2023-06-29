@@ -71,7 +71,7 @@ func GeneratePdf(db *gorm.DB, body []byte, id uint) ([]storage.BankProcessingDoc
 			}
 
 			fileName = "bcc-data-processing" + strconv.Itoa(int(clientGotten.ID)) + "_" + helpers.CurrentDateString()
-			bankProcessingDocuments = append(bankProcessingDocuments, storage.BankProcessingDocument{Title: "Банк Центр Кредит", File: "storage/" + fileName + ".pdf", ApplicationID: requestData.ApplicationID, Image: "banks/bcc.png", BankID: 1})
+			bankProcessingDocuments = append(bankProcessingDocuments, storage.BankProcessingDocument{Title: "Банк Центр Кредит", File: "storage/" + fileName + ".pdf", ApplicationID: requestData.ApplicationID, Image: "storage/banks/bcc.png", BankID: 1})
 
 			err = r.ConvertHTMLtoPdf("storage/" + fileName + ".pdf")
 			if err != nil {
@@ -84,7 +84,7 @@ func GeneratePdf(db *gorm.DB, body []byte, id uint) ([]storage.BankProcessingDoc
 			}
 
 			fileName = "eu-data-processing" + strconv.Itoa(int(clientGotten.ID)) + "_" + helpers.CurrentDateString()
-			bankProcessingDocuments = append(bankProcessingDocuments, storage.BankProcessingDocument{Title: "Евразийский Банк", File: "storage/" + fileName + ".pdf", ApplicationID: requestData.ApplicationID, Image: "banks/eu.png", BankID: 2})
+			bankProcessingDocuments = append(bankProcessingDocuments, storage.BankProcessingDocument{Title: "Евразийский Банк", File: "storage/" + fileName + ".pdf", ApplicationID: requestData.ApplicationID, Image: "storage/banks/eu.png", BankID: 2})
 
 			err = r.ConvertHTMLtoPdf("storage/" + fileName + ".pdf")
 			if err != nil {
@@ -97,7 +97,7 @@ func GeneratePdf(db *gorm.DB, body []byte, id uint) ([]storage.BankProcessingDoc
 			}
 
 			fileName = "shinhan-data-processing" + strconv.Itoa(int(clientGotten.ID)) + "_" + helpers.CurrentDateString()
-			bankProcessingDocuments = append(bankProcessingDocuments, storage.BankProcessingDocument{Title: "Шинхан Банк", File: "storage/" + fileName + ".pdf", ApplicationID: requestData.ApplicationID, Image: "banks/shinhan.png", BankID: 3})
+			bankProcessingDocuments = append(bankProcessingDocuments, storage.BankProcessingDocument{Title: "Шинхан Банк", File: "storage/" + fileName + ".pdf", ApplicationID: requestData.ApplicationID, Image: "storage/banks/shinhan.png", BankID: 3})
 
 			err = r.ConvertHTMLtoPdf("storage/" + fileName + ".pdf")
 			if err != nil {
