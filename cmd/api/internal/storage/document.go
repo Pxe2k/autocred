@@ -14,11 +14,11 @@ type Document struct {
 	IndividualClientID uint
 }
 
-func (d *Document) Update(db gorm.DB, document Document) (*Document, error) {
-	err := db.Debug().Model(&Document{}).Where("id = ?", document.ID).Updates(document).Error
+func (d *Document) Update(db *gorm.DB, document *Document, clientID uint) error {
+	err := db.Debug().Model(&Document{}).Where("individual_client_id = ?", clientID).Updates(document).Error
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return d, nil
+	return nil
 }
