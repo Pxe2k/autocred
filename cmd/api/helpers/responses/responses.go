@@ -19,7 +19,7 @@ type UserResponseData struct {
 	FirstName      string                `json:"firstName"`
 	MiddleName     string                `json:"middleName"`
 	LastName       *string               `json:"lastName,omitempty"`
-	IIN            string                `json:"iin"`
+	IIN            *string               `json:"iin,omitempty"`
 	Document       string                `json:"document"`
 	DocumentNumber string                `json:"documentNumber"`
 	JobTitle       string                `json:"jobTitle"`
