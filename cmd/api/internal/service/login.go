@@ -25,20 +25,18 @@ func CreateUserService(db *gorm.DB, body []byte, autoDealerID uint) (*storage.Us
 		return &storage.User{}, err
 	}
 
-	iin, err := takeDataFromResponseObject(requestData.ResponseObject)
-	if err != nil {
-		return nil, err
-	}
-
 	user.Email = requestData.Email
 	user.FirstName = requestData.FirstName
 	user.MiddleName = requestData.MiddleName
 	user.LastName = requestData.LastName
 	if requestData.ResponseObject != "" {
-		user.IIN = iin
-
+		iin, err1 := takeDataFromResponseObject(requestData.ResponseObject)
+		if err1 != nil {
+			return nil, err1
+		}
+		user.IIN = &iin
 	} else {
-		user.IIN = requestData.IIN
+		user.IIN = nil
 	}
 	user.Document = requestData.Document
 	user.DocumentNumber = requestData.DocumentNumber

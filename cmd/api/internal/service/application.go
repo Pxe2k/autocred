@@ -70,7 +70,7 @@ func SendApplications(db *gorm.DB, id uint, body []byte) (*storage.BankResponse,
 				fmt.Println("error:", err1)
 			}
 			if bccResponseData.Status == "OK" {
-				bankResponses = append(bankResponses, storage.BankResponse{Status: "В ожидании", Description: bccResponseData.Message, ApplicationID: bccResponseData.RequestId, BankApplicationID: application.BankApplications[i].ID})
+				bankResponses = append(bankResponses, storage.BankResponse{Status: "Ожидает создания", Description: bccResponseData.Message, ApplicationID: bccResponseData.RequestId, BankApplicationID: application.BankApplications[i].ID})
 			} else {
 				bankResponses = append(bankResponses, storage.BankResponse{Status: "Ошибка отправки", Description: bccResponseData.Message, ApplicationID: bccResponseData.RequestId, BankApplicationID: application.BankApplications[i].ID})
 			}
@@ -80,7 +80,7 @@ func SendApplications(db *gorm.DB, id uint, body []byte) (*storage.BankResponse,
 				fmt.Println("error:", err2)
 			}
 			if euBankResponseData.Success == true {
-				bankResponses = append(bankResponses, storage.BankResponse{Status: "В ожидании", Description: euBankResponseData.Msg, ApplicationID: euBankResponseData.OrderID, BankApplicationID: application.BankApplications[i].ID})
+				bankResponses = append(bankResponses, storage.BankResponse{Status: "Ожидает создания", Description: euBankResponseData.Msg, ApplicationID: euBankResponseData.OrderID, BankApplicationID: application.BankApplications[i].ID})
 			} else {
 				bankResponses = append(bankResponses, storage.BankResponse{Status: "Ошибка отправки", Description: euBankResponseData.Msg, ApplicationID: euBankResponseData.OrderID, BankApplicationID: application.BankApplications[i].ID})
 			}
@@ -91,7 +91,7 @@ func SendApplications(db *gorm.DB, id uint, body []byte) (*storage.BankResponse,
 			}
 			stringShinhanRequestID := strconv.Itoa(shinhanResponseData.ApplicationID)
 			application.BankApplications[i].BankResponse.ApplicationID = stringShinhanRequestID
-			bankResponses = append(bankResponses, storage.BankResponse{Status: "В ожидании", Description: "", ApplicationID: stringShinhanRequestID, BankApplicationID: application.BankApplications[i].ID})
+			bankResponses = append(bankResponses, storage.BankResponse{Status: "Ожидает создания", Description: "", ApplicationID: stringShinhanRequestID, BankApplicationID: application.BankApplications[i].ID})
 		}
 	}
 
@@ -303,6 +303,7 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 	requestData.Car.Brand = applicationData.CarBrand
 	requestData.Car.Model = applicationData.CarModel
 	requestData.Car.Year = uint(issueYear)
+
 	requestData.Car.Insurance = false
 	requestData.Car.Price = uint(applicationData.CarPrice)
 	requestData.City = "Алматы"
@@ -710,7 +711,7 @@ func getShinhanStatus(shinhanApplicationID string) (string, error) {
 	case "Ожидает рассмотрения":
 		responseData.Status = "Ожидает рассмотрения"
 	case "В рассмотрении":
-		responseData.Status = "Ожидает рассмотрения"
+		responseData.Status = "В рассмотрении"
 	case "Автоматическая проверка":
 		responseData.Status = "Ожидает рассмотрения"
 	case "Отказ клиента":

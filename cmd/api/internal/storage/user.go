@@ -15,7 +15,7 @@ type User struct {
 	FirstName      string        `gorm:"size:100" json:"firstName"`
 	MiddleName     string        `gorm:"size:100" json:"middleName"`
 	LastName       *string       `gorm:"size:100" json:"lastName,omitempty"`
-	IIN            string        `gorm:"size:100;unique" json:"iin"`
+	IIN            *string       `gorm:"size:100;unique" json:"iin,omitempty"`
 	Document       string        `gorm:"size:100" json:"document"`
 	DocumentNumber string        `gorm:"size:100" json:"documentNumber"`
 	JobTitle       string        `gorm:"size:100" json:"jobTitle"`
