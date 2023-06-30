@@ -319,3 +319,50 @@ func SubmitBusinessClientOTP(db *gorm.DB, body []byte, id uint) (string, error) 
 
 	return "success", nil
 }
+
+func UpdateIndividualClient(db *gorm.DB, body []byte, clientID uint) (string, error) {
+	individualClient := storage.IndividualClient{}
+	err := json.Unmarshal(body, &individualClient)
+	if err != nil {
+		return "error", err
+	}
+
+	err = individualClient.Update(db, clientID)
+	if err != nil {
+		return "error", err
+	}
+
+	if individualClient.Document != nil {
+		document := storage.Document{}
+		err = document.Update(db, individualClient.Document, clientID)
+		if err != nil {
+			return "error", err
+		}
+	}
+
+	if individualClient.RegistrationAddress != nil {
+		registrationAddress := storage.RegistrationAddress{}
+		err = registrationAddress.Update(db, individualClient.RegistrationAddress, clientID)
+		if err != nil {
+			return "error", err
+		}
+	}
+
+	if individualClient.ResidentialAddress != nil {
+		residentialAddress := storage.ResidentialAddress{}
+		err = residentialAddress.Update(db, individualClient.ResidentialAddress, clientID)
+		if err != nil {
+			return "error", err
+		}
+	}
+
+	if individualClient.WorkPlaceInfo != nil {
+		workPlaceInfo := storage.WorkPlaceInfo{}
+		err = workPlaceInfo.Update(db, individualClient.WorkPlaceInfo, clientID)
+		if err != nil {
+			return "error", err
+		}
+	}
+
+	return "success", nil
+}

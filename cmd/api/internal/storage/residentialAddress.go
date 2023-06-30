@@ -15,3 +15,12 @@ type ResidentialAddress struct {
 	IndividualClientID        *uint  `json:"individualClientID,omitempty"`
 	BeneficialOwnerBusinessID *uint  `json:"beneficialOwnerBusinessID,omitempty"`
 }
+
+func (ra ResidentialAddress) Update(db *gorm.DB, address *ResidentialAddress, clientID uint) error {
+	err := db.Debug().Model(&WorkPlaceInfo{}).Where("individual_client_id = ?", clientID).Updates(address).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

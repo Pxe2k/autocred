@@ -19,11 +19,11 @@ type WorkPlaceInfo struct {
 	IndividualClientID uint
 }
 
-func (w *WorkPlaceInfo) Update(db gorm.DB, workPlace WorkPlaceInfo) (*WorkPlaceInfo, error) {
-	err := db.Debug().Model(&WorkPlaceInfo{}).Where("id = ?", workPlace.ID).Updates(workPlace).Error
+func (w *WorkPlaceInfo) Update(db *gorm.DB, workPlace *WorkPlaceInfo, clientID uint) error {
+	err := db.Debug().Model(&WorkPlaceInfo{}).Where("individual_client_id = ?", clientID).Updates(workPlace).Error
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return w, nil
+	return nil
 }

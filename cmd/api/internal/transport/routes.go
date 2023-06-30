@@ -28,6 +28,7 @@ func (server *Server) InitializeRoutes() {
 	clientApi.HandleFunc("/individual/upload-avatar/{id}", middlewares.SetMiddlewareJSON(server.uploadIndividualClientAvatar)).Methods("PUT")
 	clientApi.HandleFunc("/business/upload-avatar/{id}", middlewares.SetMiddlewareJSON(server.uploadBusinessClientAvatar)).Methods("PUT")
 	clientApi.HandleFunc("/otp", middlewares.SetMiddlewareJSON(server.generateClientOTP)).Methods("POST")
+	clientApi.HandleFunc("/individual/update/{id}", middlewares.SetMiddlewareJSON(server.updateIndividualClient)).Methods("PATCH")
 	clientApi.HandleFunc("/individual/submit", middlewares.SetMiddlewareJSON(server.submitIndividualClientOTP)).Methods("PATCH")
 	clientApi.HandleFunc("/business/submit", middlewares.SetMiddlewareJSON(server.submitBusinessClientOTP)).Methods("PATCH")
 

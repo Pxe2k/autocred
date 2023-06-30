@@ -7,9 +7,10 @@ import (
 
 type AutoDealer struct {
 	gorm.Model
-	Title   string `gorm:"size:100;" json:"title"`
-	Address string `gorm:"size:100;" json:"address"`
-	Users   []User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"users"`
+	Title           string `gorm:"size:100;" json:"title"`
+	Address         string `gorm:"size:100;" json:"address"`
+	BCCAutoDealerID uint   `json:"BCCAutoDealerID"`
+	Users           []User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"users"`
 }
 
 func (a *AutoDealer) Save(db *gorm.DB) (*AutoDealer, error) {

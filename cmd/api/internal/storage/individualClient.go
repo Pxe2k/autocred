@@ -123,3 +123,12 @@ func (ic *IndividualClient) UpdateUserID(db *gorm.DB, client IndividualClient) e
 
 	return nil
 }
+
+func (ic *IndividualClient) Update(db *gorm.DB, id uint) error {
+	err := db.Debug().Model(&IndividualClient{}).Where("id = ?", id).Updates(&ic).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
