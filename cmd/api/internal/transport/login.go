@@ -74,9 +74,7 @@ func (server *Server) login(w http.ResponseWriter, r *http.Request) {
 
 	code, err := service.SignIn(requestData.Phone, requestData.Password, server.DB)
 	if err != nil {
-		passErr := errors.New("Incorrect Details")
-		fmt.Println(err)
-		responses.ERROR(w, http.StatusUnauthorized, passErr)
+		responses.ERROR(w, http.StatusUnauthorized, err)
 		return
 	}
 
