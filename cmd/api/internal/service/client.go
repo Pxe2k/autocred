@@ -35,7 +35,7 @@ func CreateIndividualClientService(db *gorm.DB, body []byte, uid uint) (*storage
 	return createdClient, nil
 }
 
-func GetIndividualClientService(db *gorm.DB, id, tokenID uint) (responses.IndividualClientResponseData, error) {
+func GetIndividualClientService(db *gorm.DB, id, tokenID, roleID uint) (responses.IndividualClientResponseData, error) {
 	client := storage.IndividualClient{}
 	responseData := responses.IndividualClientResponseData{}
 	clientGotten, err := client.Get(db, id)
@@ -50,13 +50,28 @@ func GetIndividualClientService(db *gorm.DB, id, tokenID uint) (responses.Indivi
 	responseData.LastName = clientGotten.LastName
 	responseData.BirthDate = clientGotten.BirthDate
 	responseData.Phone = clientGotten.Phone
-	responseData.Document = clientGotten.Document
-	responseData.ResidentialAddress = clientGotten.ResidentialAddress
+	responseData.Document.Number = clientGotten.Document.Number
+	responseData.Document.IIN = clientGotten.Document.IIN
+	responseData.Document.Type = clientGotten.Document.Type
+	responseData.Document.IssuingAuthority = clientGotten.Document.IssuingAuthority
+	responseData.Document.PlaceOfBirth = clientGotten.Document.PlaceOfBirth
+	responseData.Document.DocumentIssueDate = clientGotten.Document.DocumentIssueDate
+	responseData.Document.DocumentEndDate = clientGotten.Document.DocumentIssueDate
+	responseData.RegistrationAddress.Address = clientGotten.RegistrationAddress.Address
+	responseData.RegistrationAddress.Address1 = clientGotten.RegistrationAddress.Address1
+	responseData.RegistrationAddress.Address2 = clientGotten.RegistrationAddress.Address2
+	responseData.RegistrationAddress.Address3 = clientGotten.RegistrationAddress.Address3
+	responseData.RegistrationAddress.Address4 = clientGotten.RegistrationAddress.Address4
+	responseData.RegistrationAddress.Address5 = clientGotten.RegistrationAddress.Address5
+	responseData.RegistrationAddress.Address6 = clientGotten.RegistrationAddress.Address6
+	responseData.RegistrationAddress.Kato = clientGotten.RegistrationAddress.Kato
 	responseData.CreatedAt = clientGotten.CreatedAt
 
-	if clientGotten.UserID != tokenID {
-		responseData.Status = false
-		return responseData, nil
+	if roleID != 1 {
+		if clientGotten.UserID != tokenID {
+			responseData.Status = false
+			return responseData, nil
+		}
 	}
 
 	responseData.Status = true
@@ -69,9 +84,23 @@ func GetIndividualClientService(db *gorm.DB, id, tokenID uint) (responses.Indivi
 	responseData.UserID = clientGotten.UserID
 	responseData.User = clientGotten.User
 	responseData.MaritalStatus = clientGotten.MaritalStatus
-	responseData.WorkPlaceInfo = clientGotten.WorkPlaceInfo
-	responseData.RegistrationAddress = clientGotten.RegistrationAddress
-	responseData.ResidentialAddress = clientGotten.ResidentialAddress
+	responseData.WorkPlaceInfo.Experience = clientGotten.WorkPlaceInfo.Experience
+	responseData.WorkPlaceInfo.WorkPlace = clientGotten.WorkPlaceInfo.WorkPlace
+	responseData.WorkPlaceInfo.Address = clientGotten.WorkPlaceInfo.Address
+	responseData.WorkPlaceInfo.OrganizationPhone = clientGotten.WorkPlaceInfo.OrganizationPhone
+	responseData.WorkPlaceInfo.OrganizationName = clientGotten.WorkPlaceInfo.OrganizationName
+	responseData.WorkPlaceInfo.MonthlyIncome = clientGotten.WorkPlaceInfo.MonthlyIncome
+	responseData.WorkPlaceInfo.JobTitle = clientGotten.WorkPlaceInfo.JobTitle
+	responseData.WorkPlaceInfo.DateNextSalary = clientGotten.WorkPlaceInfo.DateNextSalary
+	responseData.WorkPlaceInfo.EmploymentDate = clientGotten.WorkPlaceInfo.EmploymentDate
+	responseData.ResidentialAddress.Address = clientGotten.ResidentialAddress.Address
+	responseData.ResidentialAddress.Address1 = clientGotten.ResidentialAddress.Address1
+	responseData.ResidentialAddress.Address2 = clientGotten.ResidentialAddress.Address2
+	responseData.ResidentialAddress.Address3 = clientGotten.ResidentialAddress.Address3
+	responseData.ResidentialAddress.Address4 = clientGotten.ResidentialAddress.Address4
+	responseData.ResidentialAddress.Address5 = clientGotten.ResidentialAddress.Address5
+	responseData.ResidentialAddress.Address6 = clientGotten.ResidentialAddress.Address6
+	responseData.ResidentialAddress.Kato = clientGotten.ResidentialAddress.Kato
 	responseData.Contacts = clientGotten.Contacts
 	responseData.BonusInfo = clientGotten.BonusInfo
 	responseData.CurrentLoans = clientGotten.CurrentLoans

@@ -113,12 +113,19 @@ func (server *Server) submit(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, responses.SubmitResponse{Token: &token})
 }
 
-func (server *Server) getRoleID(w http.ResponseWriter, r *http.Request) {
-	roleID, err := auth.ExtractRoleID(r)
+func (server *Server) getUserByToken(w http.ResponseWriter, r *http.Request) {
+	tokenID, err := auth.ExtractTokenID(r)
 	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
+		return
+	}
+	if tokenID == 0 {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("token is missing"))
 		return
 	}
 
-	responses.JSON(w, http.StatusOK, responses.SubmitResponse{RoleID: &roleID})
+	user := storage.User{}
+	userGotten, err := user.Get(server.DB, uint(tokenID))
+
+	responses.JSON(w, http.StatusOK, userGotten)
 }

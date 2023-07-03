@@ -51,6 +51,8 @@ func GeneratePdf(db *gorm.DB, body []byte, id uint) ([]storage.BankProcessingDoc
 	documentData.Phone = clientGotten.Phone
 	documentData.CurrentDate = helpers.CurrentDateString()
 	documentData.Place = clientGotten.User.AutoDealer.Address
+	documentData.PlaceTitle = clientGotten.User.AutoDealer.Title
+	documentData.PlaceBin = clientGotten.User.AutoDealer.Bin
 	documentData.BirthPlace = clientGotten.Document.PlaceOfBirth
 	documentData.BirthDate = clientGotten.BirthDate
 	documentData.Address = clientGotten.ResidentialAddress.Address
@@ -137,6 +139,8 @@ func ConfirmPdf(db *gorm.DB, body []byte, id uint) ([]storage.BankProcessingDocu
 	documentData.Phone = clientGotten.Phone
 	documentData.CurrentDate = helpers.CurrentDateString()
 	documentData.Place = clientGotten.User.AutoDealer.Address
+	documentData.PlaceTitle = clientGotten.User.AutoDealer.Title
+	documentData.PlaceBin = clientGotten.User.AutoDealer.Bin
 	documentData.BirthPlace = clientGotten.Document.PlaceOfBirth
 	documentData.BirthDate = clientGotten.BirthDate
 	documentData.Address = clientGotten.ResidentialAddress.Address

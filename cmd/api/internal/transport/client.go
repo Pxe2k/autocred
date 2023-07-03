@@ -133,7 +133,13 @@ func (server *Server) getIndividualClient(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	clientGotten, err := service.GetIndividualClientService(server.DB, uint(id), uint(tokenID))
+	roleID, err := auth.ExtractRoleID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	clientGotten, err := service.GetIndividualClientService(server.DB, uint(id), uint(tokenID), uint(roleID))
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return

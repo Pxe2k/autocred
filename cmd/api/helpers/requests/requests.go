@@ -185,6 +185,8 @@ type ProcessingTemplateData struct {
 	OTP                      string
 	CurrentDate              string
 	Place                    string // Место приема заявок
+	PlaceTitle               string
+	PlaceBin                 string
 	BirthPlace               string
 	BirthDate                string
 	Address                  string // Место проживания
