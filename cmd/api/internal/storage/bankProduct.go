@@ -9,6 +9,7 @@ import (
 type BankProduct struct {
 	gorm.Model
 	Title                          string         `gorm:"size:100;" json:"title"`
+	HasKasko                       bool           `json:"hasKasko"`
 	WithPercentage                 bool           `json:"withPercentage"`
 	PercentageWithProvenIncome     float64        `json:"percentageWithProvenIncome"`
 	PercentageWithoutProvenIncome  float64        `json:"percentageWithoutProvenIncome"`

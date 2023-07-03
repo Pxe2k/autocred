@@ -19,7 +19,7 @@ VALUES (
            '',
            1,
            1,
-           '2512108Am'
+           '$2a$10$w8YVGg5wZTuKkaBq7Xhx0OFO/NB4BhxDmJanFkT1F.1QoqACbLiFq'
        );
 
 INSERT INTO users (email, first_name, last_name, middle_name, iin, document, document_number, job_title, order_number, phone, work_phone, role_id, auto_dealer_id, password)
@@ -37,7 +37,7 @@ VALUES (
            '',
            2,
            1,
-           '2512108Am'
+           '$2a$10$w8YVGg5wZTuKkaBq7Xhx0OFO/NB4BhxDmJanFkT1F.1QoqACbLiFq'
        );
 
 INSERT INTO users (email, first_name, last_name, middle_name, iin, document, document_number, job_title, order_number, phone, work_phone, role_id, auto_dealer_id, password)
@@ -55,5 +55,5 @@ VALUES (
            '',
            3,
            1,
-           '2512108Am'
+           '$2a$10$w8YVGg5wZTuKkaBq7Xhx0OFO/NB4BhxDmJanFkT1F.1QoqACbLiFq'
        );
