@@ -304,7 +304,11 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 	requestData.Car.Model = applicationData.CarModel
 	requestData.Car.Year = uint(issueYear)
 
-	requestData.Car.Insurance = false
+	if bankApplicationData.KaskoID != nil {
+		requestData.Car.Insurance = true
+	} else {
+		requestData.Car.Insurance = false
+	}
 	requestData.Car.Price = uint(applicationData.CarPrice)
 	requestData.City = "Алматы"
 	requestData.Income = true
