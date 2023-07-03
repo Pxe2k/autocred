@@ -58,7 +58,7 @@ type IndividualClientResponseData struct {
 	BonusInfo        *storage.BonusInfo                   `json:"bonusInfo"`                  // Дополнительная информация
 	BeneficialOwners *[]storage.BeneficialOwnerIndividual `json:"beneficialOwners,omitempty"` // Бенефициарные владельцы
 	Pledges          *[]storage.Pledge                    `json:"pledges,omitempty"`          // Залоги
-	WorkPlaceInfo    *struct {
+	WorkPlaceInfo    struct {
 		OrganizationName  string `json:"organizationName"` // Название организанции
 		WorkPlace         string `json:"workPlaceType"`    // Тип места работы
 		WorkingActivityID uint   `json:"activityTypeID"`   // Тип деятельности
@@ -70,8 +70,8 @@ type IndividualClientResponseData struct {
 		EmploymentDate    string `json:"employmentDate"`   // Дата трудоустройства
 		DateNextSalary    string `json:"dateNextSalary"`   // Дата следующей з/п
 		OrganizationPhone string `json:"organizationPhone"`
-	} `json:"workPlaceInfo,omitempty"` // Информация о месте работы   // Отношения с банками
-	RegistrationAddress *struct {
+	} `json:"workPlaceInfo"` // Информация о месте работы   // Отношения с банками
+	RegistrationAddress struct {
 		Address  string `json:"address"` // Адрес
 		Address1 uint   `json:"address1"`
 		Address2 uint   `json:"address2"`
@@ -80,8 +80,8 @@ type IndividualClientResponseData struct {
 		Address5 uint   `json:"address5"`
 		Address6 uint   `json:"address6"`
 		Kato     string `json:"kato"` // Код КАТО
-	} `json:"registrationAddress,omitempty"` // Адрес прописки
-	ResidentialAddress *struct {
+	} `json:"registrationAddress"` // Адрес прописки
+	ResidentialAddress struct {
 		Address  string `json:"address"` // Адрес
 		Address1 uint   `json:"address1"`
 		Address2 uint   `json:"address2"`
@@ -90,8 +90,8 @@ type IndividualClientResponseData struct {
 		Address5 uint   `json:"address5"`
 		Address6 uint   `json:"address6"`
 		Kato     string `json:"kato"` // Код КАТО
-	} `json:"residentialAddress,omitempty"` // Адрес проживания
-	Document *struct {
+	} `json:"residentialAddress"` // Адрес проживания
+	Document struct {
 		Type              string `json:"type"`              // Тип документа
 		IIN               string `json:"IIN"`               // ИИН
 		Number            string `json:"number"`            // Номер
