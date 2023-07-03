@@ -13,7 +13,6 @@ import (
 	"strings"
 
 	"github.com/redis/go-redis/v9"
-	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -82,8 +81,7 @@ func SignIn(phone, password string, db *gorm.DB) (string, error) {
 	}
 
 	err = user.VerifyPassword(user.Password, password)
-	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword {
-		fmt.Println(err)
+	if err != nil {
 		return "error", err
 	}
 
