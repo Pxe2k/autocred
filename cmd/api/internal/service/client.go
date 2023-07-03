@@ -42,6 +42,10 @@ func GetIndividualClientService(db *gorm.DB, id, tokenID, roleID uint) (response
 	if err != nil {
 		return responses.IndividualClientResponseData{}, err
 	}
+	if clientGotten == nil {
+		// Handle the case where clientGotten is nil (if applicable)
+		return responses.IndividualClientResponseData{}, errors.New("client not found")
+	}
 
 	responseData.ID = clientGotten.ID
 	responseData.TypeOfClient = clientGotten.TypeOfClient
