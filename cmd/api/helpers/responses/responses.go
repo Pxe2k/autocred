@@ -34,36 +34,74 @@ type UserResponseData struct {
 }
 
 type IndividualClientResponseData struct {
-	ID                  uint                                 `json:"ID"`
-	TypeOfClient        string                               `gorm:"size:100" json:"typeOfClient"` // Тип клиента
-	FirstName           string                               `gorm:"size:100" json:"firstName"`
-	MiddleName          string                               `gorm:"size:100" json:"middleName"`
-	LastName            string                               `gorm:"size:100" json:"lastName,omitempty"`
-	Sex                 string                               `gorm:"size:100" json:"sex"`       // Пол
-	BirthDate           string                               `gorm:"size:100" json:"birthDate"` // ДР
-	Country             string                               `gorm:"size:100" json:"country"`
-	Phone               string                               `gorm:"size:100;unique" json:"phone"` // Телефон
-	SecondPhone         string                               `gorm:"size:100" json:"secondPhone"`
-	Email               string                               `gorm:"size:100" json:"email"`     // Email
-	Education           string                               `gorm:"size:100" json:"education"` // Образование
-	Status              bool                                 `json:"status"`
-	Comment             string                               `gorm:"size:100" json:"comment"`
-	Image               string                               `json:"image,omitempty"` // Аватарка
-	UserID              uint                                 `json:"userId,omitempty"`
-	User                *storage.User                        `json:"user,omitempty"`
-	Document            *storage.Document                    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"document,omitempty"`            // Документы
-	MaritalStatus       *storage.MaritalStatus               `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"maritalStatus,omitempty"`       // Семейное положение
-	WorkPlaceInfo       *storage.WorkPlaceInfo               `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"workPlaceInfo,omitempty"`       // Информация о месте работы   // Отношения с банками
-	CurrentLoans        *[]storage.CurrentLoans              `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"currentLoans,omitempty"`        // Действующие кредиты и займы
-	RegistrationAddress *storage.RegistrationAddress         `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"registrationAddress,omitempty"` // Адрес прописки
-	ResidentialAddress  *storage.ResidentialAddress          `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"residentialAddress,omitempty"`  // Адрес проживания
-	Contacts            *[]storage.ClientContact             `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"contacts,omitempty"`            // Доп. контакты
-	BonusInfo           *storage.BonusInfo                   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bonusInfo"`                     // Дополнительная информация
-	BeneficialOwners    *[]storage.BeneficialOwnerIndividual `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"beneficialOwners,omitempty"`    // Бенефициарные владельцы
-	Pledges             *[]storage.Pledge                    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"pledges,omitempty"`             // Залоги
-	Documents           *[]storage.Media                     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"documents"`
-	Applications        *[]storage.Application               `json:"applications"`
-	CreatedAt           time.Time                            `json:"createdAt"`
+	ID               uint                                 `json:"ID"`
+	TypeOfClient     string                               `gorm:"size:100" json:"typeOfClient"` // Тип клиента
+	FirstName        string                               `gorm:"size:100" json:"firstName"`
+	MiddleName       string                               `gorm:"size:100" json:"middleName"`
+	LastName         string                               `gorm:"size:100" json:"lastName,omitempty"`
+	Sex              string                               `gorm:"size:100" json:"sex"`       // Пол
+	BirthDate        string                               `gorm:"size:100" json:"birthDate"` // ДР
+	Country          string                               `gorm:"size:100" json:"country"`
+	Phone            string                               `gorm:"size:100;unique" json:"phone"` // Телефон
+	SecondPhone      string                               `gorm:"size:100" json:"secondPhone"`
+	Email            string                               `gorm:"size:100" json:"email"`     // Email
+	Education        string                               `gorm:"size:100" json:"education"` // Образование
+	Status           bool                                 `json:"status"`
+	Comment          string                               `gorm:"size:100" json:"comment"`
+	Image            string                               `json:"image,omitempty"` // Аватарка
+	UserID           uint                                 `json:"userId,omitempty"`
+	User             *storage.User                        `json:"user,omitempty"`
+	Documents        *[]storage.Media                     `json:"documents,omitempty"`        // Документы
+	MaritalStatus    *storage.MaritalStatus               `json:"maritalStatus,omitempty"`    // Семейное положение
+	CurrentLoans     *[]storage.CurrentLoans              `json:"currentLoans,omitempty"`     // Действующие кредиты и займы
+	Contacts         *[]storage.ClientContact             `json:"contacts,omitempty"`         // Доп. контакты
+	BonusInfo        *storage.BonusInfo                   `json:"bonusInfo"`                  // Дополнительная информация
+	BeneficialOwners *[]storage.BeneficialOwnerIndividual `json:"beneficialOwners,omitempty"` // Бенефициарные владельцы
+	Pledges          *[]storage.Pledge                    `json:"pledges,omitempty"`          // Залоги
+	WorkPlaceInfo    *struct {
+		OrganizationName  string `json:"organizationName"` // Название организанции
+		WorkPlace         string `json:"workPlaceType"`    // Тип места работы
+		WorkingActivityID uint   `json:"activityTypeID"`   // Тип деятельности
+		JobTitle          string `json:"jobTitle"`         // Должность
+		MonthlyIncome     int    `json:"monthlyIncome"`    // Доход
+		Address           string `json:"address"`          // Адрес
+		Experience        string `json:"experience"`       // Стаж работы в организации (мес)
+		EmploymentRate    string `json:"employmentRate"`   // Степень занятости
+		EmploymentDate    string `json:"employmentDate"`   // Дата трудоустройства
+		DateNextSalary    string `json:"dateNextSalary"`   // Дата следующей з/п
+		OrganizationPhone string `json:"organizationPhone"`
+	} `json:"workPlaceInfo,omitempty"` // Информация о месте работы   // Отношения с банками
+	RegistrationAddress *struct {
+		Address  string `json:"address"` // Адрес
+		Address1 uint   `json:"address1"`
+		Address2 uint   `json:"address2"`
+		Address3 uint   `json:"address3"`
+		Address4 uint   `json:"address4"`
+		Address5 uint   `json:"address5"`
+		Address6 uint   `json:"address6"`
+		Kato     string `json:"kato"` // Код КАТО
+	} `json:"registrationAddress,omitempty"` // Адрес прописки
+	ResidentialAddress *struct {
+		Address  string `json:"address"` // Адрес
+		Address1 uint   `json:"address1"`
+		Address2 uint   `json:"address2"`
+		Address3 uint   `json:"address3"`
+		Address4 uint   `json:"address4"`
+		Address5 uint   `json:"address5"`
+		Address6 uint   `json:"address6"`
+		Kato     string `json:"kato"` // Код КАТО
+	} `json:"residentialAddress,omitempty"` // Адрес проживания
+	Document *struct {
+		Type              string `json:"type"`              // Тип документа
+		IIN               string `json:"IIN"`               // ИИН
+		Number            string `json:"number"`            // Номер
+		IssuingAuthority  string `json:"issuingAuthority"`  // Орган выдачи
+		PlaceOfBirth      string `json:"placeOfBirth"`      // Место рождения
+		DocumentIssueDate string `json:"documentIssueDate"` // Дата выдачи
+		DocumentEndDate   string `json:"documentEndDate"`   // Дата истечения
+	} `json:"document"`
+	Applications *[]storage.Application `json:"applications"`
+	CreatedAt    time.Time              `json:"createdAt"`
 }
 
 type BusinessClientResponseData struct {

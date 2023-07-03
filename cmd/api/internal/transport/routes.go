@@ -15,7 +15,7 @@ func (server *Server) InitializeRoutes() {
 	authApi.HandleFunc("/login", middlewares.SetMiddlewareJSON(server.login)).Methods("POST")
 	authApi.HandleFunc("/ecp", middlewares.SetMiddlewareJSON(server.ecp)).Methods("POST")
 	authApi.HandleFunc("/submit", middlewares.SetMiddlewareJSON(server.submit)).Methods("POST")
-	authApi.HandleFunc("/role", middlewares.SetMiddlewareJSON(server.getRoleID)).Methods("GET")
+	authApi.HandleFunc("/user", middlewares.SetMiddlewareJSON(server.getUserByToken)).Methods("GET")
 
 	clientApi := server.Router.PathPrefix("/api/client").Subrouter()
 
