@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"os"
 	"strconv"
@@ -70,7 +71,21 @@ func SendApplications(db *gorm.DB, id uint, body []byte) (*storage.BankResponse,
 				fmt.Println("error:", err1)
 			}
 			if bccResponseData.Status == "OK" {
-				bankResponses = append(bankResponses, storage.BankResponse{Status: "Ожидает создания", Description: bccResponseData.Message, ApplicationID: bccResponseData.RequestId, BankApplicationID: application.BankApplications[i].ID})
+				status := "Ожидает рассмотрения"
+				description := bccResponseData.Message
+
+				err = sendClientImage(individualClientGotten, bccResponseData.RequestId)
+				if err != nil {
+					status = "Ошибка"
+					description = "Фото клиента не отправлено"
+				}
+				err = sendClientDocument(individualClientGotten, bccResponseData.RequestId)
+				if err != nil {
+					status = "Ошибка"
+					description = "Документы клиента не отправлены"
+				}
+
+				bankResponses = append(bankResponses, storage.BankResponse{Status: status, Description: description, ApplicationID: bccResponseData.RequestId, BankApplicationID: application.BankApplications[i].ID})
 			} else {
 				bankResponses = append(bankResponses, storage.BankResponse{Status: "Ошибка отправки", Description: bccResponseData.Message, ApplicationID: bccResponseData.RequestId, BankApplicationID: application.BankApplications[i].ID})
 			}
@@ -782,4 +797,127 @@ func getEUStatus(euApplicationID string) (responses.EUBankStatusResponseData, er
 	}
 
 	return responseData, nil
+}
+
+func sendClientImage(client *storage.IndividualClient, requestID string) error {
+	file, err := os.Open(client.Image)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	pathSplited := strings.Split(client.Image, ".")
+	fileExt := pathSplited[len(pathSplited)-1]
+
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	part, err := writer.CreateFormFile("first", client.Image)
+	if err != nil {
+		return err
+	}
+
+	io.Copy(part, file)
+	writer.Close()
+
+	url := "https://api-test.bcc.kz.bcc/production/credit/v1/ORBIS/applications" + requestID + "/?code3004&extension=" + fileExt
+
+	httpClient := &http.Client{}
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		fmt.Println("Error creating request:", err)
+		return err
+	}
+
+	req.Header.Add("authorization", "Basic "+os.Getenv("BCC_CRED"))
+
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		fmt.Println("Error sending request:", err)
+		return err
+	}
+	defer resp.Body.Close()
+
+	if err != nil {
+		return err
+	}
+
+	serverResponse, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	var result map[string]interface{}
+	err = json.Unmarshal(serverResponse, &result)
+	if err != nil {
+		fmt.Println(string(serverResponse))
+		return err
+	}
+	fmt.Println("result", result)
+
+	return nil
+}
+
+func sendClientDocument(client *storage.IndividualClient, requestID string) error {
+	var file *os.File
+	var err error
+
+	for _, document := range *client.Documents {
+		if document.Title == "idFront" {
+			file, err = os.Open(document.Title)
+			if err != nil {
+				return err
+			}
+			defer file.Close()
+		}
+	}
+
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	part, err := writer.CreateFormFile("first", client.Image)
+	if err != nil {
+		return err
+	}
+
+	io.Copy(part, file)
+	writer.Close()
+
+	url := "https://api-test.bcc.kz.bcc/production/credit/v1/ORBIS/applications" + requestID + "/?code3004&extension=pdf"
+
+	httpClient := &http.Client{}
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		fmt.Println("Error creating request:", err)
+		return err
+	}
+
+	req.Header.Add("authorization", "Basic "+os.Getenv("BCC_CRED"))
+	req.Header.Add("X-Application-Client-Id", "d3cc072a-cc60-41da-a0d9-2e217923b879")
+
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		fmt.Println("Error sending request:", err)
+		return err
+	}
+	defer resp.Body.Close()
+
+	if err != nil {
+		return err
+	}
+
+	serverResponse, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	var result map[string]interface{}
+	err = json.Unmarshal(serverResponse, &result)
+	if err != nil {
+		fmt.Println(string(serverResponse))
+		return err
+	}
+	fmt.Println("result", result)
+
+	return nil
 }
