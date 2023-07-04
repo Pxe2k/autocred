@@ -97,6 +97,7 @@ func GetIndividualClientService(db *gorm.DB, id, tokenID, roleID uint) (response
 	responseData.WorkPlaceInfo.JobTitle = clientGotten.WorkPlaceInfo.JobTitle
 	responseData.WorkPlaceInfo.DateNextSalary = clientGotten.WorkPlaceInfo.DateNextSalary
 	responseData.WorkPlaceInfo.EmploymentDate = clientGotten.WorkPlaceInfo.EmploymentDate
+	responseData.WorkPlaceInfo.EmploymentRate = clientGotten.WorkPlaceInfo.EmploymentRate
 	responseData.ResidentialAddress.Address = clientGotten.ResidentialAddress.Address
 	responseData.ResidentialAddress.Address1 = clientGotten.ResidentialAddress.Address1
 	responseData.ResidentialAddress.Address2 = clientGotten.ResidentialAddress.Address2
@@ -178,12 +179,9 @@ func GenerateClientOTP(body []byte) (string, error) {
 		return "error", err
 	}
 
-	serverENV := os.Getenv("SERVER")
-	if serverENV == "PROD" {
-		err = helpers.SendMessage(code, requestData.Phone)
-		if err != nil {
-			return "error", err
-		}
+	err = helpers.SendMessage(code, requestData.Phone)
+	if err != nil {
+		return "error", err
 	}
 
 	return code, nil
