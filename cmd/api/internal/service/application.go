@@ -173,8 +173,8 @@ func fillingBCCRequestData(client *storage.IndividualClient, applicationData *st
 	// TODO Поправить данные
 	requestData.PartnerID = "185124"
 	requestData.PartnerName = "TOO BRROKER"
-	requestData.PartnerBin = "170540017799"
-	requestData.DealerID = "4011"
+	requestData.PartnerBin = "210440000681"
+	requestData.DealerID = "4021"
 	requestData.PartnerCity = "Алматы"
 	requestData.CostObject = applicationData.CarPrice
 	requestData.DownPaymentAmt = applicationData.InitFee
