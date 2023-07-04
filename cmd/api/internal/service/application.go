@@ -136,7 +136,8 @@ func createBCCApplication(individualClient *storage.IndividualClient, applicatio
 	}
 
 	//url := os.Getenv("BCC_APPLICATION")
-	url := "https://api.bcc.kz/bcc/production/credit/v1/ORBIS/applications"
+	//url := "https://api.bcc.kz/bcc/production/credit/v1/ORBIS/applications"
+	url := "https://api-test.bcc.kz/bcc/production/credit/v1/ORBIS/applications"
 	fmt.Println("bcc route", url)
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
 	if err != nil {
@@ -575,7 +576,8 @@ func getBCCToken() (string, error) {
 	var respData responses.BCCTokenResponseData
 
 	//url := os.Getenv("BCC_TOKEN")
-	url := "https://api.bcc.kz/bcc/production/v2/oauth/token"
+	//url := "https://api.bcc.kz/bcc/production/v2/oauth/token"
+	url := "https://api-test.bcc.kz/bcc/production/v2/oauth/token"
 	payload := strings.NewReader("grant_type=client_credentials&scope=bcc.application.private")
 
 	req, err := http.NewRequest("POST", url, payload)
