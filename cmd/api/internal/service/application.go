@@ -143,9 +143,7 @@ func createBCCApplication(individualClient *storage.IndividualClient, applicatio
 		return responses.BCCResponseData{}, err
 	}
 
-	//url := os.Getenv("BCC_APPLICATION")
-	//url := "https://api.bcc.kz/bcc/production/credit/v1/ORBIS/applications"
-	url := "https://api-test.bcc.kz/bcc/production/credit/v1/ORBIS/applications"
+	url := "https://api.bcc.kz/bcc/production/credit/v1/ORBIS/applications"
 	fmt.Println("bcc route", url)
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
 	if err != nil {
@@ -581,9 +579,7 @@ func fillingShinhanBankRequestData(client *storage.IndividualClient, application
 func getBCCToken() (string, error) {
 	var respData responses.BCCTokenResponseData
 
-	//url := os.Getenv("BCC_TOKEN")
-	//url := "https://api.bcc.kz/bcc/production/v2/oauth/token"
-	url := "https://api-test.bcc.kz/bcc/production/v2/oauth/token"
+	url := "https://api.bcc.kz/bcc/production/v2/oauth/token"
 	payload := strings.NewReader("grant_type=client_credentials&scope=bcc.application.private")
 
 	req, err := http.NewRequest("POST", url, payload)
@@ -827,7 +823,7 @@ func sendClientImage(client *storage.IndividualClient, requestID string) error {
 	io.Copy(part, file)
 	writer.Close()
 
-	url := "https://api-test.bcc.kz/bcc/production/credit/v1/ORBIS/applications/" + requestID + "/files?code=3004&extension=" + fileExt
+	url := "https://api.bcc.kz/bcc/production/credit/v1/ORBIS/applications/" + requestID + "/files?code=3004&extension=" + fileExt
 	fmt.Println("bcc url: ", url)
 
 	httpClient := &http.Client{}
@@ -898,7 +894,7 @@ func sendClientDocument(client *storage.IndividualClient, requestID string) erro
 	io.Copy(part, file)
 	writer.Close()
 
-	url := "https://api-test.bcc.kz/bcc/production/credit/v1/ORBIS/applications/" + requestID + "/files?code=3011&extension=pdf"
+	url := "https://api.bcc.kz/bcc/production/credit/v1/ORBIS/applications/" + requestID + "/files?code=3011&extension=pdf"
 	fmt.Println("bcc url: ", url)
 	httpClient := &http.Client{}
 
@@ -968,7 +964,7 @@ func sendClientStatement(client *storage.IndividualClient, requestID string) err
 	io.Copy(part, file)
 	writer.Close()
 
-	url := "https://api-test.bcc.kz/bcc/production/credit/v1/ORBIS/applications/" + requestID + "/files?code=Z077_L_APPWORK&extension=pdf"
+	url := "https://api.bcc.kz/bcc/production/credit/v1/ORBIS/applications/" + requestID + "/files?code=Z077_L_APPWORK&extension=pdf"
 	fmt.Println("bcc url: ", url)
 	httpClient := &http.Client{}
 
