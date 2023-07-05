@@ -263,7 +263,7 @@ func createEUApplication(individualClient *storage.IndividualClient, application
 		return responses.EUResponseData{}, err
 	}
 
-	url := os.Getenv("EU_APPLICATION")
+	url := "https://auto.eubank.kz/orbis/application/create"
 	fmt.Println("url: ", url)
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
 	if err != nil {
@@ -272,7 +272,7 @@ func createEUApplication(individualClient *storage.IndividualClient, application
 
 	// Add header parameters to the request
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("x-eub-token", os.Getenv("EU_TOKEN"))
+	req.Header.Set("x-eub-token", "4611b141-f5d3-4596-a690-f917e83df24a")
 
 	client := http.DefaultClient
 	resp, err := client.Do(req)
@@ -746,7 +746,7 @@ func getShinhanStatus(shinhanApplicationID string) (string, error) {
 }
 
 func getEUStatus(euApplicationID string) (responses.EUBankStatusResponseData, error) {
-	url := "https://test-auto.eubank.kz/orbis/partner/" + euApplicationID
+	url := "https://auto.eubank.kz/orbis/partner/" + euApplicationID
 
 	fmt.Println(url)
 
@@ -760,7 +760,7 @@ func getEUStatus(euApplicationID string) (responses.EUBankStatusResponseData, er
 
 	// Add header parameters to the request
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("x-eub-token", os.Getenv("EU_TOKEN"))
+	req.Header.Set("x-eub-token", "4611b141-f5d3-4596-a690-f917e83df24a")
 
 	resp, err := client.Do(req)
 	if err != nil {
