@@ -207,6 +207,7 @@ func fillingBCCRequestData(client *storage.IndividualClient, applicationData *st
 	requestData.Model = applicationData.CarModel
 	requestData.IssueYear = issueYear
 	requestData.Iin = client.Document.IIN
+	requestData.StatementType = "ACCOUNT_STATEMENT"
 	requestData.IDocType = "УЛ"
 	if applicationData.Condition == false {
 		requestData.ProductCode = "0.201.1.0514"
