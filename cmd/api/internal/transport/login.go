@@ -126,6 +126,10 @@ func (server *Server) getUserByToken(w http.ResponseWriter, r *http.Request) {
 
 	user := storage.User{}
 	userGotten, err := user.Get(server.DB, uint(tokenID))
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("token is missing"))
+		return
+	}
 
 	responses.JSON(w, http.StatusOK, userGotten)
 }
