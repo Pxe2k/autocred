@@ -587,7 +587,7 @@ func getBCCToken() (string, error) {
 		return "error", err
 	}
 
-	req.Header.Add("authorization", "Basic "+os.Getenv("BCC_CRED_TEST"))
+	req.Header.Add("authorization", "Basic "+os.Getenv("BCC_CRED"))
 	req.Header.Add("content-type", "application/x-www-form-urlencoded")
 	req.Header.Add("accept", "application/json")
 
