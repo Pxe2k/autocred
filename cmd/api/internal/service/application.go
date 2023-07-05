@@ -333,7 +333,7 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 	requestData.Car.Price = uint(applicationData.CarPrice)
 	requestData.City = "Алматы"
 	requestData.Income = true
-	requestData.PartyID = "11201740"
+	requestData.PartyID = "11201873"
 	requestData.DownPayment = uint(applicationData.InitFee)
 	requestData.Duration = uint(bankApplicationData.TrenchesNumber)
 	requestData.Iin = client.Document.IIN
@@ -419,9 +419,9 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 	requestData.Gsvp.Name = "GSPV"
 	requestData.Gsvp.Extension = "pdf"
 	requestData.Idcd.Name = "IDCD"
-	requestData.Idcd.Extension = "jpg"
+	requestData.Idcd.Extension = "pdf"
 	requestData.Photo.Name = "PHTO"
-	requestData.Photo.Extension = "jpg"
+	requestData.Photo.Extension = "png"
 
 	return requestData, nil
 }

@@ -20,6 +20,7 @@ type Application struct {
 	PaymentDay              uint                     `json:"paymentDay"`
 	BankApplications        []BankApplication        `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bankApplications"`
 	UserID                  uint                     `json:"userID"`
+	User                    User                     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"user"`
 	IndividualClientID      uint                     `json:"individualClientID,omitempty"`
 	BusinessClientID        *uint                    `json:"businessClientID,omitempty"`
 	IndividualClient        *IndividualClient        `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"individualClient,omitempty"`
@@ -38,7 +39,7 @@ func (a *Application) Save(db *gorm.DB) (*Application, error) {
 
 func (a *Application) All(db *gorm.DB, uid uint) (*[]Application, error) {
 	var applications []Application
-	err := db.Debug().Model(&Application{}).Where("user_id = ?", uid).Order("created_at DESC").Preload("BankApplications").Preload("BankApplications.BankResponse").Preload("BankApplications.BankProduct").Preload("BankApplications.Bank").Preload("IndividualClient").Limit(100).Find(&applications).Error
+	err := db.Debug().Model(&Application{}).Where("user_id = ?", uid).Order("created_at DESC").Preload("BankApplications").Preload("BankApplications.BankResponse").Preload("BankApplications.BankProduct").Preload("BankApplications.Bank").Preload("IndividualClient").Preload("User").Preload("User.AutoDealer").Limit(100).Find(&applications).Error
 	if err != nil {
 		return nil, err
 	}
