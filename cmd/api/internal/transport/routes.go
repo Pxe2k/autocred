@@ -130,4 +130,7 @@ func (server *Server) InitializeRoutes() {
 	userApi.HandleFunc("/deactivate/{id}", middlewares.SetMiddlewareJSON(server.deactivateUser)).Methods("DELETE")
 	userApi.HandleFunc("/activate/{id}", middlewares.SetMiddlewareJSON(server.recoverUser)).Methods("PATCH")
 
+	smsApi := server.Router.PathPrefix("/api/sms").Subrouter()
+
+	smsApi.HandleFunc("/balance", middlewares.SetMiddlewareJSON(server.getBalance)).Methods("GET")
 }
