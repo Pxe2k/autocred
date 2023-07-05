@@ -10,6 +10,7 @@ type AutoDealer struct {
 	Title           string `gorm:"size:100;" json:"title"`
 	Address         string `gorm:"size:100;" json:"address"`
 	BCCAutoDealerID uint   `json:"BCCAutoDealerID"`
+	EUAutoDealerID  uint   `json:"EUAutoDealerID"`
 	Bin             string `json:"bin"`
 	Users           []User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"users"`
 }
