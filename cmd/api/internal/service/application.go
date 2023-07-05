@@ -76,13 +76,21 @@ func SendApplications(db *gorm.DB, id uint, body []byte) (*storage.BankResponse,
 
 				err = sendClientImage(individualClientGotten, bccResponseData.RequestId)
 				if err != nil {
+					fmt.Println("error", err)
 					status = "Ошибка"
 					description = "Фото клиента не отправлено"
 				}
 				err = sendClientDocument(individualClientGotten, bccResponseData.RequestId)
 				if err != nil {
+					fmt.Println("error", err)
 					status = "Ошибка"
 					description = "Документы клиента не отправлены"
+				}
+				err = sendClientStatement(individualClientGotten, bccResponseData.RequestId)
+				if err != nil {
+					fmt.Println("error", err)
+					status = "Ошибка"
+					description = "Выписка счета клиента не отправлена"
 				}
 
 				bankResponses = append(bankResponses, storage.BankResponse{Status: status, Description: description, ApplicationID: bccResponseData.RequestId, BankApplicationID: application.BankApplications[i].ID})
@@ -240,8 +248,6 @@ func fillingBCCRequestData(client *storage.IndividualClient, applicationData *st
 	//}
 	requestData.Document.Extension = "pdf"
 	requestData.Document.Code = "SOG"
-
-	fmt.Println("processing data doc", requestData.Document.File)
 
 	return requestData, nil
 }
@@ -585,7 +591,7 @@ func getBCCToken() (string, error) {
 		return "error", err
 	}
 
-	req.Header.Add("authorization", "Basic "+os.Getenv("BCC_CRED"))
+	req.Header.Add("authorization", "Basic "+os.Getenv("BCC_CRED_TEST"))
 	req.Header.Add("content-type", "application/x-www-form-urlencoded")
 	req.Header.Add("accept", "application/json")
 
@@ -821,17 +827,25 @@ func sendClientImage(client *storage.IndividualClient, requestID string) error {
 	io.Copy(part, file)
 	writer.Close()
 
-	url := "https://api-test.bcc.kz.bcc/production/credit/v1/ORBIS/applications" + requestID + "/?code3004&extension=" + fileExt
+	url := "https://api-test.bcc.kz/bcc/production/credit/v1/ORBIS/applications/" + requestID + "/files?code=3004&extension=" + fileExt
+	fmt.Println("bcc url: ", url)
 
 	httpClient := &http.Client{}
 
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest("PUT", url, body)
 	if err != nil {
 		fmt.Println("Error creating request:", err)
 		return err
 	}
 
-	req.Header.Add("authorization", "Basic "+os.Getenv("BCC_CRED"))
+	authToken, err := getBCCToken()
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Content-Type", writer.FormDataContentType()) // Set Content-Type header
+	req.Header.Add("authorization", "Bearer "+authToken)
+	req.Header.Add("X-Application-Client-Id", "014b0ca2-bf14-4da8-b4f6-4b071c2ffae8")
 
 	resp, err := httpClient.Do(req)
 	if err != nil {
@@ -856,7 +870,6 @@ func sendClientImage(client *storage.IndividualClient, requestID string) error {
 		return err
 	}
 	fmt.Println("result", result)
-
 	return nil
 }
 
@@ -866,7 +879,8 @@ func sendClientDocument(client *storage.IndividualClient, requestID string) erro
 
 	for _, document := range *client.Documents {
 		if document.Title == "idFront" {
-			file, err = os.Open(document.Title)
+			fmt.Println("filepath: ", document.File)
+			file, err = os.Open(document.File)
 			if err != nil {
 				return err
 			}
@@ -884,18 +898,24 @@ func sendClientDocument(client *storage.IndividualClient, requestID string) erro
 	io.Copy(part, file)
 	writer.Close()
 
-	url := "https://api-test.bcc.kz.bcc/production/credit/v1/ORBIS/applications" + requestID + "/?code3004&extension=pdf"
-
+	url := "https://api-test.bcc.kz/bcc/production/credit/v1/ORBIS/applications/" + requestID + "/files?code=3011&extension=pdf"
+	fmt.Println("bcc url: ", url)
 	httpClient := &http.Client{}
 
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest("PUT", url, body)
 	if err != nil {
 		fmt.Println("Error creating request:", err)
 		return err
 	}
 
-	req.Header.Add("authorization", "Basic "+os.Getenv("BCC_CRED"))
-	req.Header.Add("X-Application-Client-Id", "d3cc072a-cc60-41da-a0d9-2e217923b879")
+	authToken, err := getBCCToken()
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Content-Type", writer.FormDataContentType()) // Set Content-Type header
+	req.Header.Add("authorization", "Bearer "+authToken)
+	req.Header.Add("X-Application-Client-Id", "014b0ca2-bf14-4da8-b4f6-4b071c2ffae8")
 
 	resp, err := httpClient.Do(req)
 	if err != nil {
@@ -916,7 +936,76 @@ func sendClientDocument(client *storage.IndividualClient, requestID string) erro
 	var result map[string]interface{}
 	err = json.Unmarshal(serverResponse, &result)
 	if err != nil {
-		fmt.Println(string(serverResponse))
+		return err
+	}
+	fmt.Println("result", result)
+
+	return nil
+}
+
+func sendClientStatement(client *storage.IndividualClient, requestID string) error {
+	var file *os.File
+	var err error
+
+	for _, document := range *client.Documents {
+		if document.Title == "statement" {
+			fmt.Println("filepath: ", document.File)
+			file, err = os.Open(document.File)
+			if err != nil {
+				return err
+			}
+			defer file.Close()
+		}
+	}
+
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	part, err := writer.CreateFormFile("first", client.Image)
+	if err != nil {
+		return err
+	}
+
+	io.Copy(part, file)
+	writer.Close()
+
+	url := "https://api-test.bcc.kz/bcc/production/credit/v1/ORBIS/applications/" + requestID + "/files?code=Z077_L_APPWORK&extension=pdf"
+	fmt.Println("bcc url: ", url)
+	httpClient := &http.Client{}
+
+	req, err := http.NewRequest("PUT", url, body)
+	if err != nil {
+		fmt.Println("Error creating request:", err)
+		return err
+	}
+
+	authToken, err := getBCCToken()
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Content-Type", writer.FormDataContentType()) // Set Content-Type header
+	req.Header.Add("authorization", "Bearer "+authToken)
+	req.Header.Add("X-Application-Client-Id", "014b0ca2-bf14-4da8-b4f6-4b071c2ffae8")
+
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		fmt.Println("Error sending request:", err)
+		return err
+	}
+	defer resp.Body.Close()
+
+	if err != nil {
+		return err
+	}
+
+	serverResponse, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	var result map[string]interface{}
+	err = json.Unmarshal(serverResponse, &result)
+	if err != nil {
 		return err
 	}
 	fmt.Println("result", result)

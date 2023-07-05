@@ -17,6 +17,7 @@ type Application struct {
 	CarPrice                int                      `json:"carPrice"`                     // Цена авто
 	InitFee                 int                      `json:"initFee"`                      // Первоначалка
 	LoanPercentage          int                      `json:"loanPercentage"`               // Процент кредита
+	PaymentDay              uint                     `json:"paymentDay"`
 	BankApplications        []BankApplication        `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"bankApplications"`
 	UserID                  uint                     `json:"userID"`
 	IndividualClientID      uint                     `json:"individualClientID,omitempty"`
