@@ -419,7 +419,7 @@ func fillingEUBankRequestData(client *storage.IndividualClient, applicationData 
 	requestData.Gsvp.Name = "GSPV"
 	requestData.Gsvp.Extension = "pdf"
 	requestData.Idcd.Name = "IDCD"
-	requestData.Idcd.Extension = "pdf"
+	requestData.Idcd.Extension = "jpg"
 	requestData.Photo.Name = "PHTO"
 	requestData.Photo.Extension = "png"
 
@@ -875,7 +875,7 @@ func sendClientDocument(client *storage.IndividualClient, requestID string) erro
 	var err error
 
 	for _, document := range *client.Documents {
-		if document.Title == "idFront" {
+		if document.Title == "scan" {
 			fmt.Println("filepath: ", document.File)
 			file, err = os.Open(document.File)
 			if err != nil {
