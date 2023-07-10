@@ -1,1 +1,0 @@
-curl -X PUT -F 'first=@~/Desktop/Projects/autocredit/templates/resultMedia/outputPDF' https://api-test.bcc.kz.bcc/production/credit/v1/ORBIS/applications/FFAB1F716ACC1A0DE054020820EDF4B2/files?code=3004&extension=jpg
