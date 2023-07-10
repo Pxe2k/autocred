@@ -80,12 +80,14 @@ func SendApplications(db *gorm.DB, id uint, body []byte) (*storage.BankResponse,
 					status = "Ошибка"
 					description = "Фото клиента не отправлено"
 				}
+
 				err = sendClientDocument(individualClientGotten, bccResponseData.RequestId)
 				if err != nil {
 					fmt.Println("error", err)
 					status = "Ошибка"
 					description = "Документы клиента не отправлены"
 				}
+
 				err = sendClientStatement(individualClientGotten, bccResponseData.RequestId)
 				if err != nil {
 					fmt.Println("error", err)
@@ -193,21 +195,26 @@ func fillingBCCRequestData(client *storage.IndividualClient, applicationData *st
 	}
 
 	// TODO Поправить данные
-	requestData.PartnerID = "185124"
-	requestData.PartnerName = "TOO BRROKER"
+	//requestData.PartnerID = "185124"
+	//requestData.PartnerName = "TOO BRROKER"
+	//requestData.LoanAmt = bankApplicationData.LoanAmount
+	requestData.PartnerID = helpers.RandBankApplicationID(16)
 	requestData.PartnerBin = "210440000681"
 	requestData.DealerID = "4021"
 	requestData.PartnerCity = "Алматы"
-	requestData.CostObject = applicationData.CarPrice
+	requestData.CostObject = bankApplicationData.LoanAmount
 	requestData.DownPaymentAmt = applicationData.InitFee
-	requestData.LoanAmt = bankApplicationData.LoanAmount
 	requestData.LoanDuration = bankApplicationData.TrenchesNumber
-	requestData.SimpleFinAnalysis = 0
+	for _, document := range *client.Documents {
+		if document.Title == "statement" {
+			requestData.SimpleFinAnalysis = 1
+			requestData.StatementType = "ACCOUNT_STATEMENT"
+		}
+	}
 	requestData.Brand = applicationData.CarBrand
 	requestData.Model = applicationData.CarModel
 	requestData.IssueYear = issueYear
 	requestData.Iin = client.Document.IIN
-	requestData.StatementType = "ACCOUNT_STATEMENT"
 	requestData.IDocType = "УЛ"
 	if applicationData.Condition == false {
 		requestData.ProductCode = "0.201.1.0514"
@@ -217,6 +224,8 @@ func fillingBCCRequestData(client *storage.IndividualClient, applicationData *st
 	requestData.MobilePhoneNo = client.Phone
 	requestData.WorkName = client.WorkPlaceInfo.OrganizationName
 	requestData.WorkAddress = client.WorkPlaceInfo.Address
+	requestData.OrganizationPhoneNo = client.WorkPlaceInfo.OrganizationPhone
+	requestData.BasicIncome = client.BonusInfo.NetIncome
 	switch client.WorkPlaceInfo.WorkingActivityID {
 	case 1:
 		requestData.WorkStatus = "Пенсионер"
@@ -227,9 +236,6 @@ func fillingBCCRequestData(client *storage.IndividualClient, applicationData *st
 	default:
 		requestData.WorkStatus = "Обычный клиент"
 	}
-	requestData.OrganizationPhoneNo = client.WorkPlaceInfo.OrganizationPhone
-	requestData.BasicIncome = client.BonusInfo.NetIncome
-	requestData.AdditionalIncome = 0
 	requestData.UserCode = client.MiddleName + " " + client.FirstName + " " + client.LastName
 	for _, contact := range *client.Contacts {
 		requestData.ContactPerson = append(requestData.ContactPerson, requests.ContactPerson{
@@ -263,7 +269,7 @@ func createEUApplication(individualClient *storage.IndividualClient, application
 		return responses.EUResponseData{}, err
 	}
 
-	url := "https://auto.eubank.kz/orbis/application/create"
+	url := os.Getenv("EU_URL") + "/orbis/application/create"
 	fmt.Println("url: ", url)
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
 	if err != nil {
@@ -272,7 +278,7 @@ func createEUApplication(individualClient *storage.IndividualClient, application
 
 	// Add header parameters to the request
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("x-eub-token", "4611b141-f5d3-4596-a690-f917e83df24a")
+	req.Header.Set("x-eub-token", os.Getenv("EU_TOKEN"))
 
 	client := http.DefaultClient
 	resp, err := client.Do(req)
@@ -437,7 +443,7 @@ func createShinhanApplication(individualClient *storage.IndividualClient, applic
 		return responses.ShinhanResponseData{}, err
 	}
 
-	url := os.Getenv("SHINHAN_APPLICATION")
+	url := os.Getenv("SHINHAN_URL") + "/api/v1/orbis/application_create/"
 	fmt.Println("url: ", url)
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
 	if err != nil {
@@ -580,7 +586,7 @@ func fillingShinhanBankRequestData(client *storage.IndividualClient, application
 func getBCCToken() (string, error) {
 	var respData responses.BCCTokenResponseData
 
-	url := "https://api.bcc.kz/bcc/production/v2/oauth/token"
+	url := os.Getenv("BCC_URL") + "/bcc/production/v2/oauth/token"
 	payload := strings.NewReader("grant_type=client_credentials&scope=bcc.application.private")
 
 	req, err := http.NewRequest("POST", url, payload)
@@ -824,7 +830,7 @@ func sendClientImage(client *storage.IndividualClient, requestID string) error {
 	io.Copy(part, file)
 	writer.Close()
 
-	url := "https://api.bcc.kz/bcc/production/credit/v1/ORBIS/applications/" + requestID + "/files?code=3004&extension=" + fileExt
+	url := os.Getenv("BCC_URL") + "/bcc/production/credit/v1/ORBIS/applications/" + requestID + "/files?code=3004&extension=" + fileExt
 	fmt.Println("bcc url: ", url)
 
 	httpClient := &http.Client{}
@@ -842,7 +848,7 @@ func sendClientImage(client *storage.IndividualClient, requestID string) error {
 
 	req.Header.Set("Content-Type", writer.FormDataContentType()) // Set Content-Type header
 	req.Header.Add("authorization", "Bearer "+authToken)
-	req.Header.Add("X-Application-Client-Id", "014b0ca2-bf14-4da8-b4f6-4b071c2ffae8")
+	req.Header.Add("X-Application-Client-Id", os.Getenv("BCC_CLIENT_ID"))
 
 	resp, err := httpClient.Do(req)
 	if err != nil {
@@ -895,7 +901,7 @@ func sendClientDocument(client *storage.IndividualClient, requestID string) erro
 	io.Copy(part, file)
 	writer.Close()
 
-	url := "https://api.bcc.kz/bcc/production/credit/v1/ORBIS/applications/" + requestID + "/files?code=3011&extension=pdf"
+	url := os.Getenv("BCC_URL") + "/bcc/production/credit/v1/ORBIS/applications/" + requestID + "/files?code=3011&extension=pdf"
 	fmt.Println("bcc url: ", url)
 	httpClient := &http.Client{}
 
@@ -912,7 +918,7 @@ func sendClientDocument(client *storage.IndividualClient, requestID string) erro
 
 	req.Header.Set("Content-Type", writer.FormDataContentType()) // Set Content-Type header
 	req.Header.Add("authorization", "Bearer "+authToken)
-	req.Header.Add("X-Application-Client-Id", "014b0ca2-bf14-4da8-b4f6-4b071c2ffae8")
+	req.Header.Add("X-Application-Client-Id", os.Getenv("BCC_CLIENT_ID"))
 
 	resp, err := httpClient.Do(req)
 	if err != nil {
@@ -965,7 +971,7 @@ func sendClientStatement(client *storage.IndividualClient, requestID string) err
 	io.Copy(part, file)
 	writer.Close()
 
-	url := "https://api.bcc.kz/bcc/production/credit/v1/ORBIS/applications/" + requestID + "/files?code=Z077_L_APPWORK&extension=pdf"
+	url := os.Getenv("BCC_URL") + "/bcc/production/credit/v1/ORBIS/applications/" + requestID + "/files?code=VipSchet6&extension=pdf"
 	fmt.Println("bcc url: ", url)
 	httpClient := &http.Client{}
 
@@ -982,7 +988,7 @@ func sendClientStatement(client *storage.IndividualClient, requestID string) err
 
 	req.Header.Set("Content-Type", writer.FormDataContentType()) // Set Content-Type header
 	req.Header.Add("authorization", "Bearer "+authToken)
-	req.Header.Add("X-Application-Client-Id", "014b0ca2-bf14-4da8-b4f6-4b071c2ffae8")
+	req.Header.Add("X-Application-Client-Id", os.Getenv("BCC_CLIENT_ID"))
 
 	resp, err := httpClient.Do(req)
 	if err != nil {
