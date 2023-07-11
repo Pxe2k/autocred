@@ -132,6 +132,7 @@ func SendApplications(db *gorm.DB, id uint, body []byte) (*storage.BankResponse,
 func createBCCApplication(individualClient *storage.IndividualClient, application *storage.Application, bankApplication storage.BankApplication) (responses.BCCResponseData, error) {
 	authToken, err := getBCCToken()
 	if err != nil {
+		fmt.Println(err)
 		return responses.BCCResponseData{}, err
 	}
 
@@ -145,7 +146,7 @@ func createBCCApplication(individualClient *storage.IndividualClient, applicatio
 		return responses.BCCResponseData{}, err
 	}
 
-	url := "https://api.bcc.kz/bcc/production/credit/v1/ORBIS/applications"
+	url := os.Getenv("BCC_URL") + "/bcc/production/credit/v2/ORBIS/applications"
 	fmt.Println("bcc route", url)
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
 	if err != nil {
@@ -594,7 +595,7 @@ func getBCCToken() (string, error) {
 		return "error", err
 	}
 
-	req.Header.Add("authorization", "Basic "+os.Getenv("BCC_CRED"))
+	req.Header.Add("Authorization", "Basic "+os.Getenv("BCC_CRED"))
 	req.Header.Add("content-type", "application/x-www-form-urlencoded")
 	req.Header.Add("accept", "application/json")
 
@@ -752,7 +753,7 @@ func getShinhanStatus(shinhanApplicationID string) (string, error) {
 }
 
 func getEUStatus(euApplicationID string) (responses.EUBankStatusResponseData, error) {
-	url := "https://auto.eubank.kz/orbis/partner/" + euApplicationID
+	url := os.Getenv("EU_URL") + "/orbis/partner/" + euApplicationID
 
 	fmt.Println(url)
 
@@ -830,7 +831,7 @@ func sendClientImage(client *storage.IndividualClient, requestID string) error {
 	io.Copy(part, file)
 	writer.Close()
 
-	url := os.Getenv("BCC_URL") + "/bcc/production/credit/v1/ORBIS/applications/" + requestID + "/files?code=3004&extension=" + fileExt
+	url := os.Getenv("BCC_URL") + "/bcc/production/credit/v2/ORBIS/applications/" + requestID + "/files?code=3004&extension=" + fileExt
 	fmt.Println("bcc url: ", url)
 
 	httpClient := &http.Client{}
@@ -901,7 +902,7 @@ func sendClientDocument(client *storage.IndividualClient, requestID string) erro
 	io.Copy(part, file)
 	writer.Close()
 
-	url := os.Getenv("BCC_URL") + "/bcc/production/credit/v1/ORBIS/applications/" + requestID + "/files?code=3011&extension=pdf"
+	url := os.Getenv("BCC_URL") + "/bcc/production/credit/v2/ORBIS/applications/" + requestID + "/files?code=3011&extension=pdf"
 	fmt.Println("bcc url: ", url)
 	httpClient := &http.Client{}
 
@@ -971,7 +972,7 @@ func sendClientStatement(client *storage.IndividualClient, requestID string) err
 	io.Copy(part, file)
 	writer.Close()
 
-	url := os.Getenv("BCC_URL") + "/bcc/production/credit/v1/ORBIS/applications/" + requestID + "/files?code=VipSchet6&extension=pdf"
+	url := os.Getenv("BCC_URL") + "/bcc/production/credit/v2/ORBIS/applications/" + requestID + "/files?code=VipSchet6&extension=pdf"
 	fmt.Println("bcc url: ", url)
 	httpClient := &http.Client{}
 
