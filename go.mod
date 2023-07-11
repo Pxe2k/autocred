@@ -9,7 +9,7 @@ require (
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
 	github.com/joho/godotenv v1.5.1
-	github.com/redis/go-redis/v9 v9.0.2
+	github.com/redis/go-redis/v9 v9.0.5
 	golang.org/x/crypto v0.6.0
 	gorm.io/datatypes v1.2.0
 	gorm.io/driver/postgres v1.5.0
