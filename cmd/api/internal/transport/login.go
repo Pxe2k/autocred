@@ -29,15 +29,18 @@ func (server *Server) createUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var autoDealerID uint32
+	var autoDealerID uint
 
+	// TODO доставать autoDealerID из токена
 	if roleID == 2 {
-		autoDealerID, err = auth.ExtractAutoDealerID(r)
-
-		if err != nil {
+		user := storage.User{}
+		userGotten, err1 := user.Get(server.DB, uint(tokenID))
+		if err1 != nil {
 			responses.ERROR(w, http.StatusUnprocessableEntity, err)
 			return
 		}
+
+		autoDealerID = userGotten.AutoDealerID
 	}
 
 	body, err := io.ReadAll(r.Body)
@@ -45,7 +48,7 @@ func (server *Server) createUser(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 	}
 
-	userCreated, err := service.CreateUserService(server.DB, body, uint(autoDealerID))
+	userCreated, err := service.CreateUserService(server.DB, body, autoDealerID)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
