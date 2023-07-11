@@ -33,14 +33,12 @@ func (server *Server) createUser(w http.ResponseWriter, r *http.Request) {
 
 	// TODO доставать autoDealerID из токена
 	if roleID == 2 {
-		user := storage.User{}
-		userGotten, err1 := user.Get(server.DB, uint(tokenID))
+		autoDealerID32, err1 := auth.ExtractAutoDealerID(r)
 		if err1 != nil {
-			responses.ERROR(w, http.StatusUnprocessableEntity, err)
+			responses.ERROR(w, http.StatusUnprocessableEntity, err1)
 			return
 		}
-
-		autoDealerID = userGotten.AutoDealerID
+		autoDealerID = uint(autoDealerID32)
 	}
 
 	body, err := io.ReadAll(r.Body)
